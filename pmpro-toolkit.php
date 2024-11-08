@@ -351,12 +351,6 @@ add_action( 'wp_enqueue_scripts', 'pmprodev_enqueue_scripts' );
  * @since 1.0
  */
 function pmprodev_create_button() {
-	global $pmpro_level;
-	$level = array( $pmpro_level );
-	//bail if it's a free level
-	if( pmpro_areLevelsFree( $level ) ) {
-		return;
-	}
 
 ?>
 	<div class="pmpro_card">
