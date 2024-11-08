@@ -23,7 +23,7 @@ $pmprodev_other_tables = array(
 $clean_up_actions = array(
 	'pmprodev_clean_member_tables'	=> array(
 		'label' => __( 'Delete Member Data', 'pmpro-toolkit' ),
-		'description' => __( 'Delete all member data. This script deletes data from the wp_pmpro_memberships_users, wp_pmpro_membership_orders, and wp_pmpro_discount_codes_uses tables.', 'pmpro-toolkit' ),
+		'description' => __( 'Delete all member data. This script deletes data from the wp_pmpro_memberships_users, wp_pmpro_membership_orders, wp_pmpro_discount_codes_uses, wp_pmpro_subscriptions and wp_pmpro_subscriptionmeta tables', 'pmpro-toolkit' ),
 		'message' => __( 'Member tables have been truncated.', 'pmpro-toolkit' ),
 	),
 	'pmprodev_clean_level_data'	=> array(
