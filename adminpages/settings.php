@@ -60,12 +60,6 @@
 		$msgt = __( "Your developer's toolkit settings have been updated.", 'pmpro-toolkit' );
 
 	}
-
-	// Show the contextual messages on our admin pages.
-	if ( ! empty( $msg ) ) { ?>
-		<div id="message" class="<?php if($msg > 0) echo "updated fade"; else echo "error"; ?>"><p><?php echo wp_kses_post( $msgt );?></p></div>
-		<?php
-	}
 ?>
 <h2><?php esc_html_e( 'Toolkit Options', 'pmpro-toolkit' ); ?></h2>
 <form action="" method="POST" enctype="multipart/form-data">
