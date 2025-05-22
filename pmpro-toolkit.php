@@ -16,6 +16,7 @@ global $pmprodev_options, $gateway;
 $default_options = array(
 	'expire_memberships' => '',
 	'expiration_warnings' => '',
+	'payment_reminders' => '',
 	'credit_card_expiring' => '',
 	'ipn_debug' => '',
 	'authnet_silent_post_debug' => '',
@@ -80,15 +81,32 @@ function pmprodev_gateway_debug_setup() {
 		define( 'PMPRO_INS_DEBUG', $pmprodev_options['ipn_debug'] );
 	}
 
-	//unhook crons
+	// Unhook crons or Action Scheduler actions
 	if( !empty( $pmprodev_options['expire_memberships'] ) ) {
-		remove_action( "pmpro_cron_expire_memberships", "pmpro_cron_expire_memberships" );
+		if ( class_exists( 'PMPro_Scheduled_Actions' ) ) {
+			remove_action( 'pmpro_schedule_daily', array( PMPro_Scheduled_Actions::instance(), 'membership_expiration_reminders' ), 10 );
+		} else {
+			remove_action( "pmpro_cron_expire_memberships", "pmpro_cron_expire_memberships" );
+		}
 	}
 
-	if( !empty( $pmprodev_options['expiration_warnings'] ) )	{
-		remove_action( "pmpro_cron_expiration_warnings", "pmpro_cron_expiration_warnings" );
+	if( !empty( $pmprodev_options['expiration_warnings'] ) ){
+		if ( class_exists( 'PMPro_Scheduled_Actions' ) ) {
+			remove_action( 'pmpro_schedule_daily', array( PMPro_Scheduled_Actions::instance(), 'membership_expiration_warnings' ), 10 );
+		} else {
+			remove_action( "pmpro_cron_expiration_warnings", "pmpro_cron_expiration_warnings" );
+		}
 	}
 
+	if( !empty( $pmprodev_options['payment_reminders'] ) ){
+		if ( class_exists( 'PMPro_Scheduled_Actions' ) ) {
+			remove_action( 'pmpro_schedule_daily', array( PMPro_Scheduled_Actions::instance(), 'recurring_payment_reminders' ), 10 );
+		} else {
+			remove_action( "pmpro_cron_recurring_payment_reminders", "pmpro_cron_recurring_payment_reminders" );
+		}
+	}
+
+	// Backward compatibility with older PMPro versions
 	if( !empty( $pmprodev_options['credit_card_expiring'] ) ) {
 		remove_action( "pmpro_cron_credit_card_expiring_warnings", "pmpro_cron_credit_card_expiring_warnings" );
 	}
