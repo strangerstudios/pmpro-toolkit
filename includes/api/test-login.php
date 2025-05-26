@@ -27,7 +27,7 @@ class Test_Login_Endpoint extends API_Endpoint {
 			'/test-login',
 			array(
 				'methods'             => WP_REST_Server::CREATABLE,
-				'permission_callback' => array( $this, 'permission_callback' ),
+				'permission_callback' => array( $this, 'handle_permissions' ),
 				'callback'            => array( $this, 'handle_request' ),
 			)
 		);
@@ -39,7 +39,7 @@ class Test_Login_Endpoint extends API_Endpoint {
 	 *
 	 * @return void
 	 */
-	public function permission_callback() {
+	public function handle_permissions() {
 		// Allow unauthenticated, but rate limit by IP
 		$ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
 

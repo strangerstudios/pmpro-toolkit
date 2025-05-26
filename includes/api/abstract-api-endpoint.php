@@ -3,6 +3,7 @@
 // Toolkit
 namespace TK;
 
+use WP_REST_Request;
 use WP_REST_Response;
 use WP_Error;
 
@@ -48,7 +49,7 @@ abstract class API_Endpoint {
 	 *
 	 * @return bool
 	 */
-	public function permission_callback() {
+	public function handle_permissions() {
 		return is_user_logged_in();
 	}
 
