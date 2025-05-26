@@ -3,6 +3,9 @@
 // Toolkit
 namespace TK;
 
+use WP_REST_Response;
+use WP_Error;
+
 /**
  * Abstract class for registering API endpoints
  *
@@ -36,10 +39,12 @@ abstract class API_Endpoint {
 	 *
 	 * @param array $data
 	 * @param int   $status HTTP status code
-	 * @return \WP_REST_Response
+	 * @return WP_REST_Response
 	 */
 	public function json_success( $data = array(), $status = 200 ) {
-		return rest_ensure_response( array_merge( array( 'success' => true ), $data ), $status );
+		$response = rest_ensure_response( array_merge( array( 'success' => true ), $data ) );
+		$response->set_status( $status );
+		return $response;
 	}
 
 	/**
@@ -48,9 +53,9 @@ abstract class API_Endpoint {
 	 * @param string $message
 	 * @param int    $status HTTP status code
 	 * @param string $code WP_Error code
-	 * @return \WP_Error
+	 * @return WP_Error
 	 */
 	public function json_error( $message = 'An error occurred.', $status = 500, $code = 'api_error' ) {
-		return new \WP_Error( $code, $message, array( 'status' => $status ) );
+		return new WP_Error( $code, $message, array( 'status' => $status ) );
 	}
 }

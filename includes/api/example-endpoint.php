@@ -51,7 +51,7 @@ class Example_Endpoint extends API_Endpoint {
 	/**
 	 * Get a user.
 	 *
-	 * @param \WP_REST_Request $request
+	 * @param WP_REST_Request $request
 	 * @return void
 	 */
 	public function handle_request( WP_REST_Request $request ) {
