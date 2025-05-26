@@ -71,12 +71,12 @@ abstract class API_Endpoint {
 	/**
 	 * Standard JSON error response
 	 *
+	 * @param string $code WP_Error code
 	 * @param string $message
 	 * @param int    $status HTTP status code
-	 * @param string $code WP_Error code
 	 * @return WP_Error
 	 */
-	public function json_error( $message = 'An error occurred.', $status = 500, $code = 'api_error' ) {
+	public function json_error(  $code = 'api_error', $message = 'An error occurred.', $status = 500 ) {
 		return new WP_Error( $code, $message, array( 'status' => $status ) );
 	}
 }

@@ -7,14 +7,21 @@
 
 namespace TK;
 
+use TK\Example_Endpoint;
 use TK\Test_Login_Endpoint;
+use TK\Test_Checkout_Endpoint;
+use TK\Test_Change_Level_Endpoint;
+
 
 class API_Loader {
 	protected $endpoints = array();
 
 	public function __construct() {
 		$this->endpoints = array(
+			new Example_Endpoint(),
 			new Test_Login_Endpoint(),
+			new Test_Checkout_Endpoint(),
+			new Test_Change_Level_Endpoint(),
 		);
 
 		// Register the routes of the controller.

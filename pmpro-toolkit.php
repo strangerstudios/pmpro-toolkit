@@ -55,14 +55,14 @@ require_once PMPRODEV_DIR . '/classes/class-pmprodev-migration-assistant.php';
 /**
  * API LOADER
  */
-// Autoload all API endpoint files in /includes/api/.
+// Explicitly load the API Loader class.
+require_once plugin_dir_path( __FILE__ ) . 'includes/class-api-loader.php';
+
+ // Autoload all API endpoint files in /includes/api/.
 $api_dir = plugin_dir_path( __FILE__ ) . 'includes/api/';
 foreach ( glob( $api_dir . '*.php' ) as $api_file ) {
 	require_once $api_file;
 }
-
-// Explicitly load the API Loader class.
-require_once plugin_dir_path( __FILE__ ) . 'includes/class-api-loader.php';
 
 // Initialize the API Loader.
 new TK\API_Loader();

@@ -49,17 +49,17 @@ class Test_Login_Endpoint extends API_Endpoint {
 		// Get the current count
 		$count = (int) get_transient( $key );
 
-		if ( $count >= 5 ) {
+		if ( $count >= 10 ) {
 			// Deny: too many attempts
-			return new WP_Error(
+			return $this->json_error(
 				'rate_limited',
-				'Too many access attempts. Please wait a minute before retrying.',
-				array( 'status' => 429 )
+				'Too many access attempts. Please wait awhile before retrying.',
+				429
 			);
 		}
 
-		// Increment count and set/update expiration (1 minute)
-		set_transient( $key, $count + 1, 60 );
+		// Increment count and set/update expiration (30 seconds)
+		set_transient( $key, $count + 1, MINUTE_IN_SECONDS / 2 );
 
 		// Allow request
 		return true;
@@ -77,13 +77,19 @@ class Test_Login_Endpoint extends API_Endpoint {
 		global $wpdb;
 		$wpdb->queries = array();
 
-		// TODO: Do we want persistent cookies here? [remember => true]
+		// TODO: Do we want persistent cookies here? I don't think so. [remember => true]
 		$creds = array(
 			'user_login'    => $request['username'],
 			'user_password' => $request['password'],
-			'remember'      => true,
+			'remember'      => false,
 		);
+
 		$user  = wp_signon( $creds, false );
+
+		// If the user is not logged in, return an error and stop processing
+		if ( is_wp_error( $user ) ) {
+			return $this->json_error( 'login_failed', wp_strip_all_tags( $user->get_error_message() ), 401 );
+		}
 
 		// Process results
 		$end_time = microtime( true );
@@ -104,9 +110,8 @@ class Test_Login_Endpoint extends API_Endpoint {
 		$peak_memory_kb = round( memory_get_peak_usage( true ) / 1024 ); // Convert to KB
 		$peak_memory_kb = $peak_memory_kb ? $peak_memory_kb : 0;
 
-		if ( is_wp_error( $user ) ) {
-			return $this->json_error( $user->get_error_message(), 401, 'login_failed' );
-		}
+		// Logout the user after testing
+		wp_logout();
 
 		$data = array(
 			'status'         => 'success',
