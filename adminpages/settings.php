@@ -217,10 +217,21 @@
 							<br>
 							<?php if ( ! empty( $pmprodev_options['performance_endpoints'] ) && $pmprodev_options['performance_endpoints'] !== 'no' ) : ?>
 								<br><br>
-								<strong><?php esc_html_e( 'Endpoint URL:', 'pmpro-toolkit' ); ?></strong><br>
-								<code><?php echo esc_url( rest_url( 'toolkit/v1/performance-test' ) ); ?></code>
+								<strong><?php esc_html_e( 'Endpoint URLs:', 'pmpro-toolkit' ); ?></strong><br>
+								<code><?php echo esc_url( rest_url( 'toolkit/v1/(endpoint-name)' ) ); ?></code>
 								<br>
 								<em><?php esc_html_e( 'Use GET for read-only tests, POST for read-write tests (if enabled).', 'pmpro-toolkit' ); ?></em>
+								<br><br>
+								<strong><?php esc_html_e( 'NOTE:', 'pmpro-toolkit' ); ?></strong>
+								<?php
+								/* translators: 1: Example code define statement, 2: wp-config.php filename */
+								printf(
+									// translators: 1: define() code snippet, 2: wp-config.php filename
+									__( 'To enable full testing capability, make sure to add %1$s to your %2$s file.', 'pmpro-toolkit' ),
+									'<code>define( \'SAVEQUERIES\', true );</code>',
+									'<code>wp-config.php</code>'
+								);
+								?>						
 							<?php endif; ?>
 						</p>
 					</td>
@@ -243,7 +254,7 @@ jQuery(document).ready(function($) {
 		
 		if (selectedValue === 'read_write') {
 			if (warningDiv.length === 0) {
-				$('#pmprodev_options\\[performance_endpoints\\]').closest('td').append(
+				$('#pmprodev_options\\[performance_endpoints\\]').next('p.description').prepend(
 					'<div id="performance-endpoint-warning">' +
 					'<strong style="color: #c3524f;"><?php esc_html_e( 'CAUTION:', 'pmpro-toolkit' ); ?></strong> ' +
 					'<?php esc_html_e( '"Read and Write" mode will create and delete test data on your site. Only use this on development/testing sites.', 'pmpro-toolkit' ); ?>' +
