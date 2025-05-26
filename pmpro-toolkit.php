@@ -46,7 +46,6 @@ function pmprodev_init_options() {
 
 add_action( 'admin_init', 'pmprodev_init_options' );
 
-
 /*
 * Gateway Debug Constants
 */

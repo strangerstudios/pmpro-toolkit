@@ -21,9 +21,17 @@ abstract class API_Endpoint {
 	public static $namespace = 'toolkit/v1';
 
 	/**
-	 * Register REST routes for this endpoint
+	 * All child classes must implement a method to register REST routes for this endpoint.
 	 */
 	abstract public function register_routes();
+
+	/**
+	 * All child classes must implement a main method to handle a request.
+	 *
+	 * @param WP_REST_Request $request
+	 * @return void
+	 */
+	abstract public function handle_request( WP_REST_Request $request );
 
 	/**
 	 * Get the current API namespace
@@ -33,6 +41,18 @@ abstract class API_Endpoint {
 	public function get_namespace() {
 		return self::$namespace;
 	}
+
+	/**
+	 * Default permission callback for endpoints.
+	 * Requires authentication by default.
+	 *
+	 * @return bool
+	 */
+	public function permission_callback() {
+		return is_user_logged_in();
+	}
+
+
 
 	/**
 	 * Standard JSON success response
