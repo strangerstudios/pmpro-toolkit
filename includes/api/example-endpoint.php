@@ -63,6 +63,10 @@ class Example_Endpoint extends API_Endpoint {
 
 		$user = get_user_by( 'id', $user_id );
 
-		return rest_ensure_response( $user );
+		if ( ! $user ) {
+			return $this->json_error( 'User not found', 404, 'user_not_found' );
+		}
+
+		return $this->json_success( $user );
 	}
 }
