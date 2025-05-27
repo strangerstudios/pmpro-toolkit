@@ -238,11 +238,11 @@
 									<br>
 									<em><?php esc_html_e( 'Use GET for read-only tests, POST for read-write tests (if enabled).', 'pmpro-toolkit' ); ?></em>
 									<br><br>
-									<strong><?php esc_html_e( 'NOTE:', 'pmpro-toolkit' ); ?></strong>
 									<?php
-									if ( !defined( 'SAVEQUERIES' ) && SAVEQUERIES ) { ?>
-										<?php esc_html_e( 'The SAVEQUERIES constant is already enabled.', 'pmpro-toolkit' ); ?>
+									if ( !defined( 'SAVEQUERIES' ) || SAVEQUERIES === false ) { ?>
+										<span class="dashicons dashicons-yes" style="margin-top:-3px;"></span><?php esc_html_e( 'The SAVEQUERIES constant is enabled.', 'pmpro-toolkit' ); ?>
 									<?php } else { ?>
+										<strong><?php esc_html_e( 'NOTE:', 'pmpro-toolkit' ); ?></strong>
 										<?php printf(
 										// translators: 1: define() code snippet, 2: wp-config.php filename
 										__( 'To enable full testing capability, make sure to add %1$s to your %2$s file.', 'pmpro-toolkit' ),
@@ -272,8 +272,8 @@ jQuery(document).ready(function($) {
 		
 		if (selectedValue === 'read_write') {
 			if (warningDiv.length === 0) {
-				$('#pmprodev_options\\[performance_endpoints\\]').next('p.description').prepend(
-					'<div id="performance-endpoint-warning">' +
+				$('#pmprodev_options\\[performance_endpoints\\]').next('p.description').append(
+					'<div id="performance-endpoint-warning"><br>' +
 					'<strong style="color: #c3524f;"><?php esc_html_e( 'CAUTION:', 'pmpro-toolkit' ); ?></strong> ' +
 					'<?php esc_html_e( '"Read and Write" mode will create and delete test data on your site. Only use this on development/testing sites.', 'pmpro-toolkit' ); ?>' +
 					'</div>'
