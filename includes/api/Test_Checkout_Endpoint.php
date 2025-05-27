@@ -8,85 +8,160 @@ use WP_Error;
 
 class Test_Checkout_Endpoint extends API_Endpoint {
 
-    public function __construct() {}
+	public function __construct() {}
 
-    public function register_routes() {
-        register_rest_route(
-            $this->get_namespace(),
-            '/test-checkout',
-            array(
-                'methods'             => WP_REST_Server::CREATABLE,
-                'permission_callback' => array( $this, 'handle_permissions' ),
-                'callback'            => array( $this, 'handle_request' ),
-            )
-        );
-    }
+	public function register_routes() {
+		register_rest_route(
+			$this->get_namespace(),
+			'/test-checkout',
+			array(
+				'methods'             => WP_REST_Server::CREATABLE,
+				'permission_callback' => array( $this, 'handle_permissions' ),
+				'callback'            => array( $this, 'handle_request' ),
+			)
+		);
+	}
 
-    public function handle_permissions() {
-        // Allow unauthenticated, but rate limit by IP
-        $ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
-        $key = 'tk_test_checkout_rate_' . md5( $ip );
-        $count = (int) get_transient( $key );
+	public function handle_permissions() {
+		// Allow unauthenticated, but rate limit by IP
+		$ip    = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+		$key   = 'tk_test_checkout_rate_' . md5( $ip );
+		$count = (int) get_transient( $key );
 
-        if ( $count >= 5 ) {
-            return new WP_Error(
-                'rate_limited',
-                'Too many access attempts. Please wait awhile before retrying.',
-                array( 'status' => 429 )
-            );
-        }
+		if ( $count >= 5 ) {
+			return new WP_Error(
+				'rate_limited',
+				'Too many access attempts. Please wait awhile before retrying.',
+				array( 'status' => 429 )
+			);
+		}
 
-        set_transient( $key, $count + 1, MINUTE_IN_SECONDS / 2 );
-        return true;
-    }
+		set_transient( $key, $count + 1, MINUTE_IN_SECONDS / 2 );
+		return true;
+	}
 
-    public function handle_request( WP_REST_Request $request ) {
-        $start = microtime( true );
-        global $wpdb;
-        $wpdb->queries = array();
+	public function handle_request( WP_REST_Request $request ) {
+		$start = microtime( true );
+		global $wpdb;
+		$wpdb->queries = array();
 
-        $params = $request->get_json_params();
-        $user_id = username_exists( $params['user_login'] );
+		$params = $request->get_json_params();
 
-        if ( ! $user_id ) {
-            $user_id = wp_create_user(
-                $params['user_login'],
-                $params['user_pass'],
-                $params['user_email']
-            );
-        }
+		// Get parameters or set defaults
+		$level_id     = intval( $params['membership_level'] ?? 1 );
+		$gateway      = $params['gateway'] ?? 'check'; // Default to PMPro Check gateway (no remote call)
+		$skip_gateway = ! empty( $params['skip_gateway'] ); // default: false
+		$cleanup      = ! empty( $params['cleanup'] ); // default: false
 
-        if ( is_wp_error( $user_id ) ) {
-            return $this->json_error( 'user_error', $user_id->get_error_message(), 400 );
-        }
+		// Generate unique user data if not provided
+		$user_login = $params['user_login'] ?? 'test_' . wp_generate_password( 8, false );
+		$user_email = $params['user_email'] ?? ( $user_login . '@test.local' );
+		$user_pass  = $params['user_pass'] ?? wp_generate_password( 12 );
+		$first_name = $params['first_name'] ?? 'Test';
+		$last_name  = $params['last_name'] ?? 'McTesterson';
 
-        $level_id = intval( $params['membership_level'] );
-        $result = function_exists( 'pmpro_changeMembershipLevel' )
-            ? pmpro_changeMembershipLevel( $level_id, $user_id )
-            : false;
+		// Fake address data
+		$address = $params['baddress1'] ?? '123 Testing Ave';
+		$city    = $params['bcity'] ?? 'Testville';
+		$state   = $params['bstate'] ?? 'NY';
+		$zip     = $params['bzipcode'] ?? '10001';
+		$phone   = $params['bphone'] ?? '999-555-1234';
 
-        $end = microtime( true );
-        $total_query_time = 0;
-        if ( defined( 'SAVEQUERIES' ) && SAVEQUERIES && isset( $wpdb->queries ) ) {
-            foreach ( $wpdb->queries as $q ) {
-                $total_query_time += $q[1];
-            }
-            $total_query_time = round( $total_query_time, 4 );
-        }
+		// Mimic $_POST as if the real checkout form is being submitted.
+		$_POST = array(
+			'username'        => $user_login,
+			'password'        => $user_pass,
+			'password2'       => $user_pass,
+			'bemail'          => $user_email,
+			'bconfirmemail'   => $user_email,
+			'first_name'      => $first_name,
+			'last_name'       => $last_name,
+			'bfirstname'      => $first_name,
+			'blastname'       => $last_name,
+			'baddress1'       => $address,
+			'bcity'           => $city,
+			'bstate'          => $state,
+			'bzipcode'        => $zip,
+			'bphone'          => $phone,
+			'AccountNumber'   => '4242424242424242',   // test VISA number
+			'ExpirationMonth' => '01',
+			'ExpirationYear'  => date( 'Y', strtotime( '+2 years' ) ), // 2 years in the future
+			'CVV'             => '123',
+			'level'           => $level_id,
+			'gateway'         => $gateway,
+			'payment_method'  => $gateway,
+			'submit-checkout' => 1,
+			// Add other custom fields as needed
+		);
 
-        $query_count = get_num_queries();
-        $peak_memory_kb = round( memory_get_peak_usage( true ) / 1024 );
+		// Optionally short-circuit the gateway for performance test
+		if ( $skip_gateway ) {
+			add_filter(
+				'pmpro_checkout_new_gateway_instance',
+				function ( $gateway_obj, $gateway ) {
+					if ( method_exists( $gateway_obj, 'charge' ) ) {
+						$gateway_obj->charge = function () {
+							return true;
+						};
+					}
+					return $gateway_obj;
+				},
+				10,
+				2
+			);
+		}
 
-        $data = array(
-            'user_id'        => $user_id,
-            'level_id'       => $level_id,
-            'success'        => $result,
-            'duration_sec'   => round( $end - $start, 4 ),
-            'queries'        => $query_count,
-            'db_time_sec'    => $total_query_time,
-            'peak_memory_kb' => $peak_memory_kb ? $peak_memory_kb : 0,
-        );
+		// Buffer output to avoid sending HTML to the response.
+		ob_start();
 
-        return $this->json_success( $data );
-    }
+		// Fire the full checkout flow (simulate a real checkout request).
+		do_action( 'pmpro_checkout_preheader' );
+		if ( function_exists( 'pmpro_include_checkout' ) ) {
+			pmpro_include_checkout();
+		}
+		do_action( 'pmpro_checkout' );
+
+		ob_end_clean();
+
+		// Gather performance data
+		$end              = microtime( true );
+		$total_query_time = 0;
+		if ( defined( 'SAVEQUERIES' ) && SAVEQUERIES && isset( $wpdb->queries ) ) {
+			foreach ( $wpdb->queries as $q ) {
+				$total_query_time += $q[1];
+			}
+			$total_query_time = round( $total_query_time, 4 );
+		}
+
+		$query_count    = get_num_queries();
+		$peak_memory_kb = round( memory_get_peak_usage( true ) / 1024 );
+
+		// Find created user ID
+		$created_user_id = username_exists( $user_login );
+
+		// Optionally clean up (delete user and related data)
+		$deleted = false;
+		if ( $cleanup && $created_user_id ) {
+			require_once ABSPATH . 'wp-admin/includes/user.php';
+			wp_delete_user( $created_user_id );
+			$deleted = true;
+		}
+
+		// Return profiling results
+		return $this->json_success(
+			array(
+				'user_login'      => $user_login,
+				'user_email'      => $user_email,
+				'user_id'         => $created_user_id,
+				'level_id'        => $level_id,
+				'gateway'         => $gateway,
+				'skipped_gateway' => $skip_gateway,
+				'deleted'         => $deleted,
+				'duration_sec'    => round( $end - $start, 4 ),
+				'queries'         => $query_count,
+				'db_time_sec'     => $total_query_time,
+				'peak_memory_kb'  => $peak_memory_kb,
+			)
+		);
+	}
 }
