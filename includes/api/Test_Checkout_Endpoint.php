@@ -6,6 +6,37 @@ use WP_REST_Request;
 use WP_REST_Server;
 use WP_Error;
 
+/**
+ * Simulate a complete Paid Memberships Pro checkout and profile its performance.
+ *
+ * This endpoint enables automated performance testing of the *entire* membership checkout process,
+ * as if a real user were registering and checking out for the first time.
+ *
+ * Capabilities:
+ * - Programmatically generates unique user and billing data for each run (or uses provided data).
+ * - Submits all fields required by the real checkout form, triggering all core and custom PMPro hooks, add-ons, and gateway logic.
+ * - Optionally short-circuits payment gateway logic for rapid profiling (with `skip_gateway` param).
+ * - Optionally deletes all test data (user, membership, orders) after profiling (with `cleanup` param).
+ * - Returns detailed performance data: PHP execution time, query count, query time, peak memory usage, and created user info.
+ *
+ * Request Parameters:
+ * - membership_level (int, optional): Membership level ID to test (default: 1).
+ * - gateway (string, optional): Payment gateway to use (default: 'check' for no-charge/dummy).
+ * - skip_gateway (bool, optional): If true, disables remote gateway calls for local profiling (default: false).
+ * - cleanup (bool, optional): If true, deletes the test user and all related data after the run (default: false).
+ * - user_login, user_email, user_pass, first_name, last_name, address, city, state, zip, phone (optional): Provide custom test user details.
+ *
+ * Example payload:
+ * {
+ *   "membership_level": 2,
+ *   "gateway": "check",
+ *   "skip_gateway": true,
+ *   "cleanup": true
+ * }
+ *
+ * @param WP_REST_Request $request
+ * @return WP_REST_Response
+ */
 class Test_Checkout_Endpoint extends API_Endpoint {
 
 	public function __construct() {}
