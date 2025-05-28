@@ -12,6 +12,7 @@ use TK\Performance_Testing_Endpoint;
 use TK\Test_Login_Endpoint;
 use TK\Test_Checkout_Endpoint;
 use TK\Test_Change_Level_Endpoint;
+use TK\Test_Membership_Account_Endpoint;
 
 
 class API_Loader {
@@ -29,6 +30,7 @@ class API_Loader {
 				new Test_Login_Endpoint(),
 				new Test_Checkout_Endpoint(),
 				new Test_Change_Level_Endpoint(),
+				new Test_Membership_Account_Endpoint(),
 			);
 
 			// Register the routes of the controller.
