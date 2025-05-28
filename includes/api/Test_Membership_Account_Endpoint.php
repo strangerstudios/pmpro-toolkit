@@ -44,7 +44,7 @@ class Test_Membership_Account_Endpoint extends API_Endpoint {
 		if ( ! $user_id ) {
 			return $this->json_error(
 				'not_logged_in',
-				'You must be logged in to view the account page.',
+				'You must be logged in to perform this test.',
 				array( 'status' => 401 )
 			);
 		}
