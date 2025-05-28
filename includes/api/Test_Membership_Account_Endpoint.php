@@ -55,8 +55,6 @@ class Test_Membership_Account_Endpoint extends API_Endpoint {
 		// Simulate viewing the account page
 		if ( function_exists( 'pmpro_loadTemplate' ) ) {
 			pmpro_loadTemplate( 'account' );
-		} elseif ( function_exists( 'pmpro_loadTemplate' ) ) {
-			pmpro_loadTemplate( 'account' );
 		} else {
 			do_action( 'pmpro_account_preheader' );
 			do_action( 'pmpro_account_bullets_top' );
