@@ -15,6 +15,9 @@ use WP_REST_Response;
  */
 class Test_Search_Endpoint extends API_Endpoint {
 
+	// Trait to handle performance tracking
+	use PerformanceTrackingTrait;
+
 	/**
 	 * Register REST API routes for this endpoint.
 	 */
@@ -63,7 +66,9 @@ class Test_Search_Endpoint extends API_Endpoint {
 			return $this->json_error( 'empty_query', 'Search query is required.', 400 );
 		}
 
-		$start_time = microtime( true );
+		// Start performance tracking
+		$this->start_performance_tracking();
+
 		$results    = array();
 		$count      = 0;
 
@@ -93,8 +98,8 @@ class Test_Search_Endpoint extends API_Endpoint {
 			$count      = count( $results );
 		}
 
-		$end_time = microtime( true );
-		$duration = $end_time - $start_time;
+		// End performance tracking
+		$performance_data = $this->end_performance_tracking();
 
 		return $this->json_success(
 			array(
@@ -102,7 +107,10 @@ class Test_Search_Endpoint extends API_Endpoint {
 				'type'     => $type ? $type : 'post',
 				'results'  => $results,
 				'count'    => $count,
-				'duration' => $duration,
+				'duration_sec'   => $performance_data['duration_sec'],
+				'queries'        => $performance_data['queries_in_block'],
+				'db_time_sec'    => $performance_data['db_time_sec'],
+				'peak_memory_kb' => $performance_data['peak_memory_kb'],
 			)
 		);
 	}

@@ -57,15 +57,17 @@ require_once PMPRODEV_DIR . '/classes/class-pmprodev-migration-assistant.php';
  * API LOADER
  */
 // Explicitly load the API Loader class.
-require_once plugin_dir_path( __FILE__ ) . 'includes/class-api-loader.php';
+require_once plugin_dir_path( __FILE__ ) . 'classes/class-api-loader.php';
+// Load the API Performance Tracking Trait.
+require_once plugin_dir_path( __FILE__ ) . 'classes/traits/Performance_Tracking_Trait.php';
 
- // Autoload all API endpoint files in /includes/api/.
-$api_dir = plugin_dir_path( __FILE__ ) . 'includes/api/';
+ // Autoload API endpoint files in /classes/api/.
+$api_dir = plugin_dir_path( __FILE__ ) . 'classes/api/';
 foreach ( glob( $api_dir . '*.php' ) as $api_file ) {
 	require_once $api_file;
 }
 
-// Initialize the API Loader.
+// Initialize the namespaced API Loader.
 new TK\API_Loader();
 
 /**

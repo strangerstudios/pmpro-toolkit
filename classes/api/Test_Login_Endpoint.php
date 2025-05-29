@@ -50,6 +50,9 @@ use WP_Error;
  */
 class Test_Login_Endpoint extends API_Endpoint {
 
+	// Trait to handle performance tracking
+	use PerformanceTrackingTrait;
+
 	/**
 	 * Constructor
 	 */
@@ -110,9 +113,7 @@ class Test_Login_Endpoint extends API_Endpoint {
 	 */
 	public function handle_request( WP_REST_Request $request ) {
 		// Start metrics collection
-		$start_time = microtime( true );
-		global $wpdb;
-		$wpdb->queries = array();
+		$this->start_performance_tracking();
 
 		// TODO: Do we want persistent cookies here? I don't think so. [remember => true]
 		$creds = array(
@@ -121,31 +122,15 @@ class Test_Login_Endpoint extends API_Endpoint {
 			'remember'      => false,
 		);
 
-		$user  = wp_signon( $creds, false );
+		$user = wp_signon( $creds, false );
 
 		// If the user is not logged in, return an error and stop processing
 		if ( is_wp_error( $user ) ) {
 			return $this->json_error( 'login_failed', wp_strip_all_tags( $user->get_error_message() ), 401 );
 		}
 
-		// Process results
-		$end_time = microtime( true );
-
-		// Compute total DB query time
-		$total_query_time = 0;
-
-		if ( defined( 'SAVEQUERIES' ) && SAVEQUERIES && isset( $wpdb->queries ) ) {
-			foreach ( $wpdb->queries as $q ) {
-				$total_query_time += $q[1]; // $q[1] is query time in seconds
-			}
-			$total_query_time = round( $total_query_time, 4 );
-		}
-
-		// Caculate Metrics
-		$query_count = get_num_queries();
-		// $memory_used_kb = ($end_memory - $start_memory) / 1024;
-		$peak_memory_kb = round( memory_get_peak_usage( true ) / 1024 ); // Convert to KB
-		$peak_memory_kb = $peak_memory_kb ? $peak_memory_kb : 0;
+		// Stop metrics collection
+		$performance_data = $this->end_performance_tracking();
 
 		// Logout the user after testing
 		wp_logout();
@@ -153,10 +138,10 @@ class Test_Login_Endpoint extends API_Endpoint {
 		$data = array(
 			'status'         => 'success',
 			'user_id'        => $user->ID,
-			'duration'       => $end_time - $start_time,
-			'queries'        => $query_count,
-			'db_time_sec'    => $total_query_time,
-			'peak_memory_kb' => $peak_memory_kb,
+			'duration'       => $performance_data['duration_sec'],
+			'queries'        => $performance_data['queries_in_block'],
+			'db_time_sec'    => $performance_data['db_time_sec'],
+			'peak_memory_kb' => $performance_data['peak_memory_kb'],
 		);
 
 		return $this->json_success( $data );

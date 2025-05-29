@@ -13,6 +13,9 @@ use WP_Error;
  */
 class Example_Endpoint extends API_Endpoint {
 
+	// Trait to handle performance tracking
+	use PerformanceTrackingTrait;
+
 	/**
 	 * Constructor
 	 */
@@ -61,12 +64,30 @@ class Example_Endpoint extends API_Endpoint {
 			return new WP_Error( 'invalid_user_id', 'Invalid user ID', array( 'status' => 400 ) );
 		}
 
+		// Start performance tracking
+		$this->start_performance_tracking();
+
 		$user = get_user_by( 'id', $user_id );
 
 		if ( ! $user ) {
 			return $this->json_error( 'user_not_found', 'User not found.', 404 );
 		}
 
-		return $this->json_success( $user );
+		// End performance tracking
+		$performance_data = $this->end_performance_tracking();
+
+		// Prepare the response data
+		$user_data = array(
+			'id'             => $user->ID,
+			'username'       => $user->user_login,
+			'email'          => $user->user_email,
+			'display_name'   => $user->display_name,
+			'duration_sec'   => $performance_data['duration_sec'],
+			'queries'        => $performance_data['queries'],
+			'db_time_sec'    => $performance_data['db_time_sec'],
+			'peak_memory_kb' => $performance_data['peak_memory_kb'],
+		);
+
+		return $this->json_success( $user_data );
 	}
 }

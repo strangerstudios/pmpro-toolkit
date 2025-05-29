@@ -8,6 +8,9 @@ use WP_Error;
 
 class Test_Membership_Account_Endpoint extends API_Endpoint {
 
+	// Trait to handle performance tracking
+	use PerformanceTrackingTrait;
+
 	public function __construct() {}
 
 	public function register_routes() {
@@ -32,9 +35,9 @@ class Test_Membership_Account_Endpoint extends API_Endpoint {
 	 * @return WP_REST_Response
 	 */
 	public function handle_request( WP_REST_Request $request ) {
-		$start = microtime( true );
-		global $wpdb;
-		$wpdb->queries = array();
+
+		// Start performance tracking
+		$this->start_performance_tracking();
 
 		$params = $request->get_json_params();
 
@@ -63,28 +66,17 @@ class Test_Membership_Account_Endpoint extends API_Endpoint {
 
 		ob_end_clean();
 
-		// Gather performance data
-		$end              = microtime( true );
-		$total_query_time = 0;
+		// Get performance data
+		$performance_data = $this->end_performance_tracking();
 
-		// If SAVEQUERIES is enabled, calculate total query time
-		if ( defined( 'SAVEQUERIES' ) && SAVEQUERIES && isset( $wpdb->queries ) ) {
-			foreach ( $wpdb->queries as $q ) {
-				$total_query_time += $q[1];
-			}
-			$total_query_time = round( $total_query_time, 4 );
-		}
-
-		$query_count    = get_num_queries();
-		$peak_memory_kb = round( memory_get_peak_usage( true ) / 1024 );
 
 		return $this->json_success(
 			array(
 				'user_id'        => $user_id,
-				'duration_sec'   => round( $end - $start, 4 ),
-				'queries'        => $query_count,
-				'db_time_sec'    => $total_query_time,
-				'peak_memory_kb' => $peak_memory_kb,
+				'duration_sec'   => $performance_data['duration_sec'],
+				'queries'        => $performance_data['queries_in_block'],
+				'db_time_sec'    => $performance_data['db_time_sec'],
+				'peak_memory_kb' => $performance_data['peak_memory_kb'],
 			)
 		);
 	}
