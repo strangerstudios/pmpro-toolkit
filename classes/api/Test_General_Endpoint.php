@@ -28,42 +28,42 @@ class Performance_Testing_Endpoint extends API_Endpoint {
 	 * Register the REST API route for this endpoint
 	 */
 	public function register_routes() {
-
-		// Default to 'no' if the option is not set
-		$performance_endpoints_setting = isset( $pmprodev_options['performance_endpoints'] ) ? $pmprodev_options['performance_endpoints'] : 'no';
+		$base_args = array(
+			'permission_callback' => array( $this, 'handle_permissions' ),
+			'args'                => array(
+				'detailed' => array(
+					'description' => 'Include detailed performance metrics for PMPro',
+					'type'        => 'boolean',
+					'default'     => false,
+				),
+			),
+		);
 
 		// Register GET endpoint for read operations
+		$get_args             = $base_args;
+		$get_args['methods']  = WP_REST_Server::READABLE;
+		$get_args['callback'] = array( $this, 'handle_request' );
+
 		register_rest_route(
 			$this->get_namespace(),
-			'/performance-test',
-			array(
-				'methods'             => WP_REST_Server::READABLE,
-				'permission_callback' => array( $this, 'handle_permissions' ),
-				'callback'            => array( $this, 'handle_request' ),
-				'args'                => array(
-					'detailed' => array(
-						'description' => 'Include detailed performance metrics for PMPro',
-						'type'        => 'boolean',
-						'default'     => false,
-					),
-				),
-			)
+			'/test-general',
+			$get_args
 		);
 
 		// Check if the performance endpoints setting is enabled for read_write
 		global $pmprodev_options;
 		$performance_endpoints_setting = isset( $pmprodev_options['performance_endpoints'] ) ? $pmprodev_options['performance_endpoints'] : 'no';
 
-		// Only register write methods if read_write is enabled
+		// Only register write method if read_write is enabled
 		if ( $performance_endpoints_setting === 'read_write' ) {
+			$post_args             = $base_args;
+			$post_args['methods']  = WP_REST_Server::CREATABLE;
+			$post_args['callback'] = array( $this, 'handle_write_request' );
+
 			register_rest_route(
 				$this->get_namespace(),
-				'/performance-test',
-				array(
-					'methods'             => WP_REST_Server::CREATABLE, // Typically POST for creating resources
-					'permission_callback' => array( $this, 'handle_permissions' ),
-					'callback'            => array( $this, 'handle_write_request' ),
-				)
+				'/test-general',
+				$post_args
 			);
 		}
 	}
@@ -117,7 +117,7 @@ class Performance_Testing_Endpoint extends API_Endpoint {
 
 		// Test 1: Get site info
 		$this->start_performance_tracking();
-		$results['site_info']                      = array(
+		$results['site_info'] = array(
 			'site_name'     => get_bloginfo( 'name' ),
 			'site_url'      => get_bloginfo( 'url' ),
 			'wp_version'    => get_bloginfo( 'version' ),

@@ -28,7 +28,7 @@ class Example_Endpoint extends API_Endpoint {
 
 		register_rest_route(
 			$this->get_namespace(),
-			'/example-endpoint',
+			'/test-example',
 			array(
 				'methods'             => WP_REST_Server::CREATABLE,
 				'permission_callback' => array( $this, 'handle_permissions' ),
