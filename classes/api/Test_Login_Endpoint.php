@@ -139,10 +139,7 @@ class Test_Login_Endpoint extends API_Endpoint {
 		$data = array(
 			'status'         => 'success',
 			'user_id'        => $user->ID,
-			'duration'       => $performance_data['duration_sec'],
-			'queries'        => $performance_data['queries_in_block'],
-			'db_time_sec'    => $performance_data['db_time_sec'],
-			'peak_memory_kb' => $performance_data['peak_memory_kb'],
+			'metrics'		 => $performance_data,
 		);
 
 		return $this->json_success( $data );

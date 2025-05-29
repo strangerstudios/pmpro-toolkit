@@ -82,10 +82,7 @@ class Example_Endpoint extends API_Endpoint {
 			'username'       => $user->user_login,
 			'email'          => $user->user_email,
 			'display_name'   => $user->display_name,
-			'duration_sec'   => $performance_data['duration_sec'],
-			'queries'        => $performance_data['queries'],
-			'db_time_sec'    => $performance_data['db_time_sec'],
-			'peak_memory_kb' => $performance_data['peak_memory_kb'],
+			'metrics'        => $performance_data,
 		);
 
 		return $this->json_success( $user_data );

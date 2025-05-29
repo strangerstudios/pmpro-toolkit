@@ -100,10 +100,7 @@ class Test_Cancel_Level_Endpoint extends API_Endpoint {
 				'level_id'       => $level_id,
 				'cancelled'      => $cancelled,
 				'restored'       => $restored,
-				'duration_sec'   => $performance_data['duration_sec'],
-				'queries'        => $performance_data['queries_in_block'],
-				'db_time_sec'    => $performance_data['db_time_sec'],
-				'peak_memory_kb' => $performance_data['peak_memory_kb'],
+				'metrics'       => $performance_data,
 			)
 		);
 	}

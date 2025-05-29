@@ -146,7 +146,7 @@ class Performance_Testing_Endpoint extends API_Endpoint {
 			'posts_count'          => $posts_count,
 			'pmpro_active_members' => $pmpro_members_count,
 			'pmpro_levels_count'   => $pmpro_levels_count,
-			'block_performance'    => $db_block_performance,
+			'metrics'              => $db_block_performance,
 		);
 
 		// Test 3: Memory and processing test
@@ -160,7 +160,7 @@ class Performance_Testing_Endpoint extends API_Endpoint {
 
 		$results['memory_test'] = array(
 			'array_elements_created' => 1000, // Indicating what was done
-			'block_performance'      => $memory_block_performance,
+			'metrics'                => $memory_block_performance,
 		);
 
 		// PMPro specific tests if detailed and PMPro is available
@@ -170,8 +170,8 @@ class Performance_Testing_Endpoint extends API_Endpoint {
 			$pmpro_block_performance = $this->end_performance_tracking();
 
 			$results['pmpro_detailed_test'] = array(
-				'levels_loaded'     => is_array( $levels ) ? count( $levels ) : 0,
-				'block_performance' => $pmpro_block_performance,
+				'levels_loaded' => is_array( $levels ) ? count( $levels ) : 0,
+				'metrics'       => $pmpro_block_performance,
 			);
 		}
 
@@ -233,8 +233,8 @@ class Performance_Testing_Endpoint extends API_Endpoint {
 			$write_test_data['success'] = false;
 			$write_test_data['error']   = is_wp_error( $test_post_id ) ? $test_post_id->get_error_message() : 'Failed to create post.';
 		}
-		$write_test_data['block_performance'] = $this->end_performance_tracking();
-		$results['write_test_post']           = $write_test_data;
+		$write_test_data['metrics'] = $this->end_performance_tracking();
+		$results['write_test_post'] = $write_test_data;
 
 		// Test 2: Database write test with options
 		// Start performance tracking for the option write operation
@@ -253,11 +253,11 @@ class Performance_Testing_Endpoint extends API_Endpoint {
 		$option_block_performance = $this->end_performance_tracking();
 
 		$results['option_write_test'] = array(
-			'operation'         => 'create_get_delete_option',
-			'option_created'    => (bool) $option_set,
-			'option_retrieved'  => ! empty( $option_value_retrieved ),
-			'option_deleted'    => (bool) $option_deleted,
-			'block_performance' => $option_block_performance,
+			'operation'        => 'create_get_delete_option',
+			'option_created'   => (bool) $option_set,
+			'option_retrieved' => ! empty( $option_value_retrieved ),
+			'option_deleted'   => (bool) $option_deleted,
+			'metrics'          => $option_block_performance,
 		);
 
 		// Overall Performance metrics for the entire request

@@ -15,16 +15,16 @@ trait PerformanceTrackingTrait {
 	protected $perf_initial_query_count;
 	protected $perf_start_memory; // Added to track memory usage within the block
 
-    /**
-     * Start performance tracking for a specific block of code.
-     *
-     * This method captures the start time, initial memory usage, and initial query count
-     * before executing the block of code. It also resets the query log if SAVEQUERIES is enabled.
-     */
+	/**
+	 * Start performance tracking for a specific block of code.
+	 *
+	 * This method captures the start time, initial memory usage, and initial query count
+	 * before executing the block of code. It also resets the query log if SAVEQUERIES is enabled.
+	 */
 	protected function start_performance_tracking() {
 		global $wpdb;
-		$this->perf_start_time   = microtime( true ); // Capture the start time of the block
-		$this->perf_start_memory = memory_get_usage(); // Capture memory at the start of the block
+		$this->perf_start_time          = microtime( true ); // Capture the start time of the block
+		$this->perf_start_memory        = memory_get_usage(); // Capture memory at the start of the block
 		$this->perf_initial_query_count = isset( $wpdb->num_queries ) ? $wpdb->num_queries : 0; // Initial query count before the block starts
 
 		if ( defined( 'SAVEQUERIES' ) && SAVEQUERIES && isset( $wpdb->queries ) ) {
@@ -32,13 +32,13 @@ trait PerformanceTrackingTrait {
 		}
 	}
 
-    /**
-     * End performance tracking and return the collected metrics.
-     *
-     * This method captures the end time, final memory usage, and final query count
-     * after executing the block of code. It also calculates the duration and memory
-     * used specifically by this block.
-     */
+	/**
+	 * End performance tracking and return the collected metrics.
+	 *
+	 * This method captures the end time, final memory usage, and final query count
+	 * after executing the block of code. It also calculates the duration and memory
+	 * used specifically by this block.
+	 */
 	protected function end_performance_tracking() {
 		global $wpdb;
 		$end_time   = microtime( true );
@@ -69,11 +69,11 @@ trait PerformanceTrackingTrait {
 		}
 
 		return array(
-			'duration_sec'          => $duration_sec,
-			'queries_in_block'      => $queries_in_block, // Queries executed within the tracked block
-			'db_time_sec'           => $db_time_sec,      // Total time of queries in the block (if SAVEQUERIES)
-			'memory_used_kb'        => $memory_used_kb,   // Memory specifically used by this block
-			'peak_memory_kb'        => $peak_memory_kb,   // Peak memory for the entire script up to this point
+			'duration_sec'     => $duration_sec,
+			'queries_in_block' => $queries_in_block, // Queries executed within the tracked block
+			'db_time_sec'      => $db_time_sec,      // Total time of queries in the block (if SAVEQUERIES)
+			'block_memory_kb'  => $memory_used_kb,   // Memory specifically used by this block
+			'peak_memory_kb'   => $peak_memory_kb,   // Peak memory for the entire script up to this point
 		);
 	}
 }

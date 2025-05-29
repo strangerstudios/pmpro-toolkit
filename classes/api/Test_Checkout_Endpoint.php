@@ -185,10 +185,7 @@ class Test_Checkout_Endpoint extends API_Endpoint {
 			'gateway'         => $gateway,
 			'skipped_gateway' => $skip_gateway,
 			'deleted'         => $deleted,
-			'duration_sec'    => $performance_data['duration_sec'],
-			'queries'         => $performance_data['queries_in_block'],
-			'db_time_sec'     => $performance_data['db_time_sec'],
-			'peak_memory_kb'  => $performance_data['peak_memory_kb'],
+			'metrics'		 => $performance_data,
 		);
 
 		return $this->json_success( $data );
