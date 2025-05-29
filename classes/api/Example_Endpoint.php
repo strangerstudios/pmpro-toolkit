@@ -14,7 +14,7 @@ use WP_Error;
 class Example_Endpoint extends API_Endpoint {
 
 	// Trait to handle performance tracking
-	use PerformanceTrackingTrait;
+	use \TK\PerformanceTrackingTrait;
 
 	/**
 	 * Constructor

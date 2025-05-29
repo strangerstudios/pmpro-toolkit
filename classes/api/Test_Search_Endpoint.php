@@ -16,7 +16,7 @@ use WP_REST_Response;
 class Test_Search_Endpoint extends API_Endpoint {
 
 	// Trait to handle performance tracking
-	use PerformanceTrackingTrait;
+	use \TK\PerformanceTrackingTrait;
 
 	/**
 	 * Register REST API routes for this endpoint.
@@ -69,8 +69,8 @@ class Test_Search_Endpoint extends API_Endpoint {
 		// Start performance tracking
 		$this->start_performance_tracking();
 
-		$results    = array();
-		$count      = 0;
+		$results = array();
+		$count   = 0;
 
 		if ( $type === 'member' ) {
 			// Run member search (e.g., WP_User_Query or PMPro member search)
@@ -101,17 +101,18 @@ class Test_Search_Endpoint extends API_Endpoint {
 		// End performance tracking
 		$performance_data = $this->end_performance_tracking();
 
-		return $this->json_success(
-			array(
-				'query'    => $search_query,
-				'type'     => $type ? $type : 'post',
-				'results'  => $results,
-				'count'    => $count,
-				'duration_sec'   => $performance_data['duration_sec'],
-				'queries'        => $performance_data['queries_in_block'],
-				'db_time_sec'    => $performance_data['db_time_sec'],
-				'peak_memory_kb' => $performance_data['peak_memory_kb'],
-			)
+		// Prepare the response data
+		$data = array(
+			'query'          => $search_query,
+			'type'           => $type ? $type : 'post',
+			'results'        => $results,
+			'count'          => $count,
+			'duration_sec'   => $performance_data['duration_sec'],
+			'queries'        => $performance_data['queries_in_block'],
+			'db_time_sec'    => $performance_data['db_time_sec'],
+			'peak_memory_kb' => $performance_data['peak_memory_kb'],
 		);
+
+		return $this->json_success( $data );
 	}
 }

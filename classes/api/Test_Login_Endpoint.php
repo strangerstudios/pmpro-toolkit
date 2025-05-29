@@ -51,7 +51,7 @@ use WP_Error;
 class Test_Login_Endpoint extends API_Endpoint {
 
 	// Trait to handle performance tracking
-	use PerformanceTrackingTrait;
+	use \TK\PerformanceTrackingTrait;
 
 	/**
 	 * Constructor
@@ -135,6 +135,7 @@ class Test_Login_Endpoint extends API_Endpoint {
 		// Logout the user after testing
 		wp_logout();
 
+		// Prepare the response data
 		$data = array(
 			'status'         => 'success',
 			'user_id'        => $user->ID,

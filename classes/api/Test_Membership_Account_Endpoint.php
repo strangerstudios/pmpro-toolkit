@@ -9,7 +9,7 @@ use WP_Error;
 class Test_Membership_Account_Endpoint extends API_Endpoint {
 
 	// Trait to handle performance tracking
-	use PerformanceTrackingTrait;
+	use \TK\PerformanceTrackingTrait;
 
 	public function __construct() {}
 
@@ -69,15 +69,15 @@ class Test_Membership_Account_Endpoint extends API_Endpoint {
 		// Get performance data
 		$performance_data = $this->end_performance_tracking();
 
-
-		return $this->json_success(
-			array(
-				'user_id'        => $user_id,
-				'duration_sec'   => $performance_data['duration_sec'],
-				'queries'        => $performance_data['queries_in_block'],
-				'db_time_sec'    => $performance_data['db_time_sec'],
-				'peak_memory_kb' => $performance_data['peak_memory_kb'],
-			)
+		// Prepare the response data
+		$data = array(
+			'user_id'        => $user_id,
+			'duration_sec'   => $performance_data['duration_sec'],
+			'queries'        => $performance_data['queries_in_block'],
+			'db_time_sec'    => $performance_data['db_time_sec'],
+			'peak_memory_kb' => $performance_data['peak_memory_kb'],
 		);
+
+		return $this->json_success( $data );
 	}
 }

@@ -15,10 +15,9 @@ use TK\Test_Change_Level_Endpoint;
 use TK\Test_Membership_Account_Endpoint;
 use TK\Test_Cancel_Level_Endpoint;
 
-
 class API_Loader {
 	protected $endpoints = array();
-
+	
 	public function __construct() {
 		global $pmprodev_options;
 

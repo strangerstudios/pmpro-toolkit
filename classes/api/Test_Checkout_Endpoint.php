@@ -9,7 +9,7 @@ use WP_Error;
 class Test_Checkout_Endpoint extends API_Endpoint {
 
 	// Trait to handle performance tracking
-	use PerformanceTrackingTrait;
+	use \TK\PerformanceTrackingTrait;
 
 	public function __construct() {}
 
@@ -177,20 +177,20 @@ class Test_Checkout_Endpoint extends API_Endpoint {
 		}
 
 		// Return profiling results
-		return $this->json_success(
-			array(
-				'user_login'      => $user_login,
-				'user_email'      => $user_email,
-				'user_id'         => $created_user_id,
-				'level_id'        => $level_id,
-				'gateway'         => $gateway,
-				'skipped_gateway' => $skip_gateway,
-				'deleted'         => $deleted,
-				'duration_sec'    => $performance_data['duration_sec'],
-				'queries'         => $performance_data['queries_in_block'],
-				'db_time_sec'     => $performance_data['db_time_sec'],
-				'peak_memory_kb'  => $performance_data['peak_memory_kb'],
-			)
+		$data = array(
+			'user_login'      => $user_login,
+			'user_email'      => $user_email,
+			'user_id'         => $created_user_id,
+			'level_id'        => $level_id,
+			'gateway'         => $gateway,
+			'skipped_gateway' => $skip_gateway,
+			'deleted'         => $deleted,
+			'duration_sec'    => $performance_data['duration_sec'],
+			'queries'         => $performance_data['queries_in_block'],
+			'db_time_sec'     => $performance_data['db_time_sec'],
+			'peak_memory_kb'  => $performance_data['peak_memory_kb'],
 		);
+
+		return $this->json_success( $data );
 	}
 }

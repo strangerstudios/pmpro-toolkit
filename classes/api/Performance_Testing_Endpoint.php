@@ -9,34 +9,28 @@ use WP_Error;
 /**
  * Performance_Testing_Endpoint
  *
- * API endpoint for performance testing
- * 
+ * API endpoint for general performance testing.
+ * This endpoint allows for both read and write operations, depending on the configuration.
+ *
  * Usage:
  * - GET /wp-json/toolkit/v1/performance-test (Read Only mode)
  * - POST /wp-json/toolkit/v1/performance-test (Read and Write mode only)
- * 
- * The endpoint is rate-limited to 100 requests per minute per IP address.
- * 
- * Read Only mode: Returns site information, database query performance, and memory usage
- * Read and Write mode: Performs write operations (creates/deletes test data) - USE ONLY ON TEST SITES
+ *
+ * The endpoint is rate-limited to 5 requests per minute per IP address.
+ * Read Only mode: Returns site information, database query performance, and memory usage.
+ * Read and Write mode: Performs write operations (creates/deletes test data) - USE ONLY ON TEST SITES.
  */
 class Performance_Testing_Endpoint extends API_Endpoint {
 
-	/**
-	 * Constructor
-	 */
-	public function __construct() { }
+	use \TK\PerformanceTrackingTrait; // Leverage the trait
 
 	/**
 	 * Register the REST API route for this endpoint
 	 */
 	public function register_routes() {
-		global $pmprodev_options;
-		
-		// Only register if the endpoint is enabled
-		if ( empty( $pmprodev_options['performance_endpoints'] ) || $pmprodev_options['performance_endpoints'] === 'no' ) {
-			return;
-		}
+
+		// Default to 'no' if the option is not set
+		$performance_endpoints_setting = isset( $pmprodev_options['performance_endpoints'] ) ? $pmprodev_options['performance_endpoints'] : 'no';
 
 		// Register GET endpoint for read operations
 		register_rest_route(
@@ -48,7 +42,7 @@ class Performance_Testing_Endpoint extends API_Endpoint {
 				'callback'            => array( $this, 'handle_request' ),
 				'args'                => array(
 					'detailed' => array(
-						'description' => 'Include detailed performance metrics',
+						'description' => 'Include detailed performance metrics for PMPro',
 						'type'        => 'boolean',
 						'default'     => false,
 					),
@@ -56,13 +50,17 @@ class Performance_Testing_Endpoint extends API_Endpoint {
 			)
 		);
 
+		// Check if the performance endpoints setting is enabled for read_write
+		global $pmprodev_options;
+		$performance_endpoints_setting = isset( $pmprodev_options['performance_endpoints'] ) ? $pmprodev_options['performance_endpoints'] : 'no';
+
 		// Only register write methods if read_write is enabled
-		if ( $pmprodev_options['performance_endpoints'] === 'read_write' ) {
+		if ( $performance_endpoints_setting === 'read_write' ) {
 			register_rest_route(
 				$this->get_namespace(),
 				'/performance-test',
 				array(
-					'methods'             => WP_REST_Server::CREATABLE,
+					'methods'             => WP_REST_Server::CREATABLE, // Typically POST for creating resources
 					'permission_callback' => array( $this, 'handle_permissions' ),
 					'callback'            => array( $this, 'handle_write_request' ),
 				)
@@ -85,8 +83,8 @@ class Performance_Testing_Endpoint extends API_Endpoint {
 		// Get the current count
 		$count = (int) get_transient( $key );
 
-		// Allow 100 requests per minute
-		if ( $count >= 100 ) {
+		// Allow 5 requests per minute
+		if ( $count >= 5 ) {
 			return new WP_Error(
 				'rate_limit_exceeded',
 				'Rate limit exceeded. Please try again later.',
@@ -94,103 +92,108 @@ class Performance_Testing_Endpoint extends API_Endpoint {
 			);
 		}
 
-		// Increment the count
-		$count++;
+		// Increment the count and set transient
+		++$count;
 		set_transient( $key, $count, 60 ); // 60 seconds
 
 		return true;
 	}
 
 	/**
-	 * Handle GET requests for performance testing
+	 * Handle GET requests for performance testing (read operations)
 	 *
 	 * @param WP_REST_Request $request
-	 * @return array
+	 * @return array|\WP_REST_Response
 	 */
 	public function handle_request( WP_REST_Request $request ) {
-		$start_time = microtime( true );
-		$start_memory = memory_get_usage();
+		$overall_start_time   = microtime( true );
+		$overall_start_memory = memory_get_usage();
 
 		// Get detailed parameter
 		$detailed = $request->get_param( 'detailed' );
 
-		// Simulate some database queries and processing
 		global $wpdb;
-		
 		$results = array();
-		
+
 		// Test 1: Get site info
-		$results['site_info'] = array(
-			'site_name' => get_bloginfo( 'name' ),
-			'wp_version' => get_bloginfo( 'version' ),
-			'php_version' => PHP_VERSION,
-			'timestamp' => current_time( 'mysql' ),
+		$this->start_performance_tracking();
+		$results['site_info']                      = array(
+			'site_name'     => get_bloginfo( 'name' ),
+			'site_url'      => get_bloginfo( 'url' ),
+			'wp_version'    => get_bloginfo( 'version' ),
+			'php_version'   => PHP_VERSION,
+			'timestamp'     => current_time( 'mysql' ),
 			'pmpro_version' => defined( 'PMPRO_VERSION' ) ? PMPRO_VERSION : 'Not installed',
 		);
 
+		$results['site_info']['block_performance'] = $this->end_performance_tracking();
+
 		// Test 2: Database query performance
-		$db_start = microtime( true );
+		$this->start_performance_tracking();
 		$users_count = $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->users}" );
 		$posts_count = $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->posts}" );
-		
-		// PMPro-specific queries if available
+
 		$pmpro_members_count = 0;
-		$pmpro_levels_count = 0;
-		if ( defined( 'PMPRO_VERSION' ) ) {
+		$pmpro_levels_count  = 0;
+		if ( defined( 'PMPRO_VERSION' ) && isset( $wpdb->pmpro_memberships_users ) && isset( $wpdb->pmpro_membership_levels ) ) {
 			$pmpro_members_count = $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->pmpro_memberships_users} WHERE status = 'active'" );
-			$pmpro_levels_count = $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->pmpro_membership_levels}" );
+			$pmpro_levels_count  = $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->pmpro_membership_levels}" );
 		}
-		
-		$db_time = microtime( true ) - $db_start;
+		$db_block_performance = $this->end_performance_tracking();
 
 		$results['database_test'] = array(
-			'users_count' => $users_count,
-			'posts_count' => $posts_count,
+			'users_count'          => $users_count,
+			'posts_count'          => $posts_count,
 			'pmpro_active_members' => $pmpro_members_count,
-			'pmpro_levels_count' => $pmpro_levels_count,
-			'query_time_ms' => round( $db_time * 1000, 2 ),
+			'pmpro_levels_count'   => $pmpro_levels_count,
+			'block_performance'    => $db_block_performance,
 		);
 
 		// Test 3: Memory and processing test
-		$memory_test_start = microtime( true );
+		$this->start_performance_tracking();
 		$test_array = array();
-		for ( $i = 0; $i < 1000; $i++ ) {
-			$test_array[] = str_repeat( 'a', 100 );
+		for ( $i = 0; $i < 10000; $i++ ) {
+			$test_array[] = str_repeat( 'a', 100 ); // Simulate some memory usage and processing
 		}
-		$memory_test_time = microtime( true ) - $memory_test_start;
+		unset( $test_array ); // Free up memory explicitly
+		$memory_block_performance = $this->end_performance_tracking();
 
 		$results['memory_test'] = array(
-			'array_size' => count( $test_array ),
-			'processing_time_ms' => round( $memory_test_time * 1000, 2 ),
+			'array_elements_created' => 1000, // Indicating what was done
+			'block_performance'      => $memory_block_performance,
 		);
 
 		// PMPro specific tests if detailed and PMPro is available
 		if ( $detailed && defined( 'PMPRO_VERSION' ) && function_exists( 'pmpro_getAllLevels' ) ) {
-			$pmpro_start = microtime( true );
-			$levels = pmpro_getAllLevels();
-			$pmpro_time = microtime( true ) - $pmpro_start;
-			
-			$results['pmpro_test'] = array(
-				'levels_loaded' => count( $levels ),
-				'load_time_ms' => round( $pmpro_time * 1000, 2 ),
+			$this->start_performance_tracking();
+			$levels                  = pmpro_getAllLevels( true ); // Pass true to force refresh from DB
+			$pmpro_block_performance = $this->end_performance_tracking();
+
+			$results['pmpro_detailed_test'] = array(
+				'levels_loaded'     => is_array( $levels ) ? count( $levels ) : 0,
+				'block_performance' => $pmpro_block_performance,
 			);
 		}
 
-		// Performance metrics
-		$end_time = microtime( true );
-		$end_memory = memory_get_usage();
+		// Overall Performance metrics for the entire request
+		$overall_end_time   = microtime( true );
+		$overall_end_memory = memory_get_usage();
 
-		$results['performance'] = array(
-			'total_execution_time_ms' => round( ( $end_time - $start_time ) * 1000, 2 ),
-			'memory_used_kb' => round( ( $end_memory - $start_memory ) / 1024, 2 ),
-			'peak_memory_kb' => round( memory_get_peak_usage() / 1024, 2 ),
+		$results['overall_request_performance'] = array(
+			'total_execution_time_ms' => round( ( $overall_end_time - $overall_start_time ) * 1000, 2 ),
+			'total_memory_used_kb'    => round( ( $overall_end_memory - $overall_start_memory ) / 1024, 2 ),
+			'script_peak_memory_kb'   => round( memory_get_peak_usage( true ) / 1024, 2 ), // Peak for the whole script
 		);
 
-		return array(
-			'success' => true,
-			'mode' => 'read_only',
-			'detailed' => $detailed,
-			'data' => $results,
+		return new \WP_REST_Response(
+			array( // Always return WP_REST_Response
+				'success'                  => true,
+				'mode'                     => 'read_only',
+				'detailed_pmpro_requested' => (bool) $detailed,
+				'savequeries_enabled'      => (bool) ( defined( 'SAVEQUERIES' ) && SAVEQUERIES ),
+				'data'                     => $results,
+			),
+			200
 		);
 	}
 
@@ -198,74 +201,84 @@ class Performance_Testing_Endpoint extends API_Endpoint {
 	 * Handle POST requests for performance testing (write operations)
 	 *
 	 * @param WP_REST_Request $request
-	 * @return array
+	 * @return array|\WP_REST_Response
 	 */
 	public function handle_write_request( WP_REST_Request $request ) {
-		$start_time = microtime( true );
-		$start_memory = memory_get_usage();
+		$overall_start_time   = microtime( true );
+		$overall_start_memory = memory_get_usage();
 
 		global $wpdb;
-		
 		$results = array();
-		
-		// WARNING: This will modify data - only for testing!
-		$results['warning'] = 'This endpoint modifies site data and is only for testing purposes.';
 
 		// Test 1: Create and delete a test post
-		$write_start = microtime( true );
-		$test_post_id = wp_insert_post( array(
-			'post_title'   => 'Performance Test Post - ' . time(),
-			'post_content' => 'This is a test post created by the performance testing endpoint.',
-			'post_status'  => 'draft',
-			'post_type'    => 'post',
-		) );
+		// Start performance tracking for the write operation
+		$this->start_performance_tracking();
 
-		if ( ! is_wp_error( $test_post_id ) ) {
-			// Delete the test post immediately
-			wp_delete_post( $test_post_id, true );
-			$write_time = microtime( true ) - $write_start;
-			
-			$results['write_test'] = array(
-				'operation' => 'create_and_delete_post',
-				'success' => true,
-				'execution_time_ms' => round( $write_time * 1000, 2 ),
-			);
+		$test_post_id = wp_insert_post(
+			array(
+				'post_title'   => 'Performance Test Post - ' . time(),
+				'post_content' => 'This is a test post created by the performance testing endpoint.',
+				'post_status'  => 'draft', // Use draft to avoid it appearing on live site if something goes wrong
+				'post_type'    => 'post',
+			),
+			true
+		); // Pass true to return WP_Error on failure
+
+		$write_test_data = array( 'operation' => 'create_and_delete_post' );
+
+		if ( ! is_wp_error( $test_post_id ) && $test_post_id > 0 ) {
+			wp_delete_post( $test_post_id, true ); // true to force delete, bypass trash
+			$write_test_data['success'] = true;
 		} else {
-			$results['write_test'] = array(
-				'operation' => 'create_and_delete_post',
-				'success' => false,
-				'error' => $test_post_id->get_error_message(),
-			);
+			$write_test_data['success'] = false;
+			$write_test_data['error']   = is_wp_error( $test_post_id ) ? $test_post_id->get_error_message() : 'Failed to create post.';
 		}
+		$write_test_data['block_performance'] = $this->end_performance_tracking();
+		$results['write_test_post']           = $write_test_data;
 
 		// Test 2: Database write test with options
-		$option_start = microtime( true );
-		$test_option_name = 'pmprodev_performance_test_' . time();
-		update_option( $test_option_name, array( 'test' => true, 'timestamp' => time() ) );
-		$option_value = get_option( $test_option_name );
-		delete_option( $test_option_name );
-		$option_time = microtime( true ) - $option_start;
+		// Start performance tracking for the option write operation
+		$this->start_performance_tracking();
+		$test_option_name         = 'tk_performance_test_option_' . time();
+		$option_set               = update_option(
+			$test_option_name,
+			array(
+				'test_data' => true,
+				'timestamp' => time(),
+			),
+			false
+		); // false for autoload
+		$option_value_retrieved   = get_option( $test_option_name );
+		$option_deleted           = delete_option( $test_option_name );
+		$option_block_performance = $this->end_performance_tracking();
 
-		$results['option_test'] = array(
-			'operation' => 'create_get_delete_option',
-			'success' => ! empty( $option_value ),
-			'execution_time_ms' => round( $option_time * 1000, 2 ),
+		$results['option_write_test'] = array(
+			'operation'         => 'create_get_delete_option',
+			'option_created'    => (bool) $option_set,
+			'option_retrieved'  => ! empty( $option_value_retrieved ),
+			'option_deleted'    => (bool) $option_deleted,
+			'block_performance' => $option_block_performance,
 		);
 
-		// Performance metrics
-		$end_time = microtime( true );
-		$end_memory = memory_get_usage();
+		// Overall Performance metrics for the entire request
+		$overall_end_time   = microtime( true );
+		$overall_end_memory = memory_get_usage();
 
-		$results['performance'] = array(
-			'total_execution_time_ms' => round( ( $end_time - $start_time ) * 1000, 2 ),
-			'memory_used_kb' => round( ( $end_memory - $start_memory ) / 1024, 2 ),
-			'peak_memory_kb' => round( memory_get_peak_usage() / 1024, 2 ),
+		$results['overall_request_performance'] = array(
+			'total_execution_time_ms' => round( ( $overall_end_time - $overall_start_time ) * 1000, 2 ),
+			'total_memory_used_kb'    => round( ( $overall_end_memory - $overall_start_memory ) / 1024, 2 ),
+			'script_peak_memory_kb'   => round( memory_get_peak_usage( true ) / 1024, 2 ),
 		);
 
-		return array(
-			'success' => true,
-			'mode' => 'read_write',
-			'data' => $results,
+		return new \WP_REST_Response(
+			array( // Always return WP_REST_Response
+				'success'             => true,
+				'mode'                => 'read_write',
+				'warning'             => 'This endpoint modifies site data and is ONLY for testing purposes on non-production sites.',
+				'savequeries_enabled' => (bool) ( defined( 'SAVEQUERIES' ) && SAVEQUERIES ),
+				'data'                => $results,
+			),
+			200
 		);
 	}
 }
