@@ -1,7 +1,7 @@
 <?php
 
 // Toolkit
-namespace TK\Tests;
+namespace TK;
 
 use TK\API_Endpoint;
 use WP_REST_Request;
@@ -16,7 +16,7 @@ use WP_REST_Response;
 class Test_Search_Endpoint extends API_Endpoint {
 
 	// Trait to handle performance tracking
-	use \TK\PerformanceTrackingTrait;
+	use PerformanceTrackingTrait;
 
 	/**
 	 * Register REST API routes for this endpoint.

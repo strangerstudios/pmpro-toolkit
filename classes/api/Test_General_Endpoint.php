@@ -20,9 +20,9 @@ use WP_Error;
  * Read Only mode: Returns site information, database query performance, and memory usage.
  * Read and Write mode: Performs write operations (creates/deletes test data) - USE ONLY ON TEST SITES.
  */
-class Performance_Testing_Endpoint extends API_Endpoint {
+class Test_General_Endpoint extends API_Endpoint {
 
-	use \TK\PerformanceTrackingTrait; // Leverage the trait
+	use PerformanceTrackingTrait; // Leverage the trait
 
 	/**
 	 * Register the REST API route for this endpoint

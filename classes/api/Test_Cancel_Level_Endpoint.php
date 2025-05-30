@@ -34,7 +34,7 @@ use WP_Error;
 class Test_Cancel_Level_Endpoint extends API_Endpoint {
 
 	// Trait to handle performance tracking
-	use \TK\PerformanceTrackingTrait;
+	use PerformanceTrackingTrait;
 
 	public function __construct() {}
 
