@@ -147,7 +147,32 @@ class Test_Reports_Endpoint extends API_Endpoint {
 			return new \WP_Error( 'invalid_report', 'No export script available for this report.', array( 'status' => 500 ) );
 		}
 
-		// Populate $_REQUEST with relevant params from the request.
+		// Apply sensible defaults per report type
+		$defaults = array();
+		$current_year = date( 'Y' );
+
+		if ( $type === 'memberships' ) {
+			$defaults = array(
+				'period' => 'monthly',
+				'type' => 'signup_v_all',
+				'year' => $current_year,
+				'level' => 'all',
+			);
+		} elseif ( $type === 'sales' ) {
+			$defaults = array(
+				'period' => 'monthly',
+				'type' => 'revenue',
+				'year' => $current_year,
+				'show_parts' => 'new_renewals',
+			);
+		}
+
+		// Populate $_REQUEST with defaults first
+		foreach ( $defaults as $param => $value ) {
+			$_REQUEST[ $param ] = $value;
+		}
+
+		// Then override with any provided request parameters
 		foreach ( array(
 			'type', 'period', 'month', 'year', 'discount_code', 'startdate', 'enddate',
 			'custom_start_date', 'custom_end_date', 'level', 'show_parts', 's', 'l'
