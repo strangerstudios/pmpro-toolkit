@@ -93,6 +93,7 @@ class Test_Reports_Endpoint extends API_Endpoint {
 	 * @return WP_REST_Response
 	 */
 	public function handle_request( WP_REST_Request $request ) {
+
 		$report = sanitize_text_field( $request->get_param( 'report' ) );
 		if ( empty( $report ) ) {
 			return $this->json_error( 'empty_report', 'Report type is required.', 400 );
@@ -102,19 +103,6 @@ class Test_Reports_Endpoint extends API_Endpoint {
 		$this->start_performance_tracking();
 
 		$stats = array();
-		$error = null;
-
-		// Map report to CSV logic
-		$report_map = array(
-			'sales'       => 'sales',
-			'memberships' => 'memberships',
-			'login'       => 'login',
-			'memberslist' => 'memberslist',
-		);
-
-		if ( ! isset( $report_map[ $report ] ) ) {
-			return $this->json_error( 'invalid_report', 'Invalid report type.', 400 );
-		}
 
 		// Generate the CSV file using the same logic as the admin export
 		$tmp_file = $this->generate_report_csv( $report, $request );
@@ -149,32 +137,32 @@ class Test_Reports_Endpoint extends API_Endpoint {
 	 * @return string|WP_Error Path to temp CSV file or WP_Error
 	 */
 	protected function generate_report_csv( $type, $request ) {
-		$admin_url = admin_url( 'admin.php' );
-		$params    = array(
-			'page'   => 'pmpro-reports',
-			'report' => $type,
+		$script_map = array(
+			'sales' => 'sales-csv.php',
+			'memberships' => 'memberships-csv.php',
+			'login' => 'login-csv.php',
 		);
-		// Pass through relevant params from the request
-		foreach ( array( 'type', 'period', 'month', 'year', 'discount_code', 'startdate', 'enddate', 'custom_start_date', 'custom_end_date', 'level', 'show_parts', 's', 'l' ) as $param ) {
+
+		if ( ! isset( $script_map[ $type ] ) ) {
+			return new \WP_Error( 'invalid_report', 'No export script available for this report.', array( 'status' => 500 ) );
+		}
+
+		// Populate $_REQUEST with relevant params from the request.
+		foreach ( array(
+			'type', 'period', 'month', 'year', 'discount_code', 'startdate', 'enddate',
+			'custom_start_date', 'custom_end_date', 'level', 'show_parts', 's', 'l'
+		) as $param ) {
 			$value = $request->get_param( $param );
 			if ( ! is_null( $value ) ) {
-				$params[ $param ] = $value;
+				$_REQUEST[ $param ] = $value;
 			}
 		}
-		$url = add_query_arg( $params, $admin_url );
 
-		// Fetch the CSV (cookies will be sent if user is logged in)
-		$response = wp_remote_get(
-			$url,
-			array(
-				'timeout'   => 60,
-				'sslverify' => false,
-			)
-		);
-		if ( is_wp_error( $response ) ) {
-			return $response;
-		}
-		$csv = wp_remote_retrieve_body( $response );
+		// Capture the output.
+		ob_start();
+		require_once( PMPRO_DIR . '/adminpages/' . $script_map[ $type ] );
+		$csv = ob_get_clean();
+
 		if ( empty( $csv ) ) {
 			return new \WP_Error( 'empty_csv', 'No CSV data returned.' );
 		}
