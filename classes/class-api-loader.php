@@ -14,7 +14,7 @@ use TK\Test_Change_Level_Endpoint;
 use TK\Test_Membership_Account_Endpoint;
 use TK\Test_Cancel_Level_Endpoint;
 use TK\Test_Search_Endpoint;
-use TK\Test_Reports_Endpoint;
+use TK\Test_Report_Endpoint;
 
 class API_Loader {
 	/**
@@ -44,7 +44,7 @@ class API_Loader {
 				new Test_Membership_Account_Endpoint(),
 				new Test_Cancel_Level_Endpoint(),
 				new Test_Search_Endpoint(),
-				new Test_Reports_Endpoint(),
+				new Test_Report_Endpoint(),
 			);
 
 			add_action( 'rest_api_init', array( $this, 'register_routes' ) );

@@ -67,9 +67,14 @@ use WP_REST_Response;
  *
  * @since 1.0.0
  */
-class Test_Reports_Endpoint extends API_Endpoint {
+class Test_Report_Endpoint extends API_Endpoint {
 	// Trait to handle performance tracking
 	use PerformanceTrackingTrait;
+
+	/**
+	 * Allowed report types for this endpoint.
+	 */
+	const ALLOWED_REPORTS = array( 'sales', 'memberships', 'login' );
 
 	/**
 	 * Register REST API routes for this endpoint.
@@ -77,7 +82,7 @@ class Test_Reports_Endpoint extends API_Endpoint {
 	public function register_routes() {
 		register_rest_route(
 			$this->get_namespace(),
-			'/pmpro-report-test',
+			'/test-report',
 			array(
 				'methods'             => 'POST',
 				'callback'            => array( $this, 'handle_request' ),
@@ -93,36 +98,38 @@ class Test_Reports_Endpoint extends API_Endpoint {
 	 * @return WP_REST_Response
 	 */
 	public function handle_request( WP_REST_Request $request ) {
+		// Capture the starting output buffer level as early as possible.
+		$start_buffer_level = ob_get_level();
 
 		$report = sanitize_text_field( $request->get_param( 'report' ) );
 		if ( empty( $report ) ) {
 			return $this->json_error( 'empty_report', 'Report type is required.', 400 );
 		}
 
+		// Validate the report type against allowed types.
+		if ( ! in_array( $report, self::ALLOWED_REPORTS, true ) ) {
+			return $this->json_error(
+				'invalid_report',
+				sprintf(
+					'Invalid report type. Allowed types: %s.',
+					implode( ', ', self::ALLOWED_REPORTS )
+				),
+				400
+			);
+		}
+
 		// Start performance tracking
 		$this->start_performance_tracking();
 
-		$stats = array();
-
-		// Generate the CSV file using the same logic as the admin export
-		$tmp_file = $this->generate_report_csv( $report, $request );
-		if ( is_wp_error( $tmp_file ) ) {
-			return $this->json_error( 'csv_error', $tmp_file->get_error_message(), 500 );
-		}
+		// Trigger the CSV export logic without capturing or parsing output
+		$this->generate_report_csv( $report, $request );
 
 		// End performance tracking
 		$performance_data = $this->end_performance_tracking();
 
-		// Parse the CSV for statistics
-		$stats = $this->parse_csv_stats( $tmp_file );
-
-		// Delete the temp file
-		@unlink( $tmp_file );
-
 		// Prepare the response data
 		$data = array(
 			'report'  => $report,
-			'stats'   => $stats,
 			'metrics' => $performance_data,
 		);
 
@@ -134,35 +141,35 @@ class Test_Reports_Endpoint extends API_Endpoint {
 	 *
 	 * @param string          $type
 	 * @param WP_REST_Request $request
-	 * @return string|WP_Error Path to temp CSV file or WP_Error
+	 * @return void
 	 */
 	protected function generate_report_csv( $type, $request ) {
 		$script_map = array(
-			'sales' => 'sales-csv.php',
+			'sales'       => 'sales-csv.php',
 			'memberships' => 'memberships-csv.php',
-			'login' => 'login-csv.php',
+			'login'       => 'login-csv.php',
 		);
 
 		if ( ! isset( $script_map[ $type ] ) ) {
-			return new \WP_Error( 'invalid_report', 'No export script available for this report.', array( 'status' => 500 ) );
+			return;
 		}
 
 		// Apply sensible defaults per report type
-		$defaults = array();
+		$defaults     = array();
 		$current_year = date( 'Y' );
 
 		if ( $type === 'memberships' ) {
 			$defaults = array(
-				'period' => 'monthly',
-				'type' => 'signup_v_all',
-				'year' => $current_year,
-				'level' => 'all',
+				'period' => 'annual',
+				'type'   => 'signup_v_all',
+				'year'   => $current_year,
+				'level'  => 'all',
 			);
 		} elseif ( $type === 'sales' ) {
 			$defaults = array(
-				'period' => 'monthly',
-				'type' => 'revenue',
-				'year' => $current_year,
+				'period'     => 'monthly',
+				'type'       => 'revenue',
+				'year'       => $current_year,
 				'show_parts' => 'new_renewals',
 			);
 		}
@@ -174,8 +181,19 @@ class Test_Reports_Endpoint extends API_Endpoint {
 
 		// Then override with any provided request parameters
 		foreach ( array(
-			'type', 'period', 'month', 'year', 'discount_code', 'startdate', 'enddate',
-			'custom_start_date', 'custom_end_date', 'level', 'show_parts', 's', 'l'
+			'type',
+			'period',
+			'month',
+			'year',
+			'discount_code',
+			'startdate',
+			'enddate',
+			'custom_start_date',
+			'custom_end_date',
+			'level',
+			'show_parts',
+			's',
+			'l',
 		) as $param ) {
 			$value = $request->get_param( $param );
 			if ( ! is_null( $value ) ) {
@@ -183,37 +201,21 @@ class Test_Reports_Endpoint extends API_Endpoint {
 			}
 		}
 
-		// Capture the output.
-		ob_start();
-		require_once( PMPRO_DIR . '/adminpages/' . $script_map[ $type ] );
-		$csv = ob_get_clean();
-
-		if ( empty( $csv ) ) {
-			return new \WP_Error( 'empty_csv', 'No CSV data returned.' );
-		}
-		$tmp_file = tempnam( sys_get_temp_dir(), 'pmpro_reportcsv_' );
-		file_put_contents( $tmp_file, $csv );
-		return $tmp_file;
-	}
-
-	/**
-	 * Parse the CSV file and return statistics (row count, totals, etc).
-	 *
-	 * @param string $csv_file
-	 * @return array
-	 */
-	protected function parse_csv_stats( $csv_file ) {
-		$rows = array();
-		if ( ( $handle = fopen( $csv_file, 'r' ) ) !== false ) {
-			$header = fgetcsv( $handle );
-			while ( ( $data = fgetcsv( $handle ) ) !== false ) {
-				$rows[] = $data;
+		// Include the CSV export script to trigger generation
+		$_REQUEST['pmpro_no_download'] = 1;
+		if ( $type === 'login' ) {
+			// For login report, we need to set the 'l' parameter to 'all' if not provided
+			if ( ! isset( $_REQUEST['l'] ) ) {
+				$_REQUEST['l'] = 'all';
 			}
-			fclose( $handle );
+		} elseif ( $type === 'sales' ) {
+			require_once PMPRO_DIR . '/adminpages/reports/sales.php';
+			// Start output buffering to discard HTML output from pmpro_report_sales_page(),
+			// which generates the sales data transient needed by sales-csv.php.
+			ob_start();
+			pmpro_report_sales_page(); // Generates the transient but outputs HTML we don't need.
+			ob_end_clean(); // Discard output
 		}
-		return array(
-			'row_count' => count( $rows ),
-			// Add more stats as needed
-		);
+		require_once PMPRO_DIR . '/adminpages/' . $script_map[ $type ];
 	}
 }
