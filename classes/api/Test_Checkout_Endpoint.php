@@ -32,21 +32,7 @@ class Test_Checkout_Endpoint extends API_Endpoint {
 	 * @return bool|WP_Error
 	 */
 	public function handle_permissions() {
-		// Allow unauthenticated, but rate limit by IP
-		$ip    = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
-		$key   = 'tk_test_checkout_rate_' . md5( $ip );
-		$count = (int) get_transient( $key );
-
-		if ( $count >= 5 ) {
-			return new WP_Error(
-				'rate_limited',
-				'Too many access attempts. Please wait awhile before retrying.',
-				array( 'status' => 429 )
-			);
-		}
-
-		set_transient( $key, $count + 1, MINUTE_IN_SECONDS / 2 );
-		return true;
+		$this->throttle_if_unauthenticated();
 	}
 
 	/**
@@ -185,7 +171,7 @@ class Test_Checkout_Endpoint extends API_Endpoint {
 			'gateway'         => $gateway,
 			'skipped_gateway' => $skip_gateway,
 			'deleted'         => $deleted,
-			'metrics'		 => $performance_data,
+			'metrics'         => $performance_data,
 		);
 
 		return $this->json_success( $data );

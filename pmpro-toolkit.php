@@ -26,6 +26,7 @@ $default_options = array(
 	'checkout_debug_when'       => '',
 	'generate_info'             => false,
 	'performance_endpoints'     => 'no',
+	'ip_throttling'             => false,
 );
 
 $pmprodev_options = get_option( 'pmprodev_options' );

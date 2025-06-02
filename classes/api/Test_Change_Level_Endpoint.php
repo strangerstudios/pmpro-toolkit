@@ -57,22 +57,14 @@ class Test_Change_Level_Endpoint extends API_Endpoint {
 		);
 	}
 
+	/**
+	 * Permission callback for the endpoint. Unauthenticated access is allowed, but
+	 * rate limiting is applied based on IP address.
+	 *
+	 * @return bool|WP_Error
+	 */
 	public function handle_permissions() {
-		// Allow unauthenticated, but rate limit by IP
-		$ip    = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
-		$key   = 'tk_test_changelevel_rate_' . md5( $ip );
-		$count = (int) get_transient( $key );
-
-		if ( $count >= 5 ) {
-			return new WP_Error(
-				'rate_limited',
-				'Too many access attempts. Please wait awhile before retrying.',
-				array( 'status' => 429 )
-			);
-		}
-
-		set_transient( $key, $count + 1, MINUTE_IN_SECONDS / 2 );
-		return true;
+		$this->throttle_if_unauthenticated();
 	}
 
 	public function handle_request( WP_REST_Request $request ) {
@@ -160,14 +152,14 @@ class Test_Change_Level_Endpoint extends API_Endpoint {
 		}
 
 		// Return profiling results
-		$data = 			array(
+		$data = array(
 			'user_id'         => $user->ID,
 			'user_login'      => $user->user_login,
 			'level_id'        => $level_id,
 			'gateway'         => $gateway,
 			'skipped_gateway' => $skip_gateway,
 			'restored'        => $restored,
-			'metrics'        => $performance_data,
+			'metrics'         => $performance_data,
 		);
 
 		return $this->json_success( $data );

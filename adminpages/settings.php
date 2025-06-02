@@ -54,6 +54,14 @@
 
 		$pmprodev_options['generate_info'] = $generate_info;
 
+		if( isset( $_POST['pmprodev_options']['ip_throttling'] ) ) {
+			$ip_throttling = sanitize_text_field( $_POST['pmprodev_options']['ip_throttling'] );
+		} else {
+			$ip_throttling = '';
+		}
+
+		$pmprodev_options['ip_throttling'] = $ip_throttling;
+
 		update_option( "pmprodev_options", $pmprodev_options );
 
 		// Assume success.
@@ -254,6 +262,17 @@
 							</p>
 						</td>
 					</tr>
+					<?php if ( ! empty( $pmprodev_options['performance_endpoints'] ) && $pmprodev_options['performance_endpoints'] !== 'no' ) : ?>
+					<tr>
+						<th scope="row" valign="top">
+							<label for="pmprodev_options[ip_throttling]"> <?php esc_html_e( 'Enable IP Throttling', 'pmpro-toolkit' ); ?></label>
+						</th>
+						<td>
+							<input type="checkbox" id="pmprodev_options[ip_throttling]" name="pmprodev_options[ip_throttling]" value="1" <?php checked( $pmprodev_options['ip_throttling'], 1, true ); ?>>
+							<label for="pmprodev_options[ip_throttling]"> <?php esc_html_e( 'Enable IP-based request throttling on public endpoints.', 'pmpro-toolkit' ); ?></label>
+						</td>
+					</tr>
+					<?php endif; ?>
 				</tbody>
 			</table>
 		</div>

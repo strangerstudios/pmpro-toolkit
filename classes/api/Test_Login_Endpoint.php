@@ -77,32 +77,10 @@ class Test_Login_Endpoint extends API_Endpoint {
 	 * Permission callback for the endpoint. Unauthenticated access is allowed, but
 	 * rate limiting is applied based on IP address.
 	 *
-	 * @return void
+	 * @return bool|WP_Error
 	 */
 	public function handle_permissions() {
-		// Allow unauthenticated, but rate limit by IP
-		$ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
-
-		// Create a unique key for this endpoint and IP
-		$key = 'tk_test_login_rate_' . md5( $ip );
-
-		// Get the current count
-		$count = (int) get_transient( $key );
-
-		if ( $count >= 10 ) {
-			// Deny: too many attempts
-			return $this->json_error(
-				'rate_limited',
-				'Too many access attempts. Please wait awhile before retrying.',
-				429
-			);
-		}
-
-		// Increment count and set/update expiration (30 seconds)
-		set_transient( $key, $count + 1, MINUTE_IN_SECONDS / 2 );
-
-		// Allow request
-		return true;
+		$this->throttle_if_unauthenticated();
 	}
 
 	/**

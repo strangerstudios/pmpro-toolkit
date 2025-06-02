@@ -76,7 +76,48 @@ abstract class API_Endpoint {
 	 * @param int    $status HTTP status code
 	 * @return WP_Error
 	 */
-	public function json_error(  $code = 'api_error', $message = 'An error occurred.', $status = 500 ) {
+	public function json_error( $code = 'api_error', $message = 'An error occurred.', $status = 500 ) {
 		return new WP_Error( $code, $message, array( 'status' => $status ) );
+	}
+
+	/**
+	 * Check if a specific setting is enabled using global $pmprodev_options;
+	 *
+	 * @param string $setting The setting key to check.
+	 * @return string|bool Returns the setting value if it exists, or false if not set.
+	 */
+	public function check_setting( $setting ) {
+		global $pmprodev_options;
+		return isset( $pmprodev_options[ $setting ] ) ? $pmprodev_options[ $setting ] : false;
+	}
+
+	/**
+	 * Check if we should throttle requests based on IP address for unauthenticated requests.
+	 *
+	 * This method checks if IP throttling is enabled and applies rate limiting
+	 * to unauthenticated requests based on the user's IP address.
+	 *
+	 * @return WP_Error|void Returns a WP_Error if rate limit exceeded, otherwise void.
+	 */
+	public function throttle_if_unauthenticated() {
+		// Check if IP throttling is enabled
+		if ( $this->check_setting( 'ip_throttling' ) ) {
+			// Allow unauthenticated, but rate limit by IP
+			$ip    = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+			$key   = 'tk_test_checkout_rate_' . md5( $ip );
+			$count = (int) get_transient( $key );
+
+			if ( $count >= 5 ) {
+				return new WP_Error(
+					'rate_limited',
+					'Too many access attempts. Please wait awhile before retrying.',
+					array( 'status' => 429 )
+				);
+			}
+
+			set_transient( $key, $count + 1, MINUTE_IN_SECONDS / 2 );
+
+			return true;
+		}
 	}
 }

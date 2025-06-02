@@ -69,34 +69,13 @@ class Test_General_Endpoint extends API_Endpoint {
 	}
 
 	/**
-	 * Permission callback for the endpoint. Rate limited by IP address.
+	 * Permission callback for the endpoint. Unauthenticated access is allowed, but
+	 * rate limiting is applied based on IP address.
 	 *
-	 * @return boolean|WP_Error
+	 * @return bool|WP_Error
 	 */
 	public function handle_permissions() {
-		// Get the user's IP address
-		$ip = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
-
-		// Create a unique key for this endpoint and IP
-		$key = 'tk_performance_test_rate_' . md5( $ip );
-
-		// Get the current count
-		$count = (int) get_transient( $key );
-
-		// Allow 5 requests per minute
-		if ( $count >= 5 ) {
-			return new WP_Error(
-				'rate_limit_exceeded',
-				'Rate limit exceeded. Please try again later.',
-				array( 'status' => 429 )
-			);
-		}
-
-		// Increment the count and set transient
-		++$count;
-		set_transient( $key, $count, 60 ); // 60 seconds
-
-		return true;
+		$this->throttle_if_unauthenticated();
 	}
 
 	/**

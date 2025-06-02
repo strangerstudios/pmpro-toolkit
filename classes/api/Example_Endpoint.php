@@ -45,7 +45,7 @@ class Example_Endpoint extends API_Endpoint {
 
 	/**
 	 * Check if the user has the right permissions
-	 * TODO: Add logic to check if the user has the right permissions
+	 * This example would override the requirement for authentication
 	 */
 	public function handle_permissions() {
 		return true;
