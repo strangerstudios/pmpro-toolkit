@@ -67,7 +67,7 @@ class Example_Endpoint extends API_Endpoint {
 		// Start performance tracking
 		$this->start_performance_tracking();
 
-		$user = get_user_by( 'id', $user_id );
+		$user = $this->get_user( $user_id );
 
 		if ( ! $user ) {
 			return $this->json_error( 'user_not_found', 'User not found.', 404 );
@@ -86,5 +86,21 @@ class Example_Endpoint extends API_Endpoint {
 		);
 
 		return $this->json_success( $user_data );
+	}
+
+	/**
+	 * A private class method example. Get user by ID.
+	 *
+	 * @param int $user_id
+	 * @return WP_User|WP_Error
+	 */
+	private function get_user( $user_id ) {
+		$user = get_user_by( 'id', $user_id );
+
+		if ( ! $user ) {
+			return new WP_Error( 'user_not_found', 'User not found.', array( 'status' => 404 ) );
+		}
+
+		return $user;
 	}
 }
