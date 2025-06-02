@@ -181,6 +181,7 @@ This makes it easy to measure performance consistently across endpoints.
 
 ---
 
+
 ### `/wp-json/toolkit/v1/test-search`
 
 **Method:** `POST`  
@@ -197,3 +198,26 @@ This makes it easy to measure performance consistently across endpoints.
 **Request Parameters:**
 - `query` (string, required): Search term to test
 - `type` (string, optional): 'post' (default) or 'member'
+
+---
+
+### `/wp-json/toolkit/v1/test-member-export`
+
+**Method:** `POST`  
+**Description:** Generates a simulated Paid Memberships Pro member export (CSV). Runs the full PMPro member export script with test parameters (e.g., search string, membership level) and captures performance metrics. No file download is triggered by default.
+
+**Request Body Example:**
+````json
+{
+  "s": "john",
+  "l": 2,
+  "pn": 1,
+  "limit": 100
+}
+````
+
+**Request Parameters:**
+- `s` (string, optional): Search query (username, email, or other usermeta)
+- `l` (int|string, optional): Membership level ID, 'oldmembers', or 'all'
+- `pn` (int, optional): Page number for paginated export
+- `limit` (int, optional): Number of records per page
