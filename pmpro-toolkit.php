@@ -25,7 +25,7 @@ $default_options = array(
 	'checkout_debug_email'      => '',
 	'checkout_debug_when'       => '',
 	'generate_info'             => false,
-	'performance_endpoints'      => 'no',
+	'performance_endpoints'     => 'no',
 );
 
 $pmprodev_options = get_option( 'pmprodev_options' );
@@ -61,7 +61,7 @@ require_once plugin_dir_path( __FILE__ ) . 'classes/class-api-loader.php';
 // Load the API Performance Tracking Trait.
 require_once plugin_dir_path( __FILE__ ) . 'classes/traits/Performance_Tracking_Trait.php';
 
- // Autoload API endpoint files in /classes/api/.
+// Autoload API endpoint files in /classes/api/.
 $api_dir = plugin_dir_path( __FILE__ ) . 'classes/api/';
 foreach ( glob( $api_dir . '*.php' ) as $api_file ) {
 	require_once $api_file;
