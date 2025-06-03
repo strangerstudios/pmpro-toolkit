@@ -75,7 +75,7 @@ class Test_General_Endpoint extends API_Endpoint {
 	 * @return bool|WP_Error
 	 */
 	public function handle_permissions() {
-		$this->throttle_if_unauthenticated();
+		return $this->throttle_if_unauthenticated();
 	}
 
 	/**
