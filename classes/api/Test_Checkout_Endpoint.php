@@ -72,25 +72,42 @@ class Test_Checkout_Endpoint extends API_Endpoint {
 
 		$params = $request->get_json_params();
 
+		// If user fields are missing, fetch random user data
+		$need_random = empty( $params['user_login'] ) || empty( $params['user_email'] );
+		$random_user = $need_random ? $this->get_random_user_data() : false;
+
 		// Get parameters or set defaults
 		$level_id     = intval( $params['membership_level'] ?? 1 );
 		$gateway      = $params['gateway'] ?? 'check'; // Default to PMPro Check gateway (no remote call)
 		$skip_gateway = ! empty( $params['skip_gateway'] ); // default: false
 		$cleanup      = ! empty( $params['cleanup'] ); // default: false
 
-		// Generate unique user data if not provided
-		$user_login = $params['user_login'] ?? 'test_' . wp_generate_password( 8, false );
-		$user_email = $params['user_email'] ?? ( $user_login . '@test.local' );
-		$user_pass  = $params['user_pass'] ?? wp_generate_password( 12 );
-		$first_name = $params['first_name'] ?? 'Test';
-		$last_name  = $params['last_name'] ?? 'McTesterson';
-
-		// Fake address data
-		$address = $params['baddress1'] ?? '123 Testing Ave';
-		$city    = $params['bcity'] ?? 'Testville';
-		$state   = $params['bstate'] ?? 'NY';
-		$zip     = $params['bzipcode'] ?? '10001';
-		$phone   = $params['bphone'] ?? '999-555-1234';
+		// Use random user data if needed
+		if ( $random_user ) {
+			$username = strtolower( $random_user['name']['first'] . '.' . $random_user['name']['last'] );
+			$base_email = 'test@example.com';
+			$user_email = $username . '+' . uniqid() . '@example.com';
+			$first_name = $random_user['name']['first'];
+			$last_name  = $random_user['name']['last'];
+			$address    = $random_user['location']['street']['number'] . ' ' . $random_user['location']['street']['name'];
+			$city       = $random_user['location']['city'];
+			$state      = $random_user['location']['state'];
+			$zip        = $random_user['location']['postcode'];
+			$phone      = $random_user['phone'];
+			$user_login = $username;
+			$user_pass  = wp_generate_password( 12 );
+		} else {
+			$user_login = $params['user_login'] ?? 'test_' . wp_generate_password( 8, false );
+			$user_email = $params['user_email'] ?? ( $user_login . '@test.local' );
+			$user_pass  = $params['user_pass'] ?? wp_generate_password( 12 );
+			$first_name = $params['first_name'] ?? 'Test';
+			$last_name  = $params['last_name'] ?? 'McTesterson';
+			$address    = $params['baddress1'] ?? '123 Testing Ave';
+			$city       = $params['bcity'] ?? 'Testville';
+			$state      = $params['bstate'] ?? 'NY';
+			$zip        = $params['bzipcode'] ?? '10001';
+			$phone      = $params['bphone'] ?? '999-555-1234';
+		}
 
 		// Mimic $_POST as if the real checkout form is being submitted.
 		$_POST = array(
@@ -175,5 +192,23 @@ class Test_Checkout_Endpoint extends API_Endpoint {
 		);
 
 		return $this->json_success( $data );
+	}
+
+	/**
+	 * Helper: Fetch random user data from randomuser.me.
+	 *
+	 * @return array|false
+	 */
+	protected function get_random_user_data() {
+		$response = wp_remote_get( 'https://randomuser.me/api/?nat=us' );
+		if ( is_wp_error( $response ) ) {
+			return false;
+		}
+		$body = wp_remote_retrieve_body( $response );
+		$data = json_decode( $body, true );
+		if ( empty( $data['results'][0] ) ) {
+			return false;
+		}
+		return $data['results'][0];
 	}
 }
