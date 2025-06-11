@@ -6,64 +6,6 @@ use TK\API_Endpoint;
 use WP_REST_Request;
 use WP_REST_Response;
 
-/**
- * Test PMPro member export CSV generation and return basic statistics via REST API.
- *
- * This endpoint simulates the generation of PMPro member list exports
- * and collects basic output metrics by requesting the backend CSV export page.
- *
- * Capabilities:
- * - Triggers backend member export generation for PMPro member lists.
- * - Supports all known filtering parameters used by PMPro member list UI.
- * - Returns total rows and basic statistics from the CSV.
- * - Tracks performance metrics including execution time and memory usage.
- *
- * Request Parameters (POST):
- * - s (string, optional): Search query string. Supports wildcards (*) and colon-separated field searches.
- * - l (string|int, optional): Level filter. Values: 'all', level ID (1, 2, etc), 'oldmembers', 'expired', 'cancelled'.
- * - pn (int, optional): Page number for pagination.
- * - limit (int, optional): Limit number of records to export.
- *
- * Search Key Examples (when using colon in search):
- * - "login:john" - Search user login field
- * - "email:@example.com" - Search email field
- * - "discount:SAVE10" - Search by discount code
- * - "first_name:John" - Search user meta field
- *
- * Example payload:
- * {
- *   "s": "john*",
- *   "l": "1",
- *   "limit": 1000
- * }
- *
- * Response:
- * On success:
- * {
- *   "status": "success",
- *   "export_type": "members",
- *   "filters": {
- *     "search": "john*",
- *     "level": "1",
- *     "limit": 1000
- *   },
- *   "metrics": {
- *     "duration": 2.45,
- *     "queries": 24,
- *     "db_time_sec": 0.156,
- *     "peak_memory_kb": 12048
- *   }
- * }
- *
- * On error:
- * {
- *   "code": "export_error",
- *   "message": "Member export failed.",
- *   "data": { "status": 500 }
- * }
- *
- * @since 1.0.0
- */
 class Test_Member_Export_Endpoint extends API_Endpoint {
     // Trait to handle performance tracking
     use PerformanceTrackingTrait;
@@ -84,10 +26,62 @@ class Test_Member_Export_Endpoint extends API_Endpoint {
     }
 
     /**
-     * Handle the member export test request.
+     * Test PMPro member export CSV generation and return basic statistics via REST API.
      *
-     * @param WP_REST_Request $request
-     * @return WP_REST_Response
+     * This endpoint simulates the generation of PMPro member list exports
+     * and collects basic output metrics by requesting the backend CSV export page.
+     *
+     * Capabilities:
+     * - Triggers backend member export generation for PMPro member lists.
+     * - Supports all known filtering parameters used by PMPro member list UI.
+     * - Returns total rows and basic statistics from the CSV.
+     * - Tracks performance metrics including execution time and memory usage.
+     *
+     * Request Parameters (POST):
+     * - s (string, optional): Search query string. Supports wildcards (*) and colon-separated field searches.
+     * - l (string|int, optional): Level filter. Values: 'all', level ID (1, 2, etc), 'oldmembers', 'expired', 'cancelled'.
+     * - pn (int, optional): Page number for pagination.
+     * - limit (int, optional): Limit number of records to export.
+     *
+     * Search Key Examples (when using colon in search):
+     * - "login:john" - Search user login field
+     * - "email:@example.com" - Search email field
+     * - "discount:SAVE10" - Search by discount code
+     * - "first_name:John" - Search user meta field
+     *
+     * Example payload:
+     * {
+     *   "s": "john*",
+     *   "l": "1",
+     *   "limit": 1000
+     * }
+     *
+     * Response:
+     * On success:
+     * {
+     *   "status": "success",
+     *   "export_type": "members",
+     *   "filters": {
+     *     "search": "john*",
+     *     "level": "1",
+     *     "limit": 1000
+     *   },
+     *   "metrics": {
+     *     "duration": 2.45,
+     *     "queries": 24,
+     *     "db_time_sec": 0.156,
+     *     "peak_memory_kb": 12048
+     *   }
+     * }
+     *
+     * On error:
+     * {
+     *   "code": "export_error",
+     *   "message": "Member export failed.",
+     *   "data": { "status": 500 }
+     * }
+     *
+     * @since 1.0.0
      */
     public function handle_request( WP_REST_Request $request ) {
 

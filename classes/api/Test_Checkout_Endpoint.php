@@ -27,52 +27,6 @@ class Test_Checkout_Endpoint extends API_Endpoint {
 	}
 
 	/**
-	 * Get endpoint argument definitions for validation.
-	 *
-	 * @return array
-	 */
-	private function get_endpoint_args() {
-		return array(
-			'membership_level' => array(
-				'description' => __( 'Membership level ID to test.', 'tk' ),
-				'type'        => 'integer',
-				'default'     => 1,
-				'minimum'     => 1,
-			),
-			'gateway'          => array(
-				'description' => __( 'Payment gateway to use.', 'tk' ),
-				'type'        => 'string',
-				'default'     => 'check',
-				'enum'        => array( 'check', 'stripe', 'paypal', 'authorizenet' ),
-			),
-			'skip_gateway'     => array(
-				'description' => __( 'Skip remote gateway calls for local profiling.', 'tk' ),
-				'type'        => 'boolean',
-				'default'     => false,
-			),
-			'cleanup'          => array(
-				'description' => __( 'Delete test user and data after checkout.', 'tk' ),
-				'type'        => 'boolean',
-				'default'     => false,
-			),
-			'checkout_date'    => array(
-				'description' => __( 'Custom checkout date for backdating (MySQL datetime format).', 'tk' ),
-				'type'        => 'string',
-				'format'      => 'date-time',
-			),
-			'user_login'       => array(
-				'description' => __( 'Custom username for test user.', 'tk' ),
-				'type'        => 'string',
-			),
-			'user_email'       => array(
-				'description' => __( 'Custom email for test user.', 'tk' ),
-				'type'        => 'string',
-				'format'      => 'email',
-			),
-		);
-	}
-
-	/**
 	 * Permission callback for the endpoint. Unauthenticated access is allowed, but
 	 * rate limiting is applied based on IP address.
 	 *
@@ -223,6 +177,52 @@ class Test_Checkout_Endpoint extends API_Endpoint {
 		);
 
 		return $this->json_success( $data );
+	}
+
+	/**
+	 * Get endpoint argument definitions for validation.
+	 *
+	 * @return array
+	 */
+	private function get_endpoint_args() {
+		return array(
+			'membership_level' => array(
+				'description' => __( 'Membership level ID to test.', 'tk' ),
+				'type'        => 'integer',
+				'default'     => 1,
+				'minimum'     => 1,
+			),
+			'gateway'          => array(
+				'description' => __( 'Payment gateway to use.', 'tk' ),
+				'type'        => 'string',
+				'default'     => 'check',
+				'enum'        => array( 'check', 'stripe', 'paypal', 'authorizenet' ),
+			),
+			'skip_gateway'     => array(
+				'description' => __( 'Skip remote gateway calls for local profiling.', 'tk' ),
+				'type'        => 'boolean',
+				'default'     => false,
+			),
+			'cleanup'          => array(
+				'description' => __( 'Delete test user and data after checkout.', 'tk' ),
+				'type'        => 'boolean',
+				'default'     => false,
+			),
+			'checkout_date'    => array(
+				'description' => __( 'Custom checkout date for backdating (MySQL datetime format).', 'tk' ),
+				'type'        => 'string',
+				'format'      => 'date-time',
+			),
+			'user_login'       => array(
+				'description' => __( 'Custom username for test user.', 'tk' ),
+				'type'        => 'string',
+			),
+			'user_email'       => array(
+				'description' => __( 'Custom email for test user.', 'tk' ),
+				'type'        => 'string',
+				'format'      => 'email',
+			),
+		);
 	}
 
 	/**

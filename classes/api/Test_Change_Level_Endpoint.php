@@ -6,38 +6,6 @@ use WP_REST_Request;
 use WP_REST_Server;
 use WP_Error;
 
-/**
- * Simulate a Paid Memberships Pro membership level change for a logged-in user and profile performance.
- *
- * This endpoint allows toolkit users to programmatically test and profile the process of changing a membership
- * level for an existing user (as if that user were logged in and visiting the checkout page).
- *
- * Capabilities:
- * - Switches the current user context to the specified user (by login or email).
- * - Submits a real PMPro checkout as a logged-in user, including all hooks, gateway routines, and add-ons.
- * - Optionally short-circuits the gateway for fast, local profiling (avoiding remote gateway calls).
- * - Can restore the user’s original membership level after profiling for a clean test (optional).
- * - Returns detailed performance data: PHP time, DB queries, DB time, peak memory usage.
- *
- * Request Parameters:
- * - user_login (string, required): The username or email address of the user to test as.
- * - membership_level (int, required): The membership level ID to change to.
- * - gateway (string, optional): Gateway to use for checkout (default: 'check' for test/no-charge).
- * - skip_gateway (bool, optional): If true, disables remote gateway calls for faster profiling (default: false).
- * - cleanup (bool, optional): If true, restores the user’s original membership level after test (default: false).
- *
- * Example payload:
- * {
- *   "user_login": "testing",
- *   "membership_level": 2,
- *   "gateway": "check",
- *   "skip_gateway": true,
- *   "cleanup": true
- * }
- *
- * @param WP_REST_Request $request
- * @return WP_REST_Response
- */
 class Test_Change_Level_Endpoint extends API_Endpoint {
 
 	// Trait to handle performance tracking
@@ -67,6 +35,38 @@ class Test_Change_Level_Endpoint extends API_Endpoint {
 		return $this->throttle_if_unauthenticated();
 	}
 
+	/**
+	 * Simulate a Paid Memberships Pro membership level change for a logged-in user and profile performance.
+	 *
+	 * This endpoint allows toolkit users to programmatically test and profile the process of changing a membership
+	 * level for an existing user (as if that user were logged in and visiting the checkout page).
+	 *
+	 * Capabilities:
+	 * - Switches the current user context to the specified user (by login or email).
+	 * - Submits a real PMPro checkout as a logged-in user, including all hooks, gateway routines, and add-ons.
+	 * - Optionally short-circuits the gateway for fast, local profiling (avoiding remote gateway calls).
+	 * - Can restore the user’s original membership level after profiling for a clean test (optional).
+	 * - Returns detailed performance data: PHP time, DB queries, DB time, peak memory usage.
+	 *
+	 * Request Parameters:
+	 * - user_login (string, required): The username or email address of the user to test as.
+	 * - membership_level (int, required): The membership level ID to change to.
+	 * - gateway (string, optional): Gateway to use for checkout (default: 'check' for test/no-charge).
+	 * - skip_gateway (bool, optional): If true, disables remote gateway calls for faster profiling (default: false).
+	 * - cleanup (bool, optional): If true, restores the user’s original membership level after test (default: false).
+	 *
+	 * Example payload:
+	 * {
+	 *   "user_login": "testing",
+	 *   "membership_level": 2,
+	 *   "gateway": "check",
+	 *   "skip_gateway": true,
+	 *   "cleanup": true
+	 * }
+	 *
+	 * @param WP_REST_Request $request
+	 * @return WP_REST_Response
+	 */
 	public function handle_request( WP_REST_Request $request ) {
 		$this->start_performance_tracking();
 

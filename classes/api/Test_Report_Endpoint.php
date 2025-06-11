@@ -6,67 +6,6 @@ use TK\API_Endpoint;
 use WP_REST_Request;
 use WP_REST_Response;
 
-/**
- * Test PMPro report CSV generation and return basic statistics via REST API.
- *
- * This endpoint simulates the generation of PMPro admin reports (e.g., Sales, Memberships)
- * and collects basic output metrics by requesting the backend CSV export page.
- *
- * Capabilities:
- * - Triggers backend report generation for PMPro admin reports.
- * - Supports all known filtering parameters used by PMPro report UI (e.g., period, type, level).
- * - Returns total rows and basic statistics from the CSV.
- * - Tracks performance metrics including execution time and memory usage.
- *
- * Request Parameters (POST):
- * - report (string, required): Report to generate. One of: 'sales', 'memberships', 'login', 'memberslist'.
- * - type (string, optional): Report sub-type or graph selection.
- * - period (string, optional): Time period, e.g., 'daily', 'monthly'.
- * - month (int|string, optional): Specific month filter.
- * - year (int|string, optional): Specific year filter.
- * - discount_code (string, optional): Filter by discount code.
- * - level (int|string, optional): Membership level ID or 'all'.
- * - startdate, enddate (string, optional): Date range filter (YYYY-MM-DD).
- * - custom_start_date, custom_end_date (string, optional): Alternative custom date range fields.
- * - show_parts (string, optional): Additional sales data breakdown (e.g., 'new_renewals').
- * - s (string, optional): Search query string (login report).
- * - l (string|int, optional): Level filter for login report ('all', 1, 2, etc).
- *
- * Example payload:
- * {
- *   "report": "sales",
- *   "type": "revenue",
- *   "period": "daily",
- *   "month": 5,
- *   "year": 2025,
- *   "custom_start_date": "2025-05-01",
- *   "custom_end_date": "2025-05-31",
- *   "show_parts": "new_renewals"
- * }
- *
- * Response:
- * On success:
- * {
- *   "status": "success",
- *   "report": "sales",
- *   "stats": { "row_count": 42 },
- *   "metrics": {
- *     "duration": 0.128,
- *     "queries": 12,
- *     "db_time_sec": 0.024,
- *     "peak_memory_kb": 6096
- *   }
- * }
- *
- * On error:
- * {
- *   "code": "csv_error",
- *   "message": "No CSV data returned.",
- *   "data": { "status": 500 }
- * }
- *
- * @since 1.0.0
- */
 class Test_Report_Endpoint extends API_Endpoint {
 	// Trait to handle performance tracking
 	use PerformanceTrackingTrait;
@@ -92,10 +31,65 @@ class Test_Report_Endpoint extends API_Endpoint {
 	}
 
 	/**
-	 * Handle the report test request.
+	 * Test PMPro report CSV generation and return basic statistics via REST API.
 	 *
-	 * @param WP_REST_Request $request
-	 * @return WP_REST_Response
+	 * This endpoint simulates the generation of PMPro admin reports (e.g., Sales, Memberships)
+	 * and collects basic output metrics by requesting the backend CSV export page.
+	 *
+	 * Capabilities:
+	 * - Triggers backend report generation for PMPro admin reports.
+	 * - Supports all known filtering parameters used by PMPro report UI (e.g., period, type, level).
+	 * - Returns total rows and basic statistics from the CSV.
+	 * - Tracks performance metrics including execution time and memory usage.
+	 *
+	 * Request Parameters (POST):
+	 * - report (string, required): Report to generate. One of: 'sales', 'memberships', 'login', 'memberslist'.
+	 * - type (string, optional): Report sub-type or graph selection.
+	 * - period (string, optional): Time period, e.g., 'daily', 'monthly'.
+	 * - month (int|string, optional): Specific month filter.
+	 * - year (int|string, optional): Specific year filter.
+	 * - discount_code (string, optional): Filter by discount code.
+	 * - level (int|string, optional): Membership level ID or 'all'.
+	 * - startdate, enddate (string, optional): Date range filter (YYYY-MM-DD).
+	 * - custom_start_date, custom_end_date (string, optional): Alternative custom date range fields.
+	 * - show_parts (string, optional): Additional sales data breakdown (e.g., 'new_renewals').
+	 * - s (string, optional): Search query string (login report).
+	 * - l (string|int, optional): Level filter for login report ('all', 1, 2, etc).
+	 *
+	 * Example payload:
+	 * {
+	 *   "report": "sales",
+	 *   "type": "revenue",
+	 *   "period": "daily",
+	 *   "month": 5,
+	 *   "year": 2025,
+	 *   "custom_start_date": "2025-05-01",
+	 *   "custom_end_date": "2025-05-31",
+	 *   "show_parts": "new_renewals"
+	 * }
+	 *
+	 * Response:
+	 * On success:
+	 * {
+	 *   "status": "success",
+	 *   "report": "sales",
+	 *   "stats": { "row_count": 42 },
+	 *   "metrics": {
+	 *     "duration": 0.128,
+	 *     "queries": 12,
+	 *     "db_time_sec": 0.024,
+	 *     "peak_memory_kb": 6096
+	 *   }
+	 * }
+	 *
+	 * On error:
+	 * {
+	 *   "code": "csv_error",
+	 *   "message": "No CSV data returned.",
+	 *   "data": { "status": 500 }
+	 * }
+	 *
+	 * @since 1.0.0
 	 */
 	public function handle_request( WP_REST_Request $request ) {
 		// Capture the starting output buffer level as early as possible.

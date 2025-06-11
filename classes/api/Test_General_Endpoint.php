@@ -6,20 +6,6 @@ use WP_REST_Request;
 use WP_REST_Server;
 use WP_Error;
 
-/**
- * Performance_Testing_Endpoint
- *
- * API endpoint for general performance testing.
- * This endpoint allows for both read and write operations, depending on the configuration.
- *
- * Usage:
- * - GET /wp-json/toolkit/v1/performance-test (Read Only mode)
- * - POST /wp-json/toolkit/v1/performance-test (Read and Write mode only)
- *
- * The endpoint is rate-limited to 5 requests per minute per IP address.
- * Read Only mode: Returns site information, database query performance, and memory usage.
- * Read and Write mode: Performs write operations (creates/deletes test data) - USE ONLY ON TEST SITES.
- */
 class Test_General_Endpoint extends API_Endpoint {
 
 	use PerformanceTrackingTrait; // Leverage the trait
@@ -79,10 +65,18 @@ class Test_General_Endpoint extends API_Endpoint {
 	}
 
 	/**
-	 * Handle GET requests for performance testing (read operations)
+	 * Performance_Testing_Endpoint
 	 *
-	 * @param WP_REST_Request $request
-	 * @return array|\WP_REST_Response
+	 * API endpoint for general performance testing.
+	 * This endpoint allows for both read and write operations, depending on the configuration.
+	 *
+	 * Usage:
+	 * - GET /wp-json/toolkit/v1/performance-test (Read Only mode)
+	 * - POST /wp-json/toolkit/v1/performance-test (Read and Write mode only)
+	 *
+	 * The endpoint is rate-limited to 5 requests per minute per IP address.
+	 * Read Only mode: Returns site information, database query performance, and memory usage.
+	 * Read and Write mode: Performs write operations (creates/deletes test data) - USE ONLY ON TEST SITES.
 	 */
 	public function handle_request( WP_REST_Request $request ) {
 		$overall_start_time   = microtime( true );

@@ -6,31 +6,6 @@ use WP_REST_Request;
 use WP_REST_Server;
 use WP_Error;
 
-/**
- * Simulate cancelling a Paid Memberships Pro membership level for a logged-in user and profile performance.
- *
- * This endpoint allows toolkit users to programmatically test and profile the process of cancelling a membership
- * level for an existing user (as if that user were logged in and visiting the account/cancel page).
- *
- * Capabilities:
- * - Switches the current user context to the specified user (by login or email).
- * - Cancels the user's membership level using PMPro routines, including all hooks and add-ons.
- * - Can restore the user’s original membership level after profiling for a clean test (optional).
- * - Returns detailed performance data: PHP time, DB queries, DB time, peak memory usage.
- *
- * Request Parameters:
- * - membership_level (int, required): The membership level ID to cancel.
- * - cleanup (bool, optional): If true, restores the user’s original membership level after test (default: false).
- *
- * Example payload:
- * {
- *   "membership_level": 2,
- *   "cleanup": true
- * }
- *
- * @param WP_REST_Request $request
- * @return WP_REST_Response
- */
 class Test_Cancel_Level_Endpoint extends API_Endpoint {
 
 	// Trait to handle performance tracking
@@ -50,6 +25,31 @@ class Test_Cancel_Level_Endpoint extends API_Endpoint {
 		);
 	}
 
+	/**
+	 * Simulate cancelling a Paid Memberships Pro membership level for a logged-in user and profile performance.
+	 *
+	 * This endpoint allows toolkit users to programmatically test and profile the process of cancelling a membership
+	 * level for an existing user (as if that user were logged in and visiting the account/cancel page).
+	 *
+	 * Capabilities:
+	 * - Switches the current user context to the specified user (by login or email).
+	 * - Cancels the user's membership level using PMPro routines, including all hooks and add-ons.
+	 * - Can restore the user’s original membership level after profiling for a clean test (optional).
+	 * - Returns detailed performance data: PHP time, DB queries, DB time, peak memory usage.
+	 *
+	 * Request Parameters:
+	 * - membership_level (int, required): The membership level ID to cancel.
+	 * - cleanup (bool, optional): If true, restores the user’s original membership level after test (default: false).
+	 *
+	 * Example payload:
+	 * {
+	 *   "membership_level": 2,
+	 *   "cleanup": true
+	 * }
+	 *
+	 * @param WP_REST_Request $request
+	 * @return WP_REST_Response
+	 */
 	public function handle_request( WP_REST_Request $request ) {
 
 		// Start performance tracking
@@ -96,11 +96,11 @@ class Test_Cancel_Level_Endpoint extends API_Endpoint {
 		// Return profiling results
 		return $this->json_success(
 			array(
-				'user_id'        => $user_id,
-				'level_id'       => $level_id,
-				'cancelled'      => $cancelled,
-				'restored'       => $restored,
-				'metrics'       => $performance_data,
+				'user_id'   => $user_id,
+				'level_id'  => $level_id,
+				'cancelled' => $cancelled,
+				'restored'  => $restored,
+				'metrics'   => $performance_data,
 			)
 		);
 	}
