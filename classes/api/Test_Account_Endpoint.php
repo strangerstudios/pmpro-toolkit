@@ -6,7 +6,7 @@ use WP_REST_Request;
 use WP_REST_Server;
 use WP_Error;
 
-class Test_Membership_Account_Endpoint extends API_Endpoint {
+class Test_Account_Endpoint extends API_Endpoint {
 
 	// Trait to handle performance tracking
 	use PerformanceTrackingTrait;

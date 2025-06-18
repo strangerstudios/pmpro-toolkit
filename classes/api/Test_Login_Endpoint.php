@@ -63,55 +63,43 @@ class Test_Login_Endpoint extends API_Endpoint {
 	 *   "password": "secret_password"
 	 * }
 	 *
-	 * Response:
-	 * On success:
+	 * Success response:
 	 * {
+	 *   "success": true,
 	 *   "status": "success",
-	 *   "user_id": 123,
-	 *   "duration": 0.1052,
-	 *   "queries": 18,
-	 *   "db_time_sec": 0.0275,
-	 *   "peak_memory_kb": 6352
-	 * }
-	 * On error (e.g. invalid credentials or rate limit exceeded):
-	 * {
-	 *   "code": "login_failed",
-	 *   "message": "Invalid username or incorrect password.",
-	 *   "data": { "status": 401 }
+	 *   "user_id": 927,
+	 *   "metrics": {
+	 *       "savequeries_on": true,
+	 *       "queries_in_block": 2,
+	 *       "duration_sec": 0.048000000000000001,
+	 *       "db_time_ms": 0.25,
+	 *       "block_memory_kb": 150.19999999999999,
+	 *       "peak_memory_kb": 212992
+	 *   }
 	 * }
 	 *
 	 * @param WP_REST_Request $request REST request object.
 	 * @return WP_REST_Response|WP_Error Response with performance metrics or error details.
 	 */
 	public function handle_request( WP_REST_Request $request ) {
-		// Start metrics collection
+		// Start metrics collection first
 		$this->start_performance_tracking();
 
-		// TODO: Do we want persistent cookies here? I don't think so. [remember => true]
-		$creds = array(
-			'user_login'    => $request['username'],
-			'user_password' => $request['password'],
-			'remember'      => false,
-		);
+		// Direct credential check (bypassing wp_signon completely)
+		$user = get_user_by( 'login', $request['username'] );
 
-		$user = wp_signon( $creds, false );
-
-		// If the user is not logged in, return an error and stop processing
-		if ( is_wp_error( $user ) ) {
-			return $this->json_error( 'login_failed', wp_strip_all_tags( $user->get_error_message() ), 401 );
+		if ( ! $user || ! wp_check_password( $request['password'], $user->user_pass, $user->ID ) ) {
+			return $this->json_error( 'login_failed', __( 'Invalid username or incorrect password.', 'pmpro-toolkit' ), 401 );
 		}
 
 		// Stop metrics collection
 		$performance_data = $this->end_performance_tracking();
 
-		// Logout the user after testing
-		wp_logout();
-
 		// Prepare the response data
 		$data = array(
-			'status'         => 'success',
-			'user_id'        => $user->ID,
-			'metrics'		 => $performance_data,
+			'status'  => 'success',
+			'user_id' => $user->ID,
+			'metrics' => $performance_data,
 		);
 
 		return $this->json_success( $data );
