@@ -92,6 +92,10 @@ class Test_Report_Endpoint extends API_Endpoint {
 	 * @since 1.0.0
 	 */
 	public function handle_request( WP_REST_Request $request ) {
+
+		// Raise WordPress memory limit
+		wp_raise_memory_limit( 'admin' );
+
 		// Capture the starting output buffer level as early as possible.
 		$start_buffer_level = ob_get_level();
 

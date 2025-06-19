@@ -49,9 +49,9 @@ class API_Loader {
 				new Test_Member_Export_Endpoint(),
 			);
 
+			// Register the API routes for all endpoints.
 			add_action( 'rest_api_init', array( $this, 'register_routes' ) );
 			// Enable Basic Auth for REST API endpoints.
-			add_filter( 'rest_authentication_errors', array( $this, 'enable_basic_auth' ) );
 			add_filter( 'determine_current_user', array( $this, 'basic_auth_user' ), 20 );
 			// Allow fallback to regular user password if App Password fails.
 			add_filter( 'rest_authentication_errors', array( $this, 'hybrid_basic_auth' ), 200 );
