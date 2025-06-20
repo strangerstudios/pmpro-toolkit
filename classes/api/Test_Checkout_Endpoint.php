@@ -82,9 +82,7 @@ class Test_Checkout_Endpoint extends API_Endpoint {
 		$gateway       = sanitize_text_field( $params['gateway'] ?? 'check' );
 		$skip_gateway  = ! empty( $params['skip_gateway'] );
 		$cleanup       = ! empty( $params['cleanup'] );
-		$checkout_date = ! empty( $params['checkout_date'] ) ?
-			sanitize_text_field( $params['checkout_date'] ) :
-			current_time( 'mysql' );
+		$checkout_date = ! empty( $params['checkout_date'] ) ? sanitize_text_field( $params['checkout_date'] ) : current_time( 'mysql' );
 
 		// Validate membership level exists
 		if ( ! pmpro_getLevel( $level_id ) ) {
@@ -157,8 +155,8 @@ class Test_Checkout_Endpoint extends API_Endpoint {
 
 		// Optionally clean up (delete user and related data)
 		$deleted = false;
+
 		if ( $cleanup && $user_id && ! $existing_user_id ) {
-			require_once ABSPATH . 'wp-admin/includes/user.php';
 			wp_delete_user( $user_id );
 			$deleted = true;
 		}
@@ -233,16 +231,14 @@ class Test_Checkout_Endpoint extends API_Endpoint {
 	 * @return array|WP_Error User data array or error.
 	 */
 	private function prepare_user_data( $params ) {
-		// Check if user data is provided
-		$has_user_data = ! empty( $params['user_login'] ) && ! empty( $params['user_email'] );
 
-		if ( $has_user_data ) {
+		if ( empty( $params['generate'] ) ) {
 			// Use provided data
-			$username   = sanitize_user( $params['user_login'] );
-			$user_email = sanitize_email( $params['user_email'] );
+			$username   = sanitize_user( $params['user_login'] ?? 'testuser_' . uniqid() );
+			$user_email = sanitize_email( $params['user_email'] ?? $username . '+' . uniqid() . '@example.com' );
 			$first_name = sanitize_text_field( $params['first_name'] ?? 'Test' );
 			$last_name  = sanitize_text_field( $params['last_name'] ?? 'User' );
-			$address    = sanitize_text_field( $params['baddress1'] ?? '123 Test St' );
+			$address    = sanitize_text_field( $params['baddress1'] ?? '123 Test St.' );
 			$city       = sanitize_text_field( $params['bcity'] ?? 'Testville' );
 			$state      = sanitize_text_field( $params['bstate'] ?? 'NY' );
 			$zip        = sanitize_text_field( $params['bzipcode'] ?? '10001' );
