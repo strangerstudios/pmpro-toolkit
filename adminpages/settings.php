@@ -5,6 +5,8 @@
 	}
 
 	global $msg, $msgt, $pmprodev_options;
+	$pmpro_db_version = get_option( 'pmpro_db_version' );
+
 
 	// Bail if nonce field isn't set.
 	if ( !empty( $_REQUEST['savesettings'] ) && ( empty( $_REQUEST[ 'pmpro_toolkit_nonce' ] ) 
@@ -36,6 +38,13 @@
 		}
 
 		$pmprodev_options['expiration_warnings'] = $expiration_warnings;
+
+		if( isset( $_POST['pmprodev_options']['payment_reminders'] ) ) {
+			$payment_reminders = intval( $_POST['pmprodev_options']['payment_reminders'] );
+		} else {
+			$payment_reminders = 0;
+		}
+		$pmprodev_options['payment_reminders'] = $payment_reminders;
 
 		if( isset( $_POST['pmprodev_options']['credit_card_expiring'] ) ) {
 			$credit_card_expiring = intval( $_POST['pmprodev_options']['credit_card_expiring'] );
@@ -94,7 +103,11 @@
 		<div class="pmpro_section_toggle">
 			<button class="pmpro_section-toggle-button" type="button" aria-expanded="true">
 				<span class="dashicons dashicons-arrow-up-alt2"></span>
-				<?php esc_html_e( 'Scheduled Cron Job Debugging', 'pmpro-toolkit' ); ?>
+					<?php if ( class_exists( 'PMPro_Scheduled_Actions' ) ) { ?>
+					<?php esc_html_e( 'Scheduled Actions Debugging', 'pmpro-toolkit' ); ?>
+				<?php } else { ?>
+					<?php esc_html_e( 'Scheduled Cron Job Debugging', 'pmpro-toolkit' ); ?>
+				<?php } ?>
 			</button>
 		</div>
 		<div class="pmpro_section_inside">
@@ -124,7 +137,20 @@
 							</label>
 						</td>
 					<tr>
-					<!-- another row but for Credit Card Expiring -->
+					<!-- another row but for Payment Reminders -->
+					<tr>
+						<th scope="row" valign="top">
+							<label for="payment_reminders"><?php esc_html_e( 'Payment Reminders', 'pmpro-toolkit' ); ?></label>
+						</th>
+						<td>
+							<input id="payment_reminders" type="checkbox" name="pmprodev_options[payment_reminders]" value="1" <?php checked( $pmprodev_options['payment_reminders'], 1, true ); ?>>
+							<label for="payment_reminders">
+								<?php esc_html_e( 'Check to disable the script that sends payment reminders.', 'pmpro-toolkit' ); ?>
+							</label>
+						</td>
+					<tr>
+					<!-- another row but for Credit Card Expiring in older versions -->
+					<?php if ( $pmpro_db_version < 3.4 ) { ?>
 					<tr>
 						<th scope="row" valign="top">
 							<label for="credit_card_expiring"><?php esc_html_e( 'Credit Card Expiring', 'pmpro-toolkit' ); ?></label>
@@ -136,6 +162,7 @@
 							</label>
 						</td>
 					</tr>
+					<?php } ?>
 				</tbody>
 			</table>
 		</div>
