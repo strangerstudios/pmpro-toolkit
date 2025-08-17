@@ -53,7 +53,7 @@ $clean_up_actions = array(
 	),
 	'pmprodev_delete_test_orders' => array(
 		'label' => __( 'Delete Test Orders', 'pmpro-toolkit' ),
-		'description' => __( 'Delete all orders made through the testing or sandbox gateway environment', 'pmpro-toolkit' ),
+		'description' => __( 'Delete all orders made through the testing or sandbox gateway environment. This includes any test subscriptions.', 'pmpro-toolkit' ),
 		'message' => __( 'Test orders deleted.', 'pmpro-toolkit' )
 	),
 	'pmprodev_clear_cached_report_data' => array(
@@ -440,7 +440,7 @@ function pmprodev_clear_vvl_report( $message ) {
 }
 
 /**
- * Delete all orders with a sandbox gateway environment
+ * Delete all orders with a sandbox gateway environment and tries to clean up subscriptions at the same time.
  *
  * @param string $message The message to display after the orders are deleted.
  * @return void
@@ -448,7 +448,9 @@ function pmprodev_clear_vvl_report( $message ) {
  */
 function pmprodev_delete_test_orders( $message ) {
 	global $wpdb;
+	// Delete the test orders now and sandbox subscriptions.
 	$wpdb->query( "DELETE FROM {$wpdb->pmpro_membership_orders} WHERE gateway_environment = 'sandbox'" );
+	$wpdb->query( "DELETE FROM {$wpdb->pmpro_subscriptions} WHERE gateway_environment = 'sandbox'" );
 	pmprodev_output_message( $message );
 }
 
