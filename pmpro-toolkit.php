@@ -357,7 +357,8 @@ function pmprodev_create_button() {
 		<div class="pmpro_card_content">
 			<input type="text" id="pmprodev-base-email" value="<?php echo esc_attr( get_option('admin_email') ) ?>">
 			<button id='pmprodev-generate' type="button"><? esc_html_e( 'Generate New User', 'pmpro-toolkit' ); ?></button>
-			<button id='pmprodev-generate-submit' type="button"><? esc_html_e( 'Generate New User and Submit', 'pmpro-toolkit' ); ?></button>
+			<button id='pmprodev-generate' type="button"><?php esc_html_e( 'Generate New User', 'pmpro-toolkit' ); ?></button>
+			<button id='pmprodev-generate-submit' type="button"><?php esc_html_e( 'Generate New User and Submit', 'pmpro-toolkit' ); ?></button>
 		</div>
 	</div>
 	<?php
