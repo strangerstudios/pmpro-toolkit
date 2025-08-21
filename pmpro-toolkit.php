@@ -9,6 +9,13 @@
  * Text Domain: pmpro-toolkit
 */
 
+defined( 'ABSPATH' ) || exit;
+
+// If Paid Membership Pro is not active do nothing
+if ( ! is_plugin_active( 'paid-memberships-pro/paid-memberships-pro.php' ) ) {
+	return;
+}
+
 /*
 * Globals
 */
