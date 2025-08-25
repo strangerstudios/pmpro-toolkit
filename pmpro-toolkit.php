@@ -24,7 +24,6 @@ $default_options = array(
 	'expire_memberships' => '',
 	'expiration_warnings' => '',
 	'payment_reminders' => '',
-	'credit_card_expiring' => '',
 	'ipn_debug' => '',
 	'authnet_silent_post_debug' => '',
 	'stripe_webhook_debug' => '',
@@ -90,33 +89,29 @@ function pmprodev_gateway_debug_setup() {
 
 	// Unhook crons or Action Scheduler actions
 	if( !empty( $pmprodev_options['expire_memberships'] ) ) {
-		if ( class_exists( 'PMPro_Scheduled_Actions' ) ) {
-			remove_action( 'pmpro_schedule_daily', array( PMPro_Scheduled_Actions::instance(), 'membership_expiration_reminders' ), 10 );
+		if ( class_exists( 'PMPro_Recurring_Actions' ) ) {
+			remove_action( 'pmpro_schedule_daily', array( PMPro_Recurring_Actions::instance(), 'check_for_expired_memberships' ) );
 		} else {
 			remove_action( "pmpro_cron_expire_memberships", "pmpro_cron_expire_memberships" );
 		}
 	}
 
 	if( !empty( $pmprodev_options['expiration_warnings'] ) ){
-		if ( class_exists( 'PMPro_Scheduled_Actions' ) ) {
-			remove_action( 'pmpro_schedule_daily', array( PMPro_Scheduled_Actions::instance(), 'membership_expiration_warnings' ), 10 );
+		if ( class_exists( 'PMPro_Recurring_Actions' ) ) {
+			remove_action( 'pmpro_schedule_daily', array( PMPro_Recurring_Actions::instance(), 'membership_expiration_reminders' ), 99 );
 		} else {
 			remove_action( "pmpro_cron_expiration_warnings", "pmpro_cron_expiration_warnings" );
 		}
 	}
 
 	if( !empty( $pmprodev_options['payment_reminders'] ) ){
-		if ( class_exists( 'PMPro_Scheduled_Actions' ) ) {
-			remove_action( 'pmpro_schedule_daily', array( PMPro_Scheduled_Actions::instance(), 'recurring_payment_reminders' ), 10 );
+		if ( class_exists( 'PMPro_Recurring_Actions' ) ) {
+			remove_action( 'pmpro_schedule_daily', array( PMPro_Recurring_Actions::instance(), 'recurring_payment_reminders' ) );
 		} else {
 			remove_action( "pmpro_cron_recurring_payment_reminders", "pmpro_cron_recurring_payment_reminders" );
 		}
 	}
 
-	// Backward compatibility with older PMPro versions
-	if( !empty( $pmprodev_options['credit_card_expiring'] ) ) {
-		remove_action( "pmpro_cron_credit_card_expiring_warnings", "pmpro_cron_credit_card_expiring_warnings" );
-	}
 }
 add_action('init', 'pmprodev_gateway_debug_setup');
 

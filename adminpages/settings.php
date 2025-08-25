@@ -98,12 +98,12 @@
 		</div>
 	</div>
 
-	<!--Scheduled Cron Job Debugging section -->
+	<!--Scheduled Cron Job / Action Scheduler Debugging section -->
 	<div class="pmpro_section" data-visibility="shown" data-activated="true">
 		<div class="pmpro_section_toggle">
 			<button class="pmpro_section-toggle-button" type="button" aria-expanded="true">
 				<span class="dashicons dashicons-arrow-up-alt2"></span>
-					<?php if ( class_exists( 'PMPro_Scheduled_Actions' ) ) { ?>
+					<?php if ( class_exists( 'PMPro_Recurring_Actions' ) ) { ?>
 					<?php esc_html_e( 'Scheduled Actions Debugging', 'pmpro-toolkit' ); ?>
 				<?php } else { ?>
 					<?php esc_html_e( 'Scheduled Cron Job Debugging', 'pmpro-toolkit' ); ?>
@@ -121,7 +121,7 @@
 						<td>
 							<input id="expire_memberships" type="checkbox"  name="pmprodev_options[expire_memberships]" value="1" <?php checked( $pmprodev_options['expire_memberships'], 1, true ); ?>>
 							<label for="expire_memberships">
-								<?php esc_html_e( 'Check to disable the script that checks for expired memberships.', 'pmpro-toolkit' ); ?>
+								<?php esc_html_e( 'Disable checking for expired memberships.', 'pmpro-toolkit' ); ?>
 							</label>
 						</td>
 					</tr>
@@ -133,7 +133,7 @@
 						<td>
 							<input id="expiration_warnings" type="checkbox" name="pmprodev_options[expiration_warnings]" value="1" <?php checked( $pmprodev_options['expiration_warnings'], 1, true ); ?>>
 							<label for="expiration_warnings">
-								<?php esc_html_e( 'Check to disable the script that sends expiration warnings.', 'pmpro-toolkit' ); ?>
+								<?php esc_html_e( 'Disable sending expiration warnings.', 'pmpro-toolkit' ); ?>
 							</label>
 						</td>
 					<tr>
@@ -145,7 +145,7 @@
 						<td>
 							<input id="payment_reminders" type="checkbox" name="pmprodev_options[payment_reminders]" value="1" <?php checked( $pmprodev_options['payment_reminders'], 1, true ); ?>>
 							<label for="payment_reminders">
-								<?php esc_html_e( 'Check to disable the script that sends payment reminders.', 'pmpro-toolkit' ); ?>
+								<?php esc_html_e( 'Disable sending payment reminders.', 'pmpro-toolkit' ); ?>
 							</label>
 						</td>
 					<tr>
