@@ -64,32 +64,36 @@ require_once PMPRODEV_DIR . '/classes/class-pmprodev-migration-assistant.php';
 /**
  * API LOADER
  */
-// Explicitly load the API Loader class.
-require_once plugin_dir_path( __FILE__ ) . 'classes/class-api-loader.php';
-// Load the API Performance Tracking Trait.
-require_once plugin_dir_path( __FILE__ ) . 'classes/traits/Performance_Tracking_Trait.php';
+if ( ! empty( $pmprodev_options['performance_endpoints'] ) && $pmprodev_options['performance_endpoints'] !== 'no' ) {
+	// Explicitly load the API Loader class.
+	require_once plugin_dir_path( __FILE__ ) . 'classes/class-api-loader.php';
+	// Load the API Performance Tracking Trait.
+	require_once plugin_dir_path( __FILE__ ) . 'classes/traits/Performance_Tracking_Trait.php';
 
-// Autoload API endpoint files in /classes/api/.
-$api_dir = plugin_dir_path( __FILE__ ) . 'classes/api/';
-foreach ( glob( $api_dir . '*.php' ) as $api_file ) {
-	require_once $api_file;
+	// Autoload API endpoint files in /classes/api/.
+	$api_dir = plugin_dir_path( __FILE__ ) . 'classes/api/';
+	foreach ( glob( $api_dir . '*.php' ) as $api_file ) {
+		require_once $api_file;
+	}
+
+	// Initialize the namespaced API Loader.
+	new TK\API_Loader();
 }
-
-// Initialize the namespaced API Loader.
-new TK\API_Loader();
 
 /**
  * Register WP-CLI commands for Toolkit scripts.
  */
 if ( defined( 'WP_CLI' ) && WP_CLI ) {
-\WP_CLI::add_command( 'pmpro-toolkit', 'TK\\Toolkit_Commands' );
+	// Load CLI command class.
+	require_once plugin_dir_path( __FILE__ ) . 'cli/Toolkit_Commands.php';
+	\WP_CLI::add_command( 'pmpro-toolkit', 'TK\\Toolkit_Commands' );
 }
 
 /**
  * Remove the cron jobs for expiration warnings and expiring credit cards if the options are set.
  *
- * @return void
  * @since 1.0
+ * @return void
  */
 function pmprodev_gateway_debug_setup() {
 
