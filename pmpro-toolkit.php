@@ -3,11 +3,18 @@
  * Plugin Name: Paid Memberships Pro - Developer's Toolkit Add On
  * Plugin URI: https://www.paidmembershipspro.com/add-ons/pmpro-toolkit/
  * Description: Various tools to test and debug Paid Memberships Pro enabled websites.
- * Version: 1.0
+ * Version: 1.1b
  * Author: Paid Memberships Pro
  * Author URI: https://www.paidmembershipspro.com
  * Text Domain: pmpro-toolkit
-*/
+ */
+
+defined( 'ABSPATH' ) || exit;
+
+// If Paid Membership Pro is not active do nothing
+if ( ! is_plugin_active( 'paid-memberships-pro/paid-memberships-pro.php' ) ) {
+	return;
+}
 
 /*
 * Globals
@@ -16,29 +23,31 @@ global $pmprodev_options, $gateway;
 $default_options = array(
 	'expire_memberships' => '',
 	'expiration_warnings' => '',
-	'credit_card_expiring' => '',
+	'payment_reminders' => '',
 	'ipn_debug' => '',
 	'authnet_silent_post_debug' => '',
-	'stripe_webhook_debug' => '',
-	'ins_debug' => '',
-	'redirect_email' => '',
-	'checkout_debug_email' => '',
-	'checkout_debug_when' => '',
-	'generate_info' => false,
+	'stripe_webhook_debug'      => '',
+	'ins_debug'                 => '',
+	'redirect_email'            => '',
+	'checkout_debug_email'      => '',
+	'checkout_debug_when'       => '',
+	'generate_info'             => false,
+	'performance_endpoints'     => 'no',
+	'ip_throttling'             => false,
 );
 
 $pmprodev_options = get_option( 'pmprodev_options' );
 
-if( empty( $pmprodev_options ) ) {
+if ( empty( $pmprodev_options ) ) {
 	$pmprodev_options = $default_options;
 } else {
 	$pmprodev_options = array_merge( $default_options, $pmprodev_options );
 }
 
-//intialize options in the DB
+// intialize options in the DB
 function pmprodev_init_options() {
 	global $pmprodev_options, $default_options;
-	if( ! $pmprodev_options || empty( $pmprodev_options ) ) {
+	if ( ! $pmprodev_options || empty( $pmprodev_options ) ) {
 		$pmprodev_options = $default_options;
 		update_option( 'pmprodev_options', $pmprodev_options );
 	}
@@ -46,12 +55,28 @@ function pmprodev_init_options() {
 
 add_action( 'admin_init', 'pmprodev_init_options' );
 
-define( 'PMPRODEV_DIR', dirname( __FILE__ ) );
-include_once PMPRODEV_DIR . '/classes/class-pmprodev-migration-assistant.php';
-
 /*
 * Gateway Debug Constants
 */
+define( 'PMPRODEV_DIR', __DIR__ );
+require_once PMPRODEV_DIR . '/classes/class-pmprodev-migration-assistant.php';
+
+/**
+ * API LOADER
+ */
+// Explicitly load the API Loader class.
+require_once plugin_dir_path( __FILE__ ) . 'classes/class-api-loader.php';
+// Load the API Performance Tracking Trait.
+require_once plugin_dir_path( __FILE__ ) . 'classes/traits/Performance_Tracking_Trait.php';
+
+// Autoload API endpoint files in /classes/api/.
+$api_dir = plugin_dir_path( __FILE__ ) . 'classes/api/';
+foreach ( glob( $api_dir . '*.php' ) as $api_file ) {
+	require_once $api_file;
+}
+
+// Initialize the namespaced API Loader.
+new TK\API_Loader();
 
 /**
  * Remove the cron jobs for expiration warnings and expiring credit cards if the options are set.
@@ -63,37 +88,50 @@ function pmprodev_gateway_debug_setup() {
 
 	global $pmprodev_options;
 
-	//define IPN/webhook debug emails
-	if( !empty( $pmprodev_options['ipn_debug']) && !defined( 'PMPRO_IPN_DEBUG' ) ) {
+	// define IPN/webhook debug emails
+	if ( ! empty( $pmprodev_options['ipn_debug'] ) && ! defined( 'PMPRO_IPN_DEBUG' ) ) {
 		define( 'PMPRO_IPN_DEBUG', $pmprodev_options['ipn_debug'] );
 	}
 
-	if( !empty( $pmprodev_options['ipn_debug']) && !defined( 'PMPRO_AUTHNET_SILENT_POST_DEBUG' ) ) {
+	if ( ! empty( $pmprodev_options['ipn_debug'] ) && ! defined( 'PMPRO_AUTHNET_SILENT_POST_DEBUG' ) ) {
 		define( 'PMPRO_AUTHNET_SILENT_POST_DEBUG', $pmprodev_options['ipn_debug'] );
 	}
 
-	if( !empty( $pmprodev_options['ipn_debug']) && !defined( 'PMPRO_STRIPE_WEBHOOK_DEBUG' ) ) {
+	if ( ! empty( $pmprodev_options['ipn_debug'] ) && ! defined( 'PMPRO_STRIPE_WEBHOOK_DEBUG' ) ) {
 		define( 'PMPRO_STRIPE_WEBHOOK_DEBUG', $pmprodev_options['ipn_debug'] );
 	}
 
-	if( !empty( $pmprodev_options['ipn_debug']) && !defined( 'PMPRO_INS_DEBUG' ) ) {
+	if ( ! empty( $pmprodev_options['ipn_debug'] ) && ! defined( 'PMPRO_INS_DEBUG' ) ) {
 		define( 'PMPRO_INS_DEBUG', $pmprodev_options['ipn_debug'] );
 	}
 
-	//unhook crons
+	// Unhook crons or Action Scheduler actions
 	if( !empty( $pmprodev_options['expire_memberships'] ) ) {
-		remove_action( "pmpro_cron_expire_memberships", "pmpro_cron_expire_memberships" );
+		if ( class_exists( 'PMPro_Recurring_Actions' ) ) {
+			remove_action( 'pmpro_schedule_daily', array( PMPro_Recurring_Actions::instance(), 'check_for_expired_memberships' ) );
+		} else {
+			remove_action( "pmpro_cron_expire_memberships", "pmpro_cron_expire_memberships" );
+		}
 	}
 
-	if( !empty( $pmprodev_options['expiration_warnings'] ) )	{
-		remove_action( "pmpro_cron_expiration_warnings", "pmpro_cron_expiration_warnings" );
+	if( !empty( $pmprodev_options['expiration_warnings'] ) ){
+		if ( class_exists( 'PMPro_Recurring_Actions' ) ) {
+			remove_action( 'pmpro_schedule_daily', array( PMPro_Recurring_Actions::instance(), 'membership_expiration_reminders' ), 99 );
+		} else {
+			remove_action( "pmpro_cron_expiration_warnings", "pmpro_cron_expiration_warnings" );
+		}
 	}
 
-	if( !empty( $pmprodev_options['credit_card_expiring'] ) ) {
-		remove_action( "pmpro_cron_credit_card_expiring_warnings", "pmpro_cron_credit_card_expiring_warnings" );
+	if( !empty( $pmprodev_options['payment_reminders'] ) ){
+		if ( class_exists( 'PMPro_Recurring_Actions' ) ) {
+			remove_action( 'pmpro_schedule_daily', array( PMPro_Recurring_Actions::instance(), 'recurring_payment_reminders' ) );
+		} else {
+			remove_action( "pmpro_cron_recurring_payment_reminders", "pmpro_cron_recurring_payment_reminders" );
+		}
 	}
+
 }
-add_action('init', 'pmprodev_gateway_debug_setup');
+add_action( 'init', 'pmprodev_gateway_debug_setup' );
 
 /**
  * If there is a redirect email set, redirect all PMPro emails to that email.
@@ -102,13 +140,12 @@ add_action('init', 'pmprodev_gateway_debug_setup');
  * @param object $email the email object
  * @return string $recipient the email recipient
  * @since 1.0
- *
  */
 function pmprodev_redirect_emails( $recipient, $email ) {
 
 	global $pmprodev_options;
 
-	if( !empty($pmprodev_options['redirect_email'] ) ) {
+	if ( ! empty( $pmprodev_options['redirect_email'] ) ) {
 		$recipient = $pmprodev_options['redirect_email'];
 	}
 
@@ -117,7 +154,7 @@ function pmprodev_redirect_emails( $recipient, $email ) {
 add_filter( 'pmpro_email_recipient', 'pmprodev_redirect_emails', 10, 2 );
 
 /**
- * Send debug email every time checkout page is hit. 
+ * Send debug email every time checkout page is hit.
  *
  * @param mixed $filter_contents to not break the wp_redirect filter.
  * @return mixed $filter_contents to not break the wp_redirect filter.
@@ -131,31 +168,31 @@ function pmprodev_checkout_debug_email( $filter_contents = null ) {
 	if ( is_admin() || defined( 'DOING_AJAX' ) || pmpro_doing_webhook() ) {
 		return $filter_contents;
 	}
-	
+
 	// Avoid issues if we're redirecting too early before pmpro_is_checkout will work.
-	if ( ! did_action('wp') ) {
+	if ( ! did_action( 'wp' ) ) {
 		return $filter_contents;
 	}
 
 	// Make sure this is the checkout page.
-	if( ! function_exists( 'pmpro_is_checkout' ) || ! pmpro_is_checkout() ) {
+	if ( ! function_exists( 'pmpro_is_checkout' ) || ! pmpro_is_checkout() ) {
 		return $filter_contents;
 	}
-	
+
 	// Make sure they have turned this on.
-	if( empty( $pmprodev_options['checkout_debug_when'] ) ) {
+	if ( empty( $pmprodev_options['checkout_debug_when'] ) ) {
 		return $filter_contents;
 	}
 
 	// Make sure we have an email to use.
-	if( empty( $pmprodev_options['checkout_debug_email'] ) ) {
+	if ( empty( $pmprodev_options['checkout_debug_email'] ) ) {
 		return $filter_contents;
 	}
 
 	// Make sure the checkout form was submitted if using that option.
 	if ( $pmprodev_options['checkout_debug_when'] === 'on_submit' && empty( $_REQUEST['submit-checkout'] ) ) {
 		return $filter_contents;
-	}    
+	}
 
 	// Make sure there is an error if using that option.
 	if ( $pmprodev_options['checkout_debug_when'] === 'on_error' && ( empty( $pmpro_msgt ) || $pmpro_msgt != 'pmpro_error' ) ) {
@@ -168,40 +205,40 @@ function pmprodev_checkout_debug_email( $filter_contents = null ) {
 	// Get some values.
 	$level = pmpro_getLevelAtCheckout();
 	$email = new PMProEmail();
-	if( isset( $_SERVER['HTTPS'] ) && $_SERVER['HTTPS'] == 'on' ) {
+	if ( isset( $_SERVER['HTTPS'] ) && $_SERVER['HTTPS'] == 'on' ) {
 		$http = 'https://';
 	} else {
 		$http = 'http://';
 	}
 
 	// Remove password data.
-	$user_pass_bu = $current_user->user_pass;
-	$current_user->user_pass = '';    
+	$user_pass_bu            = $current_user->user_pass;
+	$current_user->user_pass = '';
 	if ( isset( $_REQUEST['password'] ) ) {
-		$password_bu = $_REQUEST['password'];
+		$password_bu          = $_REQUEST['password'];
 		$_REQUEST['password'] = '';
-	}    
+	}
 	if ( isset( $_REQUEST['password2'] ) ) {
-		$password2_bu = $_REQUEST['password2'];
+		$password2_bu          = $_REQUEST['password2'];
 		$_REQUEST['password2'] = '';
 	}
 
 	// Set up the email.
-	$email->subject = sprintf( '%s Checkout Page Debug Log', get_bloginfo( 'name' ) );
-	$email->email = $pmprodev_options['checkout_debug_email'];
+	$email->subject  = sprintf( '%s Checkout Page Debug Log', get_bloginfo( 'name' ) );
+	$email->email    = $pmprodev_options['checkout_debug_email'];
 	$email->template = 'checkout_debug';
-	$email->body = file_get_contents( plugin_dir_path(__FILE__) . '/email/checkout_debug.html' );
-	$email->data = array(
-		'sitename' => get_bloginfo( 'sitename' ),
+	$email->body     = file_get_contents( plugin_dir_path( __FILE__ ) . '/email/checkout_debug.html' );
+	$email->data     = array(
+		'sitename'     => get_bloginfo( 'sitename' ),
 		'checkout_url' => $http . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'],
-		'submit' => ( empty( $_REQUEST['submit-checkout']) ? 'no' : 'yes' ),
-		'level' => print_r( $level, true ),
-		'user' => print_r( $current_user->data, true ),
-		'request' => print_r( $_REQUEST, true ),
+		'submit'       => ( empty( $_REQUEST['submit-checkout'] ) ? 'no' : 'yes' ),
+		'level'        => print_r( $level, true ),
+		'user'         => print_r( $current_user->data, true ),
+		'request'      => print_r( $_REQUEST, true ),
 		'message_type' => ( empty( $pmpro_msgt ) ? 'N/A' : $pmpro_msgt . '|' ),
-		'message' => $pmpro_msg
+		'message'      => $pmpro_msg,
 	);
-	
+
 	// Add passwords back, just in case.
 	if ( isset( $user_pass_bu ) ) {
 		$current_user->user_pass = $user_pass_bu;
@@ -216,7 +253,7 @@ function pmprodev_checkout_debug_email( $filter_contents = null ) {
 	$order = new MemberOrder();
 	$order->getLastMemberOrder( $current_user->user_id );
 
-	if(!empty( $order ) ){
+	if ( ! empty( $order ) ) {
 		$email->data['order'] = print_r( $order, true );
 	}
 
@@ -237,11 +274,17 @@ add_action( 'shutdown', 'pmprodev_checkout_debug_email' );
  */
 function pmprodev_admin_menu() {
 	$pmprodev_menu_text = __( 'Toolkit', 'pmpro-toolkit' );
-	add_submenu_page( 'pmpro-dashboard', $pmprodev_menu_text, $pmprodev_menu_text, 'manage_options',
-		'pmpro-toolkit', 'pmprodev_settings_page' );
+	add_submenu_page(
+		'pmpro-dashboard',
+		$pmprodev_menu_text,
+		$pmprodev_menu_text,
+		'manage_options',
+		'pmpro-toolkit',
+		'pmprodev_settings_page'
+	);
 }
 
-add_action('admin_menu', 'pmprodev_admin_menu');
+add_action( 'admin_menu', 'pmprodev_admin_menu' );
 add_action( 'admin_bar_menu', 'pmprodev_admin_menu_bar', 2000 );
 
 /**
@@ -252,13 +295,15 @@ add_action( 'admin_bar_menu', 'pmprodev_admin_menu_bar', 2000 );
  * @since 1.0
  */
 function pmprodev_admin_menu_bar( $wp_admin_bar ) {
-	$wp_admin_bar->add_menu( array(
-		'id' => 'pmprodev',
-		'title' => 'PMPro Toolkit',
-		'href' => admin_url( 'admin.php?page=pmpro-toolkit' ),
-		'parent' => 'paid-memberships-pro',
-		'meta' => array( 'class' => 'pmpro-dev' )
-	) );
+	$wp_admin_bar->add_menu(
+		array(
+			'id'     => 'pmprodev',
+			'title'  => 'PMPro Toolkit',
+			'href'   => admin_url( 'admin.php?page=pmpro-toolkit' ),
+			'parent' => 'paid-memberships-pro',
+			'meta'   => array( 'class' => 'pmpro-dev' ),
+		)
+	);
 }
 
 /**
@@ -279,10 +324,10 @@ add_action( 'admin_init', 'pmprodev_process_migration_export' );
  * Load the settings page.
  *
  * @return void
- * @since 1.0	
+ * @since 1.0
  */
 function pmprodev_settings_page() {
-	require_once( plugin_dir_path( __FILE__ ) . '/adminpages/toolkit.php' );
+	require_once plugin_dir_path( __FILE__ ) . '/adminpages/toolkit.php';
 }
 
 /**
@@ -311,18 +356,18 @@ add_action( 'init', 'pmpro_toolkit_load_textdomain', 1 );
 /**
  * Add links to the plugin row meta.
  *
- * @param array $links the links array
+ * @param array  $links the links array
  * @param string $file the file name
  * @return array $links the links array
  * @since 1.0
  */
 function pmprodev_plugin_row_meta( $links, $file ) {
-	if( strpos( $file, 'pmpro-toolkit.php' ) !== false ) {
+	if ( strpos( $file, 'pmpro-toolkit.php' ) !== false ) {
 		$new_links = array(
-			'<a href="' . esc_url('https://www.paidmembershipspro.com/add-ons/pmpro-toolkit/')  . '" title="' . esc_attr( __( 'View Documentation', 'pmpro' ) ) . '">' . __( 'Docs', 'pmpro' ) . '</a>',
-			'<a href="' . esc_url('https://www.paidmembershipspro.com/support/') . '" title="' . esc_attr( __( 'Visit Customer Support Forum', 'pmpro' ) ) . '">' . __( 'Support', 'pmpro' ) . '</a>',
+			'<a href="' . esc_url( 'https://www.paidmembershipspro.com/add-ons/pmpro-toolkit/' ) . '" title="' . esc_attr( __( 'View Documentation', 'pmpro' ) ) . '">' . __( 'Docs', 'pmpro' ) . '</a>',
+			'<a href="' . esc_url( 'https://www.paidmembershipspro.com/support/' ) . '" title="' . esc_attr( __( 'Visit Customer Support Forum', 'pmpro' ) ) . '">' . __( 'Support', 'pmpro' ) . '</a>',
 		);
-		$links = array_merge( $links, $new_links );
+		$links     = array_merge( $links, $new_links );
 	}
 	return $links;
 }
@@ -337,7 +382,7 @@ add_filter( 'plugin_row_meta', 'pmprodev_plugin_row_meta', 10, 2 );
 function pmprodev_enqueue_scripts() {
 	wp_register_script( 'pmprodev-generate-checkout-info', plugins_url( 'js/pmprodev-generate-checkout-info.js', __FILE__ ), array( 'jquery' ) );
 	wp_enqueue_script( 'pmprodev-generate-checkout-info' );
-	//add css for the button
+	// add css for the button
 	wp_register_style( 'pmprodev', plugins_url( 'css/pmprodev.css', __FILE__ ) );
 	wp_enqueue_style( 'pmprodev' );
 }
@@ -364,6 +409,6 @@ function pmprodev_create_button() {
 }
 
 // check if the generate_info option is set
-if( !empty( $pmprodev_options['generate_info'] && $pmprodev_options['generate_info'] ) ) {
+if ( ! empty( $pmprodev_options['generate_info'] && $pmprodev_options['generate_info'] ) ) {
 	add_action( 'pmpro_checkout_after_pricing_fields', 'pmprodev_create_button' );
 }
