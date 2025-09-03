@@ -658,7 +658,8 @@ function pmprodev_delete_incomplete_orders( $message ) {
  * @return void
  */
 function pmprodev_output_message( $message, $type = 'success' ) {
-	if ( empty( $message ) ) {
+	// If there's no message or we're running in CLI
+	if ( empty( $message ) || defined( 'WP_CLI' ) ) {
 		return;
 	}
 	echo '<div class="notice notice-' . esc_attr( $type ) . '"><p>' . esc_html( $message ) . '</p></div>';

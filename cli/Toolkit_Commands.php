@@ -8,6 +8,14 @@ use WP_CLI_Command;
  * WP-CLI commands mapping to destructive/utility scripts in adminpages/scripts.php.
  */
 class Toolkit_Commands extends WP_CLI_Command {
+	public function __construct() {
+		if ( ! function_exists( '\\pmprodev_clean_member_tables' ) ) {
+			$script_file = dirname( __DIR__ ) . '/adminpages/scripts.php';
+			if ( file_exists( $script_file ) ) {
+				require_once $script_file;
+			}
+		}
+	}
 	/**
 	 * Wrapper to ask for confirmation unless dry run.
 	 *
@@ -43,10 +51,12 @@ class Toolkit_Commands extends WP_CLI_Command {
 	 */
 	public function clean_member_tables( $args, $assoc_args ) {
 		$dry = isset( $assoc_args['dry-run'] );
-		$this->dry_run_note( $dry, __( 'Would truncate member tables.', 'pmpro-toolkit' ) );
-		if ( $dry ) { return; }
+		if ( $dry ) {
+			$this->dry_run_note( $dry, __( 'Would truncate member tables.', 'pmpro-toolkit' ) );
+			return;
+		}
 		$this->confirm_or_continue( $dry, __( 'Are you sure you want to truncate all member tables?', 'pmpro-toolkit' ) );
-		pmprodev_clean_member_tables( __( 'Member tables have been truncated.', 'pmpro-toolkit' ) );
+		\pmprodev_clean_member_tables( __( 'Member tables have been truncated.', 'pmpro-toolkit' ) );
 		WP_CLI::success( __( 'Done.', 'pmpro-toolkit' ) );
 	}
 
@@ -58,10 +68,12 @@ class Toolkit_Commands extends WP_CLI_Command {
 	 */
 	public function clean_level_data( $args, $assoc_args ) {
 		$dry = isset( $assoc_args['dry-run'] );
-		$this->dry_run_note( $dry, __( 'Would truncate level/settings tables.', 'pmpro-toolkit' ) );
-		if ( $dry ) { return; }
+		if ( $dry ) {
+			$this->dry_run_note( $dry, __( 'Would truncate level/settings tables.', 'pmpro-toolkit' ) );
+			return;
+		}
 		$this->confirm_or_continue( $dry, __( 'Are you sure you want to reset all membership levels and related settings?', 'pmpro-toolkit' ) );
-		pmprodev_clean_level_data( __( 'Level and discount code tables have been truncated.', 'pmpro-toolkit' ) );
+		\pmprodev_clean_level_data( __( 'Level and discount code tables have been truncated.', 'pmpro-toolkit' ) );
 		WP_CLI::success( __( 'Done.', 'pmpro-toolkit' ) );
 	}
 
@@ -74,11 +86,11 @@ class Toolkit_Commands extends WP_CLI_Command {
 	public function scrub_member_data( $args, $assoc_args ) {
 		$dry = isset( $assoc_args['dry-run'] );
 		if ( $dry ) {
-			WP_CLI::log( __( '[Dry Run] Would anonymize user emails and transaction IDs.', 'pmpro-toolkit' ) );
+			$this->dry_run_note( true, __( 'Would anonymize user emails and transaction IDs.', 'pmpro-toolkit' ) );
 			return;
 		}
 		$this->confirm_or_continue( $dry, __( 'Are you sure you want to scrub (anonymize) all member emails and transaction IDs?', 'pmpro-toolkit' ) );
-		pmprodev_scrub_member_data( __( 'Scrubbing user data...', 'pmpro-toolkit' ) );
+		\pmprodev_scrub_member_data( __( 'Scrubbing user data...', 'pmpro-toolkit' ) );
 		WP_CLI::success( __( 'Done.', 'pmpro-toolkit' ) );
 	}
 
@@ -91,11 +103,11 @@ class Toolkit_Commands extends WP_CLI_Command {
 	public function delete_users( $args, $assoc_args ) {
 		$dry = isset( $assoc_args['dry-run'] );
 		if ( $dry ) {
-			WP_CLI::log( __( '[Dry Run] Would delete all non-admin users.', 'pmpro-toolkit' ) );
+			$this->dry_run_note( true, __( 'Would delete all non-admin users.', 'pmpro-toolkit' ) );
 			return;
 		}
 		$this->confirm_or_continue( $dry, __( 'Are you sure you want to DELETE all non-admin users?', 'pmpro-toolkit' ) );
-		pmprodev_delete_users( __( 'Deleting non-admins...', 'pmpro-toolkit' ) );
+		\pmprodev_delete_users( __( 'Deleting non-admins...', 'pmpro-toolkit' ) );
 		WP_CLI::success( __( 'Done.', 'pmpro-toolkit' ) );
 	}
 
@@ -107,10 +119,12 @@ class Toolkit_Commands extends WP_CLI_Command {
 	 */
 	public function clean_pmpro_options( $args, $assoc_args ) {
 		$dry = isset( $assoc_args['dry-run'] );
-		$this->dry_run_note( $dry, __( 'Would delete PMPro options.', 'pmpro-toolkit' ) );
-		if ( $dry ) { return; }
+		if ( $dry ) {
+			$this->dry_run_note( $dry, __( 'Would delete PMPro options.', 'pmpro-toolkit' ) );
+			return;
+		}
 		$this->confirm_or_continue( $dry, __( 'Are you sure you want to delete PMPro options?', 'pmpro-toolkit' ) );
-		pmprodev_clean_pmpro_options( __( 'Options deleted.', 'pmpro-toolkit' ) );
+		\pmprodev_clean_pmpro_options( __( 'Options deleted.', 'pmpro-toolkit' ) );
 		WP_CLI::success( __( 'Done.', 'pmpro-toolkit' ) );
 	}
 
@@ -122,10 +136,12 @@ class Toolkit_Commands extends WP_CLI_Command {
 	 */
 	public function clear_vvl_report( $args, $assoc_args ) {
 		$dry = isset( $assoc_args['dry-run'] );
-		$this->dry_run_note( $dry, __( 'Would truncate visits, views, logins tables.', 'pmpro-toolkit' ) );
-		if ( $dry ) { return; }
+		if ( $dry ) {
+			$this->dry_run_note( $dry, __( 'Would truncate visits, views, logins tables.', 'pmpro-toolkit' ) );
+			return;
+		}
 		$this->confirm_or_continue( $dry, __( 'Are you sure you want to clear Visits, Views, and Logins report data?', 'pmpro-toolkit' ) );
-		pmprodev_clear_vvl_report( __( 'Visits, Views, and Logins report cleared.', 'pmpro-toolkit' ) );
+		\pmprodev_clear_vvl_report( __( 'Visits, Views, and Logins report cleared.', 'pmpro-toolkit' ) );
 		WP_CLI::success( __( 'Done.', 'pmpro-toolkit' ) );
 	}
 
@@ -137,10 +153,12 @@ class Toolkit_Commands extends WP_CLI_Command {
 	 */
 	public function delete_test_orders( $args, $assoc_args ) {
 		$dry = isset( $assoc_args['dry-run'] );
-		$this->dry_run_note( $dry, __( 'Would delete sandbox orders/subscriptions.', 'pmpro-toolkit' ) );
-		if ( $dry ) { return; }
+		if ( $dry ) {
+			$this->dry_run_note( $dry, __( 'Would delete sandbox orders/subscriptions.', 'pmpro-toolkit' ) );
+			return;
+		}
 		$this->confirm_or_continue( $dry, __( 'Are you sure you want to delete ALL sandbox orders and subscriptions?', 'pmpro-toolkit' ) );
-		pmprodev_delete_test_orders( __( 'Test orders deleted.', 'pmpro-toolkit' ) );
+		\pmprodev_delete_test_orders( __( 'Test orders deleted.', 'pmpro-toolkit' ) );
 		WP_CLI::success( __( 'Done.', 'pmpro-toolkit' ) );
 	}
 
@@ -152,10 +170,12 @@ class Toolkit_Commands extends WP_CLI_Command {
 	 */
 	public function clear_cached_report_data( $args, $assoc_args ) {
 		$dry = isset( $assoc_args['dry-run'] );
-		$this->dry_run_note( $dry, __( 'Would clear report cache transients.', 'pmpro-toolkit' ) );
-		if ( $dry ) { return; }
+		if ( $dry ) {
+			$this->dry_run_note( $dry, __( 'Would clear report cache transients.', 'pmpro-toolkit' ) );
+			return; 
+		}
 		$this->confirm_or_continue( $dry, __( 'Clear cached report data now?', 'pmpro-toolkit' ) );
-		pmprodev_clear_cached_report_data( __( 'Cached report data cleared.', 'pmpro-toolkit' ) );
+		\pmprodev_clear_cached_report_data( __( 'Cached report data cleared.', 'pmpro-toolkit' ) );
 		WP_CLI::success( __( 'Done.', 'pmpro-toolkit' ) );
 	}
 
@@ -175,13 +195,13 @@ class Toolkit_Commands extends WP_CLI_Command {
 			WP_CLI::error( __( 'Please supply valid --from and --to level IDs.', 'pmpro-toolkit' ) );
 		}
 		if ( $dry ) {
-			WP_CLI::log( sprintf( __( '[Dry Run] Would move members from level %d to %d.', 'pmpro-toolkit' ), $from, $to ) );
+			$this->dry_run_note( true, sprintf( __( 'Would move members from level %1$d to %2$d.', 'pmpro-toolkit' ), $from, $to ) );
 			return;
 		}
-		$this->confirm_or_continue( $dry, sprintf( __( 'Move all members from level %d to %d?', 'pmpro-toolkit' ), $from, $to ) );
+		$this->confirm_or_continue( $dry, sprintf( __( 'Move all members from level %1$d to %2$d?', 'pmpro-toolkit' ), $from, $to ) );
 		$_REQUEST['move_level_a'] = $from;
 		$_REQUEST['move_level_b'] = $to;
-		pmprodev_move_level( __( 'Users updated. Running pmpro_after_change_membership_level filter for all users...', 'pmpro-toolkit' ) );
+		\pmprodev_move_level( __( 'Users updated. Running pmpro_after_change_membership_level filter for all users...', 'pmpro-toolkit' ) );
 		WP_CLI::success( __( 'Done.', 'pmpro-toolkit' ) );
 	}
 
@@ -203,14 +223,14 @@ class Toolkit_Commands extends WP_CLI_Command {
 			WP_CLI::error( __( 'Please supply --level and --start.', 'pmpro-toolkit' ) );
 		}
 		if ( $dry ) {
-			WP_CLI::log( sprintf( __( '[Dry Run] Would assign level %d to users without membership starting %s%s.', 'pmpro-toolkit' ), $level, $start, $end ? ' ending ' . $end : '' ) );
+			$this->dry_run_note( true, sprintf( __( 'Would assign level %1$d to users without membership starting %2$s%3$s.', 'pmpro-toolkit' ), $level, $start, $end ? ' ending ' . $end : '' ) );
 			return;
 		}
 		$this->confirm_or_continue( $dry, sprintf( __( 'Assign level %d to all users without an active membership?', 'pmpro-toolkit' ), $level ) );
 		$_REQUEST['give_level_id']        = $level;
 		$_REQUEST['give_level_startdate'] = $start;
 		$_REQUEST['give_level_enddate']   = $end;
-		pmprodev_give_level( __( '%s users were given level %s', 'pmpro-toolkit' ) );
+		\pmprodev_give_level( __( '%1$s users were given level %2$s', 'pmpro-toolkit' ) );
 		WP_CLI::success( __( 'Done.', 'pmpro-toolkit' ) );
 	}
 
@@ -228,12 +248,12 @@ class Toolkit_Commands extends WP_CLI_Command {
 			WP_CLI::error( __( 'Please supply --level.', 'pmpro-toolkit' ) );
 		}
 		if ( $dry ) {
-			WP_CLI::log( sprintf( __( '[Dry Run] Would cancel all users with level %d.', 'pmpro-toolkit' ), $level ) );
+			$this->dry_run_note( true, sprintf( __( 'Would cancel all users with level %d.', 'pmpro-toolkit' ), $level ) );
 			return;
 		}
 		$this->confirm_or_continue( $dry, sprintf( __( 'Cancel all active memberships for level %d (including recurring subscriptions)?', 'pmpro-toolkit' ), $level ) );
 		$_REQUEST['cancel_level_id'] = $level;
-		pmprodev_cancel_level( __( 'Cancelling users...', 'pmpro-toolkit' ) );
+		\pmprodev_cancel_level( __( 'Cancelling users...', 'pmpro-toolkit' ) );
 		WP_CLI::success( __( 'Done.', 'pmpro-toolkit' ) );
 	}
 
@@ -253,13 +273,13 @@ class Toolkit_Commands extends WP_CLI_Command {
 			WP_CLI::error( __( 'Please supply valid --from and --to level IDs.', 'pmpro-toolkit' ) );
 		}
 		if ( $dry ) {
-			WP_CLI::log( sprintf( __( '[Dry Run] Would copy restricted pages from level %d to %d.', 'pmpro-toolkit' ), $from, $to ) );
+			$this->dry_run_note( true, sprintf( __( 'Would copy restricted pages from level %1$d to %2$d.', 'pmpro-toolkit' ), $from, $to ) );
 			return;
 		}
-		$this->confirm_or_continue( $dry, sprintf( __( 'Copy restricted pages from level %d to %d?', 'pmpro-toolkit' ), $from, $to ) );
+		$this->confirm_or_continue( $dry, sprintf( __( 'Copy restricted pages from level %1$d to %2$d?', 'pmpro-toolkit' ), $from, $to ) );
 		$_REQUEST['copy_memberships_pages_from'] = $from;
 		$_REQUEST['copy_memberships_pages_to']   = $to;
-		pmprodev_copy_memberships_pages( __( 'Content restrictions copied.', 'pmpro-toolkit' ) );
+		\pmprodev_copy_memberships_pages( __( 'Content restrictions copied.', 'pmpro-toolkit' ) );
 		WP_CLI::success( __( 'Done.', 'pmpro-toolkit' ) );
 	}
 
@@ -277,12 +297,12 @@ class Toolkit_Commands extends WP_CLI_Command {
 			WP_CLI::error( __( 'Please supply --days (integer > 0).', 'pmpro-toolkit' ) );
 		}
 		if ( $dry ) {
-			WP_CLI::log( sprintf( __( '[Dry Run] Would delete incomplete orders older than %d days.', 'pmpro-toolkit' ), $days ) );
+			$this->dry_run_note( true, sprintf( __( 'Would delete incomplete orders older than %d days.', 'pmpro-toolkit' ), $days ) );
 			return;
 		}
 		$this->confirm_or_continue( $dry, sprintf( __( 'Delete incomplete (token/pending/review) orders older than %d days?', 'pmpro-toolkit' ), $days ) );
 		$_REQUEST['delete_incomplete_orders_days'] = $days;
-		pmprodev_delete_incomplete_orders( __( '%d orders deleted.', 'pmpro-toolkit' ) );
+		\pmprodev_delete_incomplete_orders( __( '%d orders deleted.', 'pmpro-toolkit' ) );
 		WP_CLI::success( __( 'Done.', 'pmpro-toolkit' ) );
 	}
 }
