@@ -34,6 +34,7 @@ $default_options = array(
 	'generate_info'             => false,
 	'performance_endpoints'     => 'no',
 	'ip_throttling'             => false,
+	'enable_cli_commands'       => false,
 );
 
 $pmprodev_options = get_option( 'pmprodev_options' );
@@ -83,8 +84,8 @@ if ( ! empty( $pmprodev_options['performance_endpoints'] ) && $pmprodev_options[
 /**
  * Register WP-CLI commands for Toolkit scripts.
  */
-if ( defined( 'WP_CLI' ) && WP_CLI ) {
-	// Load CLI command class.
+if ( defined( 'WP_CLI' ) && WP_CLI && ! empty( $pmprodev_options['enable_cli_commands'] ) ) {
+	// Load CLI command class only if enabled via Toolkit setting.
 	require_once plugin_dir_path( __FILE__ ) . 'cli/Toolkit_Commands.php';
 	\WP_CLI::add_command( 'pmpro-toolkit', 'TK\\Toolkit_Commands' );
 }
@@ -399,6 +400,14 @@ function pmprodev_enqueue_scripts() {
 }
 
 add_action( 'wp_enqueue_scripts', 'pmprodev_enqueue_scripts' );
+
+function pmprodev_enqueue_admin_scripts(){
+	// Add css for the admin
+	wp_register_style( 'pmprodev-admin', plugins_url( 'css/pmpro-toolkit-admin.css', __FILE__ ) );
+	wp_enqueue_style( 'pmprodev-admin' );
+}
+
+add_action( 'admin_enqueue_scripts', 'pmprodev_enqueue_admin_scripts' );
 
 /**
  * Add a button to the checkout page to fill in the user data form.

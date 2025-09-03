@@ -100,7 +100,9 @@ $other_actions = array(
 	)
 );
 
-?>
+// Suppress the admin page markup when running under WP-CLI so that requiring this
+// file for function access (e.g. in Toolkit_Commands) doesn't dump HTML in the terminal.
+if ( ! defined( 'WP_CLI' ) || ! WP_CLI ) : ?>
 <h2><?php esc_html_e( 'Database Scripts', 'pmpro-toolkit' ); ?></h2>
 <p><?php esc_html_e( 'Toolkit scripts allow you to clean up, delete, duplicate, or anonymize data in your membership site. We recommend only running one script at a time. Check a setting below and click save to run the script.', 'pmpro-toolkit' ); ?></p>
 <p><?php esc_html_e( 'Note: Running the scripts below will delete or modify data in your database. These changes cannot be reversed. Please take a site backup before running a script.', 'pmpro-toolkit' ); ?></p>
@@ -300,9 +302,9 @@ $other_actions = array(
 		});
 	});
 </script>
-<?php
+<?php endif; // End suppress admin markup for WP-CLI.
 
-
+// Collect all actions into a single array.
 $actions = array_merge( $clean_up_actions, $level_actions, $other_actions );
 foreach ( $actions as $action => $options ) {
 	if ( ! empty( $_POST[ $action ] ) ) {
@@ -650,7 +652,7 @@ function pmprodev_delete_incomplete_orders( $message ) {
 }
 
 /**
- * Output a message to the screen.
+ * Output a message to the admin screen.
  *
  * @param string $message The message to display.
  * @param string $type The type of message to display.

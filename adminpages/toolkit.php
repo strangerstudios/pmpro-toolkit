@@ -28,6 +28,11 @@
 			</a>
 		</li>
 		<li>
+			<a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-toolkit', 'section' => 'cli-commands' ), admin_url( 'admin.php' ) ) ); ?>"<?php if ( $section == 'cli-commands' ) { ?> class="current"<?php } ?>>
+				<?php esc_html_e( 'CLI Commands', 'pmpro-toolkit' ); ?>
+			</a>
+		</li>
+		<li>
 			<a href="<?php echo esc_url( add_query_arg( array( 'page' => 'pmpro-toolkit', 'section' => 'migration' ), admin_url( 'admin.php' ) ) ); ?>"<?php if ( $section == 'migration' ) { ?> class="current"<?php } ?>>
 				<?php esc_html_e( 'Migration Assistant', 'pmpro-toolkit' ); ?>
 			</a>
@@ -43,6 +48,8 @@
 		require_once 'scripts.php';
 	} elseif( 'migration' == $section ) {
 		require_once( 'migration.php' );
+	} elseif( 'cli-commands' == $section ) {
+		require_once( 'cli-commands.php' );
 	} else {
 		require_once( 'settings.php' );
 	}
