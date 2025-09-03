@@ -4,6 +4,10 @@ function pmprodev_generate_checkout_info() {
 		dataType: 'json',
 		success: function( data ) {
 		const results = data['results'][0];
+
+		// Fill required fields.
+		jQuery('.pmpro_form_input-checkbox.pmpro_form_input-required').prop('checked', true);
+		jQuery('.pmpro_form_input-text.pmpro_form_input-required').val('Sample Text');
 		
 		// Generate email address
 		const username = results.name.first + '.' + results.name.last;
@@ -40,6 +44,11 @@ jQuery(document).ready(function ( $ ) {
 		pmprodev_generate_checkout_info();
 	});
 
+	$('#pmprodev-generate-submit').click(function () {
+		pmprodev_generate_checkout_info();
+		$('.pmpro_btn-submit-checkout').click();
+	});
+
 	/**
 
 	 * Enable the generate button if the email address is valid.
@@ -49,9 +58,11 @@ jQuery(document).ready(function ( $ ) {
 		if ( email.includes('@')) {
 			//Enable the generate button
 			$('#pmprodev-generate').prop('disabled', false);
+			$('#pmprodev-generate-submit').prop('disabled', false);
 		} else {
 			//Disable the generate button
 			$('#pmprodev-generate').prop('disabled', true);
+			$('#pmprodev-generate-submit').prop('disabled', true);
 		}
 	});
 });
