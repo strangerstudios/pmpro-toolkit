@@ -253,7 +253,7 @@
 						</th>
 						<td>
 							<select name="pmprodev_options[performance_endpoints]" id="pmprodev_options[performance_endpoints]">
-								<option value="no" <?php selected( $pmprodev_options['performance_endpoints'], 'no' ); ?>><?php esc_html_e( 'No', 'pmpro-toolkit' ); ?></option>
+								<option value="no" <?php selected( $pmprodev_options['performance_endpoints'], 'no' ); ?>><?php esc_html_e( 'Disabled', 'pmpro-toolkit' ); ?></option>
 								<option value="read_only" <?php selected( $pmprodev_options['performance_endpoints'], 'read_only' ); ?>><?php esc_html_e( 'Read Only', 'pmpro-toolkit' ); ?></option>
 								<option value="read_write" <?php selected( $pmprodev_options['performance_endpoints'], 'read_write' ); ?>><?php esc_html_e( 'Read and Write', 'pmpro-toolkit' ); ?></option>
 							</select>
@@ -307,12 +307,12 @@
 jQuery(document).ready(function($) {
 	// Show additional warning when "Read and Write" is selected
 	function togglePerformanceWarning() {
-		var selectedValue = $('#pmprodev_options\\[performance_endpoints\\]').val();
+		var selectedValue = $('#pmprodev_options[performance_endpoints]').val();
 		var warningDiv = $('#performance-endpoint-warning');
 		
 		if (selectedValue === 'read_write') {
 			if (warningDiv.length === 0) {
-				$('#pmprodev_options\\[performance_endpoints\\]').next('p.description').append(
+				$('#pmprodev_options[performance_endpoints]').next('p.description').append(
 					'<div id="performance-endpoint-warning"><br>' +
 					'<strong style="color: #c3524f;"><?php esc_html_e( 'CAUTION:', 'pmpro-toolkit' ); ?></strong> ' +
 					'<?php esc_html_e( '"Read and Write" mode will create and delete test data on your site. Only use this on development/testing sites.', 'pmpro-toolkit' ); ?>' +
@@ -328,7 +328,7 @@ jQuery(document).ready(function($) {
 	togglePerformanceWarning();
 	
 	// Check when selection changes
-	$('#pmprodev_options\\[performance_endpoints\\]').change(function() {
+	$('#pmprodev_options[performance_endpoints]').change(function() {
 		togglePerformanceWarning();
 	});
 });
