@@ -79,6 +79,13 @@ foreach ( glob( $api_dir . '*.php' ) as $api_file ) {
 new TK\API_Loader();
 
 /**
+ * Register WP-CLI commands for Toolkit scripts.
+ */
+if ( defined( 'WP_CLI' ) && WP_CLI ) {
+\WP_CLI::add_command( 'pmpro-toolkit', 'TK\\Toolkit_Commands' );
+}
+
+/**
  * Remove the cron jobs for expiration warnings and expiring credit cards if the options are set.
  *
  * @return void

@@ -23,27 +23,32 @@ $pmprodev_other_tables = array(
 $clean_up_actions = array(
 	'pmprodev_clean_member_tables'	=> array(
 		'label' => __( 'Delete Member Data', 'pmpro-toolkit' ),
-		'description' => __( 'Delete all member data. This script deletes data from the wp_pmpro_memberships_users, wp_pmpro_membership_orders, wp_pmpro_discount_codes_uses, wp_pmpro_subscriptions and wp_pmpro_subscriptionmeta tables', 'pmpro-toolkit' ),
+		'description' => __( 'Delete all member data.', 'pmpro-toolkit' ),
+		'subtext' => __( 'This script deletes data from the wp_pmpro_memberships_users, wp_pmpro_membership_orders, wp_pmpro_discount_codes_uses, wp_pmpro_subscriptions and wp_pmpro_subscriptionmeta tables.', 'pmpro-toolkit' ),
 		'message' => __( 'Member tables have been truncated.', 'pmpro-toolkit' ),
 	),
 	'pmprodev_clean_level_data'	=> array(
 		'label' => __( 'Reset Membership Settings', 'pmpro-toolkit' ),
-		'description' => __( 'Delete all membership level, content protection, and discount code settings. This script deletes data from the wp_pmpro_discount_codes, wp_pmpro_discount_codes_levels, wp_pmpro_membership_levels, wp_pmpro_memberships_categories, and wp_pmpro_memberships_pages tables.', 'pmpro-toolkit' ),
+		'description' => __( 'Delete all membership level, content protection, and discount code settings.', 'pmpro-toolkit' ),
+		'subtext' => __( 'This script deletes data from the wp_pmpro_discount_codes, wp_pmpro_discount_codes_levels, wp_pmpro_membership_levels, wp_pmpro_memberships_categories, and wp_pmpro_memberships_pages tables.', 'pmpro-toolkit' ),
 		'message' => __( 'Level and discount code tables have been truncated.', 'pmpro-toolkit' )
 	),
 	'pmprodev_scrub_member_data'	=> array(
 		'label' => __( 'Scrub Member Data', 'pmpro-toolkit' ),
-		'description' => __( 'Scrub all member emails and transaction IDs. This script updates all non-admins in the wp_users and wp_pmpro_membership_orders tables to anonymize their email addresses and order transaction IDs. This may time out on slow servers or sites with large numbers of users.', 'pmpro-toolkit' ),
+		'description' => __( 'Scrub all member emails and transaction IDs.', 'pmpro-toolkit' ),
+		'subtext' => __( 'This script updates all non-admins in the wp_users and wp_pmpro_membership_orders tables to anonymize their email addresses and order transaction IDs. This may time out on slow servers or sites with large numbers of users.', 'pmpro-toolkit' ),
 		'message' => __( 'Scrubbing user data...', 'pmpro-toolkit' )
 	),
 	'pmprodev_delete_users'	=> array(
 		'label' => __( 'Delete Users', 'pmpro-toolkit' ),
-		'description' => __( 'Delete non-admin users. This script deletes from wp_users and wp_usermeta tables directly. This may time out on slow servers or sites with large numbers of users.', 'pmpro-toolkit' ),
+		'description' => __( 'Delete non-admin users.', 'pmpro-toolkit' ),
+		'subtext' => __( 'This script deletes from wp_users and wp_usermeta tables directly. This may time out on slow servers or sites with large numbers of users.', 'pmpro-toolkit' ),
 		'message' => __( 'Deleting non-admins...', 'pmpro-toolkit' )
 	),
 	'pmprodev_clean_pmpro_options'	=> array(
 		'label' => __( 'Reset Options', 'pmpro-toolkit' ),
-		'description' => __( 'Delete all PMPro options. This script deletes any option prefixed with pmpro_ in the wp_options table, excluding the pmpro_db_version and assigned PMPro pages.)', 'pmpro-toolkit' ),
+		'description' => __( 'Delete all PMPro options.', 'pmpro-toolkit' ),
+		'subtext' => __( 'This script deletes any option prefixed with pmpro_ in the wp_options table, excluding the pmpro_db_version and assigned PMPro pages.', 'pmpro-toolkit' ),
 		'message' => __( 'Options deleted.', 'pmpro-toolkit' )
 	),
 	'pmprodev_clear_vvl_report'	=> array(
@@ -53,7 +58,8 @@ $clean_up_actions = array(
 	),
 	'pmprodev_delete_test_orders' => array(
 		'label' => __( 'Delete Test Orders', 'pmpro-toolkit' ),
-		'description' => __( 'Delete all orders made through the testing or sandbox gateway environment. This includes any test subscriptions.', 'pmpro-toolkit' ),
+		'description' => __( 'Delete all orders made through the testing or sandbox gateway environment.', 'pmpro-toolkit' ),
+		'subtext' => __( 'This includes any test subscriptions.', 'pmpro-toolkit' ),
 		'message' => __( 'Test orders deleted.', 'pmpro-toolkit' )
 	),
 	'pmprodev_clear_cached_report_data' => array(
@@ -116,6 +122,9 @@ $other_actions = array(
 						<td>
 							<input type="checkbox" id="<?php echo esc_attr( $action ); ?>" name="<?php echo esc_attr( $action ); ?>" value="1">
 							<label for="<?php echo esc_attr( $action ); ?>"><?php echo wp_kses_post( $details['description'] ); ?></label>
+							<?php if ( ! empty( $details['subtext'] ) ) : ?>
+								<p class="description"><?php echo wp_kses_post( $details['subtext'] ); ?></p>
+							<?php endif; ?>
 						</td>
 					</tr>
 				<?php endforeach; ?>
