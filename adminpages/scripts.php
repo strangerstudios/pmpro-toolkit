@@ -358,24 +358,78 @@ function pmprodev_clean_level_data( $message ) {
  */
 function pmprodev_scrub_member_data( $message ) {
 	global $wpdb;
+
 	pmprodev_output_message( $message );
-	$user_ids = $wpdb->get_col( "SELECT ID FROM {$wpdb->users} WHERE user_email NOT LIKE '%+scrub%'" );
-	$count = 0;
-	$admin_email = get_option( 'admin_email' );
-	foreach ( $user_ids as $user_id ) {
-		$count++;
-		if ( ! user_can( $user_id, 'manage_options' ) ) {
-			$new_email = str_replace( '@', '+scrub' . $count . '@', $admin_email );
-			$wpdb->query( "UPDATE {$wpdb->users} SET user_email = '" . esc_sql( $new_email ) . "' WHERE ID = " . intval( $user_id ) . " LIMIT 1" );
+
+	$batch_size   = 250;
+	$admin_email  = get_option( 'admin_email' );
+	$counter      = 0; // Global sequential counter to keep deterministic unique values.
+	$offset       = 0;
+
+	// Pre-calc prefix capability meta key for more efficient role detection if needed later.
+	$caps_meta_key = $wpdb->prefix . 'capabilities';
+
+	while ( true ) {
+		// Get next batch of user IDs that have not yet been scrubbed.
+		$user_ids = $wpdb->get_col( $wpdb->prepare(
+			"SELECT ID FROM {$wpdb->users} WHERE user_email NOT LIKE '%%+scrub%%' ORDER BY ID ASC LIMIT %d OFFSET %d",
+			$batch_size,
+			$offset
+		) );
+
+		if ( empty( $user_ids ) ) {
+			break; // No more users to process.
 		}
-		$new_transaction_id = 'SCRUBBED-' . $count;
-		$wpdb->query( "UPDATE {$wpdb->pmpro_membership_orders} SET payment_transaction_id = '" . esc_sql( $new_transaction_id ) . "' WHERE user_id = '" . intval( $user_id ) . "' AND payment_transaction_id <> ''" );
-		$wpdb->query( "UPDATE {$wpdb->pmpro_membership_orders} SET subscription_transaction_id = '" . esc_sql( $new_transaction_id ) . "' WHERE user_id = '" . intval( $user_id ) . "' AND subscription_transaction_id <> ''" );
-		$wpdb->query( "UPDATE {$wpdb->pmpro_subscriptions} SET subscription_transaction_id = '" . esc_sql( $new_transaction_id ) . "' WHERE user_id = '" . intval( $user_id ) . "' AND subscription_transaction_id <> ''" );
-		update_user_meta( $user_id, 'pmpro_braintree_customerid', $new_transaction_id );
-		update_user_meta( $user_id, 'pmpro_stripe_customerid', $new_transaction_id );
+
+		$email_cases = array();
+		$email_ids   = array();
+		$tx_cases    = array(); // Will map user_id => transaction ID for CASE statements.
+
+		foreach ( $user_ids as $user_id ) {
+			$counter++;
+			$new_transaction_id     = 'SCRUBBED-' . $counter;
+			$tx_cases[ $user_id ]    = esc_sql( $new_transaction_id );
+
+			// Only anonymize email for non-admins (same logic as original code).
+			if ( ! user_can( $user_id, 'manage_options' ) ) {
+				$new_email      = str_replace( '@', '+scrub' . $counter . '@', $admin_email );
+				$email_cases[]  = 'WHEN ' . (int) $user_id . " THEN '" . esc_sql( $new_email ) . "'";
+				$email_ids[]    = (int) $user_id;
+			}
+
+			// Keep meta updates (ensures a row is created if missing) – still one of the cheaper operations.
+			update_user_meta( $user_id, 'pmpro_braintree_customerid', $new_transaction_id );
+			update_user_meta( $user_id, 'pmpro_stripe_customerid', $new_transaction_id );
+		}
+
+		// Batch update user emails where applicable.
+		if ( ! empty( $email_ids ) ) {
+			$wpdb->query( "UPDATE {$wpdb->users} SET user_email = CASE ID " . implode( ' ', $email_cases ) . ' END WHERE ID IN (' . implode( ',', $email_ids ) . ')' ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		}
+
+		// Build CASE fragment for transaction IDs.
+		if ( ! empty( $tx_cases ) ) {
+			$when_fragments = array();
+			foreach ( $tx_cases as $uid => $txid ) {
+				$when_fragments[] = 'WHEN ' . (int) $uid . " THEN '" . $txid . "'"; // Already esc_sql above.
+			}
+			$case_sql = 'CASE user_id ' . implode( ' ', $when_fragments ) . ' END';
+			$user_id_list = implode( ',', array_map( 'intval', array_keys( $tx_cases ) ) );
+
+			// Update orders payment_transaction_id only where not empty.
+			$wpdb->query( "UPDATE {$wpdb->pmpro_membership_orders} SET payment_transaction_id = IF(payment_transaction_id <> '', $case_sql, payment_transaction_id) WHERE user_id IN ($user_id_list)" ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			// Update orders subscription_transaction_id only where not empty.
+			$wpdb->query( "UPDATE {$wpdb->pmpro_membership_orders} SET subscription_transaction_id = IF(subscription_transaction_id <> '', $case_sql, subscription_transaction_id) WHERE user_id IN ($user_id_list)" ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			// Update subscriptions table subscription_transaction_id only where not empty.
+			$wpdb->query( "UPDATE {$wpdb->pmpro_subscriptions} SET subscription_transaction_id = IF(subscription_transaction_id <> '', $case_sql, subscription_transaction_id) WHERE user_id IN ($user_id_list)" ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		}
+
+		// Progress indicator per batch (instead of per user to reduce output overhead).
 		echo '. ';
+
+		$offset += $batch_size;
 	}
+
 	pmprodev_process_complete();
 }
 
