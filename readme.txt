@@ -3,7 +3,7 @@ Contributors: strangerstudios, jessica o
 Tags: paid memberships pro, pmpro, debug, developer, toolkit
 Requires at least: 5.0
 Tested up to: 6.8.2
-Stable tag: 1.0.1
+Stable tag: 1.1
 
 Adds various tools and settings to aid in the development of Paid Memberships Pro enabled websites.
 
@@ -29,9 +29,9 @@ Features:
 Please post it in the issues section of GitHub and we'll fix it as soon as we can. Thanks for helping. https://github.com/strangerstudios/pmpro-toolkit/issues
 
 == Changelog ==
-= 1.0.1 - 2025-TBD-TBD =
+= 1.1 - 2025-TBD-TBD =
 * ENHANCEMENT: Remove test subscriptions when clearing out test orders. #53 (@andrewlimaza)
-* ENHANCEMENT: Adds support for Action Scheduler handling #52 (@dalemugford)
+* ENHANCEMENT: Adds conditional support for Action Scheduler handling #52 (@dalemugford)
 * BUG FIX: Remove double header message after saving in some cases. #48 (@MaximilianoRicoTabo)
 * BUG FIX: Tweak wording for delete member script to include subscription tables. #46 (@MaximilianoRicoTabo)
 
