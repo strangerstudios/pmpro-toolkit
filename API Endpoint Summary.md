@@ -2,8 +2,8 @@
 
 **Notes:**
 - Endpoints support **Basic Auth** or **WP App Passwords** for authenticated endpoints.
-- Unauthenticated endpoints are currently **IP limit throttled** (a setting/filter will be added later).
-- Endpoints work with or without `SAVEQUERIES`, and the returned JSON lets you know if it's on:
+- Unauthenticated endpoints are currently **IP limit throttled** at 100 requests per minute per IP.
+- Endpoints work with or without `SAVEQUERIES`, and the returned JSON lets you know if it's enabled:
 
 ````json
 {
@@ -15,9 +15,10 @@
 }
 ````
 
-- All endpoints share a **PHP Trait**, which includes:
+- All endpoints use the **Performance_Tracking_Trait**, which includes:
   - `start_performance_tracking()`
   - `end_performance_tracking()`
+  - Consistent metrics collection (execution time, memory usage, query count, query time)
 
 This makes it easy to measure performance consistently across endpoints.
 
@@ -29,6 +30,9 @@ This makes it easy to measure performance consistently across endpoints.
 
 **Method:** `POST`  
 **Description:** Simulates generation of PMPro admin reports (e.g., Sales, Memberships, Login) and collects basic output metrics by requesting the backend CSV export page. Supports various filtering parameters.
+
+**Authentication:** Not required  
+**Rate Limited:** Yes (100 requests/minute per IP)
 
 **Request Body Example:**
 ````json
@@ -65,6 +69,9 @@ This makes it easy to measure performance consistently across endpoints.
 **Method:** `POST`  
 **Description:** Automates testing of the WordPress login/authentication process, using `wp_signon`. Logs out user immediately after test.
 
+**Authentication:** Not required  
+**Rate Limited:** Yes (100 requests/minute per IP)
+
 **Request Body Example:**
 ````json
 {
@@ -83,6 +90,9 @@ This makes it easy to measure performance consistently across endpoints.
 
 **Method:** `POST`  
 **Description:** Tests membership checkout performance by simulating a user registering and checking out. Can generate or use provided user data.
+
+**Authentication:** Not required  
+**Rate Limited:** Yes (100 requests/minute per IP)
 
 **Request Body Example:**
 ````json
@@ -118,6 +128,9 @@ This makes it easy to measure performance consistently across endpoints.
 **Method:** `POST`  
 **Description:** Simulates cancelling a membership level and profiles performance. Requires authentication.
 
+**Authentication:** Required (must be logged in)  
+**Rate Limited:** No (authenticated users exempt)
+
 **Request Body Example:**
 ````json
 {
@@ -136,6 +149,9 @@ This makes it easy to measure performance consistently across endpoints.
 
 **Method:** `POST`  
 **Description:** Simulates changing a membership level for an existing user. Profiles performance.
+
+**Authentication:** Not required (looks up user by login/email)  
+**Rate Limited:** Yes (100 requests/minute per IP)
 
 **Request Body Example:**
 ````json
@@ -163,6 +179,9 @@ This makes it easy to measure performance consistently across endpoints.
 - `GET`: Read-only mode. Returns site information, database query performance, and memory usage.
 - `POST`: Read/write mode (if enabled). Performs actions like creating/deleting test posts/options. **Use only on test sites.**
 
+**Authentication:** Not required  
+**Rate Limited:** Yes (100 requests/minute per IP)
+
 **Request Parameters:**
 - `detailed` (boolean, optional): If true, includes detailed PMPro metrics (default: false)
 
@@ -173,11 +192,16 @@ This makes it easy to measure performance consistently across endpoints.
 **Method:** `POST`  
 **Description:** Simulates viewing the Membership Account page for the authenticated user. Requires authentication.
 
+**Authentication:** Required (must be logged in)  
+**Rate Limited:** No (authenticated users exempt)
+
 **Request Body Example:**  
-*(None; operates on the current user context)*
+````json
+{}
+````
 
 **Request Parameters:**  
-*(None explicitly)*
+- No specific parameters required (operates on current user context)
 
 ---
 
@@ -186,6 +210,9 @@ This makes it easy to measure performance consistently across endpoints.
 
 **Method:** `POST`  
 **Description:** Simulates a frontend search operation and profiles performance.
+
+**Authentication:** Not required  
+**Rate Limited:** Yes (100 requests/minute per IP)
 
 **Request Body Example:**
 ````json
@@ -206,6 +233,9 @@ This makes it easy to measure performance consistently across endpoints.
 **Method:** `POST`  
 **Description:** Generates a simulated Paid Memberships Pro member export (CSV). Runs the full PMPro member export script with test parameters (e.g., search string, membership level) and captures performance metrics. No file download is triggered by default.
 
+**Authentication:** Not required  
+**Rate Limited:** Yes (100 requests/minute per IP)
+
 **Request Body Example:**
 ````json
 {
@@ -221,3 +251,31 @@ This makes it easy to measure performance consistently across endpoints.
 - `l` (int|string, optional): Membership level ID, 'oldmembers', or 'all'
 - `pn` (int, optional): Page number for paginated export
 - `limit` (int, optional): Number of records per page
+
+## Common Response Format
+
+All endpoints return a consistent response structure:
+
+````json
+{
+  "success": true,
+  "mode": "read_only",
+  "detailed": false,
+  "savequeries_enabled": true,
+  "data": {
+    "performance": {
+      "execution_time_sec": 0.0158,
+      "memory_used_kb": 128.5,
+      "peak_memory_kb": 2048.3,
+      "query_count": 3,
+      "query_time_sec": 0.0018
+    }
+  }
+}
+````
+
+## Rate Limiting
+
+- **Unauthenticated requests**: 100 requests per minute per IP address
+- **Authenticated requests**: No rate limiting applied
+- Rate limits are implemented using WordPress transients with IP-based keys
