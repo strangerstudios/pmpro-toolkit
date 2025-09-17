@@ -28,9 +28,24 @@ function pmprodev_generate_checkout_info() {
 		jQuery('#bcity').val( results.location.city );
 		jQuery('#bstate').val( results.location.state );
 		jQuery('#bzipcode').val( results.location.postcode );
+		jQuery('#bcountry').val( 'US' );
 		jQuery('#bphone').val( results.phone );
+		jQuery('#pmpro_sfirstname').val( results.name.first );
+		jQuery('#pmpro_slastname').val( results.name.last );
+		jQuery('#pmpro_saddress1').val( results.location.street.number  + ' ' +  results.location.street.name );
+		jQuery('#pmpro_scity').val( results.location.city );
+		jQuery('#pmpro_sstate').val( results.location.state );
+		jQuery('#pmpro_szipcode').val( results.location.postcode );
+		jQuery('#pmpro_scountry').val( 'US' );
+		jQuery('#pmpro_sphone').val( results.phone );
+		jQuery('#pmpromd_street_name').val( results.location.street.number  + ' ' +  results.location.street.name );
+		jQuery('#pmpromd_city').val( results.location.city );
+		jQuery('#pmpromd_state').val( results.location.state );
+		jQuery('#pmpromd_zip').val( results.location.postcode );
+		jQuery('#pmpromd_country').val( 'US' );
 		jQuery('#AccountNumber').val( "4242424242424242" );
-		jQuery('#ExpirationYear').val( "2028" );
+		const nextYear = new Date().getFullYear() + 1;
+		jQuery('#ExpirationYear').val( nextYear );
 		jQuery('#CVV').val( "123" );
 		}
 	});
