@@ -9,6 +9,10 @@ use WP_CLI_Command;
  */
 class Toolkit_Commands extends WP_CLI_Command {
 	public function __construct() {
+		// Load scripts file if not already loaded.
+		// This file defines functions we will call in the commands below.
+		// We check for one function to see if it's loaded.
+		// We do this in the constructor so it's only loaded once.
 		if ( ! function_exists( '\\pmprodev_clean_member_tables' ) ) {
 			$script_file = dirname( __DIR__ ) . '/adminpages/scripts.php';
 			if ( file_exists( $script_file ) ) {
