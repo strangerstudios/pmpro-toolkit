@@ -494,13 +494,12 @@ function pmprodev_clean_pmpro_options( $message ) {
  *
  * @param string $message The message to display after the process is complete.
  * @since 1.0
- * @return void
+ * @return string The message to display after the process is complete.
  */
 function pmprodev_clear_vvl_report( $message ) {
 	global $wpdb;
-	$wpdb->query( "TRUNCATE {$wpdb->pmpro_visits}" );
-	$wpdb->query( "TRUNCATE {$wpdb->pmpro_views}" );
-	$wpdb->query( "TRUNCATE {$wpdb->pmpro_logins}" );
+	$wpdb->query("DELETE FROM $wpdb->usermeta WHERE meta_key = 'pmpro_visits' OR meta_key = 'pmpro_views' OR meta_key = 'pmpro_logins'");
+	$wpdb->query("DELETE FROM $wpdb->options WHERE option_name = 'pmpro_visits' OR option_name = 'pmpro_views' OR option_name = 'pmpro_logins'");
 	pmprodev_output_message( $message );
 }
 
