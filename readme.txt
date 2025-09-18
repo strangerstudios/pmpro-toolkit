@@ -2,7 +2,7 @@
 Contributors: strangerstudios, jessica o
 Tags: paid memberships pro, pmpro, debug, developer, toolkit
 Requires at least: 5.0
-Tested up to: 6.8.2
+Tested up to: 6.8
 Stable tag: 1.1
 
 Adds various tools and settings to aid in the development of Paid Memberships Pro enabled websites.

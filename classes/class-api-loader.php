@@ -112,7 +112,7 @@ class API_Loader {
 		if ( ! is_user_logged_in() ) {
 			return new \WP_Error(
 				'rest_forbidden',
-				__( 'Authentication required.', 'your-text-domain' ),
+				__( 'Authentication required.', 'pmpro-toolkit' ),
 				array( 'status' => 401 )
 			);
 		}

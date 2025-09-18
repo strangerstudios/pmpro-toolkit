@@ -279,7 +279,7 @@
 										<strong><?php esc_html_e( 'NOTE:', 'pmpro-toolkit' ); ?></strong>
 										<?php printf(
 										// translators: 1: define() code snippet, 2: wp-config.php filename
-										__( 'To enable full testing capability, make sure to add %1$s to your %2$s file.', 'pmpro-toolkit' ),
+										esc_html__( 'To enable full testing capability, make sure to add %1$s to your %2$s file.', 'pmpro-toolkit' ),
 										'<code>define( \'SAVEQUERIES\', true );</code>',
 										'<code>wp-config.php</code>'
 										); ?>

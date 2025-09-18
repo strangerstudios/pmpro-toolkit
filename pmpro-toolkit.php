@@ -386,8 +386,8 @@ add_action( 'init', 'pmpro_toolkit_load_textdomain', 1 );
 function pmprodev_plugin_row_meta( $links, $file ) {
 	if ( strpos( $file, 'pmpro-toolkit.php' ) !== false ) {
 		$new_links = array(
-			'<a href="' . esc_url( 'https://www.paidmembershipspro.com/add-ons/pmpro-toolkit/' ) . '" title="' . esc_attr( __( 'View Documentation', 'pmpro' ) ) . '">' . __( 'Docs', 'pmpro' ) . '</a>',
-			'<a href="' . esc_url( 'https://www.paidmembershipspro.com/support/' ) . '" title="' . esc_attr( __( 'Visit Customer Support Forum', 'pmpro' ) ) . '">' . __( 'Support', 'pmpro' ) . '</a>',
+			'<a href="' . esc_url( 'https://www.paidmembershipspro.com/add-ons/pmpro-toolkit/' ) . '" title="' . esc_attr__( 'View Documentation', 'pmpro-toolkit' ) . '">' . esc_html__( 'Docs', 'pmpro-toolkit' ) . '</a>',
+			'<a href="' . esc_url( 'https://www.paidmembershipspro.com/support/' ) . '" title="' . esc_attr__( 'Visit Customer Support Forum', 'pmpro-toolkit' ) . '">' . esc_html__( 'Support', 'pmpro-toolkit' ) . '</a>',
 		);
 		$links     = array_merge( $links, $new_links );
 	}
