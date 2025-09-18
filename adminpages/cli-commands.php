@@ -1,16 +1,15 @@
 <?php
 	// Only admins can access this page.
-	if( !function_exists( "current_user_can" ) || ( !current_user_can( "manage_options" ) ) ) {
+	if ( ! function_exists( "current_user_can" ) || ( !current_user_can( "manage_options" ) ) ) {
 		die( esc_html__( "You do not have permissions to perform this action.", 'pmpro-toolkit' ) );
 	}
 
 	global $msg, $msgt, $pmprodev_options;
-	$pmpro_db_version = get_option( 'pmpro_db_version' );
 
 
 	// Bail if nonce field isn't set.
-	if ( !empty( $_REQUEST['savesettings'] ) && ( empty( $_REQUEST[ 'pmpro_toolkit_nonce' ] ) 
-		|| !check_admin_referer( 'savesettings', 'pmpro_toolkit_nonce' ) ) ) {
+	if ( ! empty( $_REQUEST['savesettings'] ) && ( empty( $_REQUEST[ 'pmpro_toolkit_nonce' ] ) 
+		|| ! check_admin_referer( 'savesettings', 'pmpro_toolkit_nonce' ) ) ) {
 		$msg = -1;
 		$msgt = __( "Are you sure you want to do that? Try again.", 'pmpro-toolkit' );
 		unset( $_REQUEST[ 'savesettings' ] );
@@ -44,7 +43,7 @@ if ( ! empty( $_REQUEST['savesettings'] ) ) {
 						<th scope="row" valign="top"><label for="pmprodev_options[enable_cli_commands]" class="description"><?php esc_html_e( 'Enable Toolkit CLI Commands', 'pmpro-toolkit' ); ?></label></th>
 						<td>
 							<input type="checkbox" id="pmprodev_options[enable_cli_commands]" name="pmprodev_options[enable_cli_commands]" value="1" <?php checked( ! empty( $pmprodev_options['enable_cli_commands'] ), 1 ); ?> />
-							<label for="pmprodev_options[enable_cli_commands]" class="description"><?php esc_html_e( 'Enable Scripts as Toolkit commands in WP-CLI. We recommend enabling on development or staging sites only.', 'pmpro-toolkit' ); ?></label>
+							<label for="pmprodev_options[enable_cli_commands]" class="description"><?php esc_html_e( 'Enable Database Scripts as commands in WP-CLI. We recommend enabling on development or staging sites only.', 'pmpro-toolkit' ); ?></label>
 						</td>
 					</tr>
 				</tbody>
