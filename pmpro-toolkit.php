@@ -294,7 +294,7 @@ add_action( 'shutdown', 'pmprodev_checkout_debug_email' );
  * @since 1.0
  */
 function pmprodev_admin_menu() {
-	$pmprodev_menu_text = __( 'Toolkit', 'pmpro-toolkit' );
+	$pmprodev_menu_text = esc_html__( 'Toolkit', 'pmpro-toolkit' );
 	add_submenu_page(
 		'pmpro-dashboard',
 		$pmprodev_menu_text,
@@ -320,7 +320,7 @@ function pmprodev_admin_menu_bar( $wp_admin_bar ) {
 	$wp_admin_bar->add_menu(
 		array(
 			'id'     => 'pmprodev',
-			'title'  => 'PMPro Toolkit',
+			'title'  => esc_html__( 'Toolkit', 'pmpro-toolkit' ),
 			'href'   => admin_url( 'admin.php?page=pmpro-toolkit' ),
 			'parent' => 'paid-memberships-pro',
 			'meta'   => array( 'class' => 'pmpro-dev' ),
