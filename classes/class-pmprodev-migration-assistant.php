@@ -65,13 +65,13 @@ class PMProDev_Migration_Assistant {
 		foreach ( $file_data as $import_type => $import_data ) {
 			// Check if we can process this type of import.
 			if ( ! method_exists( __CLASS__, 'import_data_' . $import_type ) ) {
-				$error = empty( $error ) ? __( 'Invalid import type: ', 'pmpro_toolkit' ) . $import_type : $error;
+				$error = empty( $error ) ? __( 'Invalid import type: ', pmpro-toolkit ) . $import_type : $error;
 				continue;
 			}
 
 			// Check that the data being imported is valid.
 			if ( ! is_array( $import_data ) ) {
-				$error = empty( $error ) ? __( 'Invalid import data for import type: ', 'pmpro_toolkit' ) . $import_type : $error;
+				$error = empty( $error ) ? __( 'Invalid import data for import type: ', pmpro-toolkit ) . $import_type : $error;
 				continue;
 			}
 

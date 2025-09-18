@@ -1,6 +1,6 @@
 <?php
 
-namespace TK;
+namespace PMPro_Toolkit;
 
 use WP_REST_Request;
 use WP_REST_Server;

@@ -1,9 +1,9 @@
 <?php
 
 // Toolkit
-namespace TK;
+namespace PMPro_Toolkit;
 
-use TK\API_Endpoint;
+use PMPro_Toolkit\API_Endpoint;
 use WP_REST_Request;
 use WP_REST_Response;
 

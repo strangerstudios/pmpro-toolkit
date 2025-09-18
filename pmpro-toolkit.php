@@ -82,7 +82,7 @@ if ( ! empty( $pmprodev_options['performance_endpoints'] ) && $pmprodev_options[
 	}
 
 	// Initialize the namespaced API Loader.
-	new TK\API_Loader();
+	new PMPro_Toolkit\API_Loader();
 }
 
 /**
@@ -94,7 +94,7 @@ if ( ! empty( $pmprodev_options['performance_endpoints'] ) && $pmprodev_options[
 if ( defined( 'WP_CLI' ) && WP_CLI && ! empty( $pmprodev_options['enable_cli_commands'] ) ) {
 	// Load CLI command class only if enabled via Toolkit setting.
 	require_once plugin_dir_path( __FILE__ ) . 'cli/Toolkit_Commands.php';
-	\WP_CLI::add_command( 'pmpro-toolkit', 'TK\\Toolkit_Commands' );
+	\WP_CLI::add_command( 'pmpro-toolkit', 'PMPro_Toolkit\\Toolkit_Commands' );
 }
 
 /**

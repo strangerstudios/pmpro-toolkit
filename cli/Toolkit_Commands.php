@@ -1,5 +1,5 @@
 <?php
-namespace TK;
+namespace PMPro_Toolkit;
 
 use WP_CLI;
 use WP_CLI_Command;
