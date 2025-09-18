@@ -30,9 +30,11 @@ Please post it in the issues section of GitHub and we'll fix it as soon as we ca
 
 == Changelog ==
 = 1.1 - 2025-TBD-TBD =
+* FEATURE: Enable performance testing endpoints to test Paid Memberships Pro key functionality (@dalemugford)
+* FEATURE: Enable scripts as CLI commands: Run Toolkit scripts in the WP CLI. (@dalemugford)
+* ENHANCEMENT: Use batch processing to improve performance of member data scrubbing (@dalemugford)
 * ENHANCEMENT: Remove test subscriptions when clearing out test orders. #53 (@andrewlimaza)
 * ENHANCEMENT: Adds conditional support for Action Scheduler handling #52 (@dalemugford)
-* BUG FIX: Remove double header message after saving in some cases. #48 (@MaximilianoRicoTabo)
 * BUG FIX: Tweak wording for delete member script to include subscription tables. #46 (@MaximilianoRicoTabo)
 
 

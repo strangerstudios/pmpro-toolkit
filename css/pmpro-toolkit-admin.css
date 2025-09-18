@@ -1,0 +1,6 @@
+/* CSS for PMPro Toolkit Admin Pages */
+
+/* Hide error messages displayed by other plugins */
+.pmpro_admin-pmpro-toolkit #message.error {
+	display: none;
+}

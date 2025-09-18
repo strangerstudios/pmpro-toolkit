@@ -34,6 +34,7 @@ $default_options = array(
 	'generate_info'             => false,
 	'performance_endpoints'     => 'no',
 	'ip_throttling'             => false,
+	'enable_cli_commands'       => false,
 );
 
 $pmprodev_options = get_option( 'pmprodev_options' );
@@ -63,23 +64,41 @@ require_once PMPRODEV_DIR . '/classes/class-pmprodev-migration-assistant.php';
 
 /**
  * API LOADER
+ * Load the API Loader and any API endpoint files if performance tracking is enabled.
+ * 
+ * @return void
+ * @since 1.1
  */
-// Explicitly load the API Loader class.
-require_once plugin_dir_path( __FILE__ ) . 'classes/class-api-loader.php';
-// Load the API Performance Tracking Trait.
-require_once plugin_dir_path( __FILE__ ) . 'classes/traits/Performance_Tracking_Trait.php';
+if ( ! empty( $pmprodev_options['performance_endpoints'] ) && $pmprodev_options['performance_endpoints'] !== 'no' ) {
+	// Explicitly load the API Loader class.
+	require_once plugin_dir_path( __FILE__ ) . 'classes/class-api-loader.php';
+	// Load the API Performance Tracking Trait.
+	require_once plugin_dir_path( __FILE__ ) . 'classes/traits/Performance_Tracking_Trait.php';
 
-// Autoload API endpoint files in /classes/api/.
-$api_dir = plugin_dir_path( __FILE__ ) . 'classes/api/';
-foreach ( glob( $api_dir . '*.php' ) as $api_file ) {
-	require_once $api_file;
+	// Autoload API endpoint files in /classes/api/.
+	$api_dir = plugin_dir_path( __FILE__ ) . 'classes/api/';
+	foreach ( glob( $api_dir . '*.php' ) as $api_file ) {
+		require_once $api_file;
+	}
+
+	// Initialize the namespaced API Loader.
+	new TK\API_Loader();
 }
 
-// Initialize the namespaced API Loader.
-new TK\API_Loader();
+/**
+ * Register WP-CLI commands for Toolkit scripts.
+ *
+ * @return void
+ * @since 1.1
+ */
+if ( defined( 'WP_CLI' ) && WP_CLI && ! empty( $pmprodev_options['enable_cli_commands'] ) ) {
+	// Load CLI command class only if enabled via Toolkit setting.
+	require_once plugin_dir_path( __FILE__ ) . 'cli/Toolkit_Commands.php';
+	\WP_CLI::add_command( 'pmpro-toolkit', 'TK\\Toolkit_Commands' );
+}
 
 /**
- * Remove the cron jobs for expiration warnings and expiring credit cards if the options are set.
+ * Remove the cron jobs/action schedules for expiration warnings and expiring credit cards if the options are set.
  *
  * @return void
  * @since 1.0
@@ -138,6 +157,7 @@ add_action( 'init', 'pmprodev_gateway_debug_setup' );
  *
  * @param string $recipient the email recipient
  * @param object $email the email object
+ * 
  * @return string $recipient the email recipient
  * @since 1.0
  */
@@ -157,6 +177,7 @@ add_filter( 'pmpro_email_recipient', 'pmprodev_redirect_emails', 10, 2 );
  * Send debug email every time checkout page is hit.
  *
  * @param mixed $filter_contents to not break the wp_redirect filter.
+ * 
  * @return mixed $filter_contents to not break the wp_redirect filter.
  * @since 1.0
  */
@@ -291,6 +312,7 @@ add_action( 'admin_bar_menu', 'pmprodev_admin_menu_bar', 2000 );
  * Add a menu item to the PMPro admin bar menu.
  *
  * @param WP_Admin_Bar $wp_admin_bar the WP_Admin_Bar object.
+ * 
  * @return void
  * @since 1.0
  */
@@ -374,7 +396,7 @@ function pmprodev_plugin_row_meta( $links, $file ) {
 add_filter( 'plugin_row_meta', 'pmprodev_plugin_row_meta', 10, 2 );
 
 /**
- * Enqueue scripts on the frontend.
+ * Enqueue scripts/styles on the frontend.
  *
  * @return void
  * @since 1.0
@@ -388,6 +410,23 @@ function pmprodev_enqueue_scripts() {
 }
 
 add_action( 'wp_enqueue_scripts', 'pmprodev_enqueue_scripts' );
+
+/**
+ * Enqueue scripts/styles on the admin side.
+ *
+ * @return void
+ * @since 1.1
+ */
+function pmprodev_enqueue_admin_scripts(){
+	// if we're on a toolkit admin page
+	if ( isset( $_GET['page'] ) && 'pmpro-toolkit' === $_GET['page'] ) {
+		// Add css for the admin
+		wp_register_style( 'pmprodev-admin', plugins_url( 'css/pmpro-toolkit-admin.css', __FILE__ ) );
+		wp_enqueue_style( 'pmprodev-admin' );
+	}
+}
+
+add_action( 'admin_enqueue_scripts', 'pmprodev_enqueue_admin_scripts' );
 
 /**
  * Add a button to the checkout page to fill in the user data form.

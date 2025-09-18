@@ -23,27 +23,32 @@ $pmprodev_other_tables = array(
 $clean_up_actions = array(
 	'pmprodev_clean_member_tables'	=> array(
 		'label' => __( 'Delete Member Data', 'pmpro-toolkit' ),
-		'description' => __( 'Delete all member data. This script deletes data from the wp_pmpro_memberships_users, wp_pmpro_membership_orders, wp_pmpro_discount_codes_uses, wp_pmpro_subscriptions and wp_pmpro_subscriptionmeta tables', 'pmpro-toolkit' ),
+		'description' => __( 'Delete all member data.', 'pmpro-toolkit' ),
+		'subtext' => __( 'This script deletes data from the wp_pmpro_memberships_users, wp_pmpro_membership_orders, wp_pmpro_discount_codes_uses, wp_pmpro_subscriptions and wp_pmpro_subscriptionmeta tables.', 'pmpro-toolkit' ),
 		'message' => __( 'Member tables have been truncated.', 'pmpro-toolkit' ),
 	),
 	'pmprodev_clean_level_data'	=> array(
 		'label' => __( 'Reset Membership Settings', 'pmpro-toolkit' ),
-		'description' => __( 'Delete all membership level, content protection, and discount code settings. This script deletes data from the wp_pmpro_discount_codes, wp_pmpro_discount_codes_levels, wp_pmpro_membership_levels, wp_pmpro_memberships_categories, and wp_pmpro_memberships_pages tables.', 'pmpro-toolkit' ),
+		'description' => __( 'Delete all membership level, content protection, and discount code settings.', 'pmpro-toolkit' ),
+		'subtext' => __( 'This script deletes data from the wp_pmpro_discount_codes, wp_pmpro_discount_codes_levels, wp_pmpro_membership_levels, wp_pmpro_memberships_categories, and wp_pmpro_memberships_pages tables.', 'pmpro-toolkit' ),
 		'message' => __( 'Level and discount code tables have been truncated.', 'pmpro-toolkit' )
 	),
 	'pmprodev_scrub_member_data'	=> array(
 		'label' => __( 'Scrub Member Data', 'pmpro-toolkit' ),
-		'description' => __( 'Scrub all member emails and transaction IDs. This script updates all non-admins in the wp_users and wp_pmpro_membership_orders tables to anonymize their email addresses and order transaction IDs. This may time out on slow servers or sites with large numbers of users.', 'pmpro-toolkit' ),
+		'description' => __( 'Scrub all member emails and transaction IDs.', 'pmpro-toolkit' ),
+		'subtext' => __( 'This script updates all non-admins in the wp_users and wp_pmpro_membership_orders tables to anonymize their email addresses and order transaction IDs. This may time out on slow servers or sites with large numbers of users.', 'pmpro-toolkit' ),
 		'message' => __( 'Scrubbing user data...', 'pmpro-toolkit' )
 	),
 	'pmprodev_delete_users'	=> array(
 		'label' => __( 'Delete Users', 'pmpro-toolkit' ),
-		'description' => __( 'Delete non-admin users. This script deletes from wp_users and wp_usermeta tables directly. This may time out on slow servers or sites with large numbers of users.', 'pmpro-toolkit' ),
+		'description' => __( 'Delete non-admin users.', 'pmpro-toolkit' ),
+		'subtext' => __( 'This script deletes from wp_users and wp_usermeta tables directly. This may time out on slow servers or sites with large numbers of users.', 'pmpro-toolkit' ),
 		'message' => __( 'Deleting non-admins...', 'pmpro-toolkit' )
 	),
 	'pmprodev_clean_pmpro_options'	=> array(
 		'label' => __( 'Reset Options', 'pmpro-toolkit' ),
-		'description' => __( 'Delete all PMPro options. This script deletes any option prefixed with pmpro_ in the wp_options table, excluding the pmpro_db_version and assigned PMPro pages.)', 'pmpro-toolkit' ),
+		'description' => __( 'Delete all PMPro options.', 'pmpro-toolkit' ),
+		'subtext' => __( 'This script deletes any option prefixed with pmpro_ in the wp_options table, excluding the pmpro_db_version and assigned PMPro pages.', 'pmpro-toolkit' ),
 		'message' => __( 'Options deleted.', 'pmpro-toolkit' )
 	),
 	'pmprodev_clear_vvl_report'	=> array(
@@ -53,7 +58,8 @@ $clean_up_actions = array(
 	),
 	'pmprodev_delete_test_orders' => array(
 		'label' => __( 'Delete Test Orders', 'pmpro-toolkit' ),
-		'description' => __( 'Delete all orders made through the testing or sandbox gateway environment. This includes any test subscriptions.', 'pmpro-toolkit' ),
+		'description' => __( 'Delete all orders made through the testing or sandbox gateway environment.', 'pmpro-toolkit' ),
+		'subtext' => __( 'This includes any test subscriptions.', 'pmpro-toolkit' ),
 		'message' => __( 'Test orders deleted.', 'pmpro-toolkit' )
 	),
 	'pmprodev_clear_cached_report_data' => array(
@@ -94,7 +100,9 @@ $other_actions = array(
 	)
 );
 
-?>
+// Suppress the admin page markup when running under WP-CLI so that requiring this
+// file for function access (e.g. in Toolkit_Commands) doesn't dump HTML in the terminal.
+if ( ! defined( 'WP_CLI' ) || ! WP_CLI ) : ?>
 <h2><?php esc_html_e( 'Database Scripts', 'pmpro-toolkit' ); ?></h2>
 <p><?php esc_html_e( 'Toolkit scripts allow you to clean up, delete, duplicate, or anonymize data in your membership site. We recommend only running one script at a time. Check a setting below and click save to run the script.', 'pmpro-toolkit' ); ?></p>
 <p><?php esc_html_e( 'Note: Running the scripts below will delete or modify data in your database. These changes cannot be reversed. Please take a site backup before running a script.', 'pmpro-toolkit' ); ?></p>
@@ -116,6 +124,9 @@ $other_actions = array(
 						<td>
 							<input type="checkbox" id="<?php echo esc_attr( $action ); ?>" name="<?php echo esc_attr( $action ); ?>" value="1">
 							<label for="<?php echo esc_attr( $action ); ?>"><?php echo wp_kses_post( $details['description'] ); ?></label>
+							<?php if ( ! empty( $details['subtext'] ) ) : ?>
+								<p class="description"><?php echo wp_kses_post( $details['subtext'] ); ?></p>
+							<?php endif; ?>
 						</td>
 					</tr>
 				<?php endforeach; ?>
@@ -291,9 +302,9 @@ $other_actions = array(
 		});
 	});
 </script>
-<?php
+<?php endif; // End suppress admin markup for WP-CLI.
 
-
+// Collect all actions into a single array.
 $actions = array_merge( $clean_up_actions, $level_actions, $other_actions );
 foreach ( $actions as $action => $options ) {
 	if ( ! empty( $_POST[ $action ] ) ) {
@@ -347,24 +358,78 @@ function pmprodev_clean_level_data( $message ) {
  */
 function pmprodev_scrub_member_data( $message ) {
 	global $wpdb;
+
 	pmprodev_output_message( $message );
-	$user_ids = $wpdb->get_col( "SELECT ID FROM {$wpdb->users} WHERE user_email NOT LIKE '%+scrub%'" );
-	$count = 0;
-	$admin_email = get_option( 'admin_email' );
-	foreach ( $user_ids as $user_id ) {
-		$count++;
-		if ( ! user_can( $user_id, 'manage_options' ) ) {
-			$new_email = str_replace( '@', '+scrub' . $count . '@', $admin_email );
-			$wpdb->query( "UPDATE {$wpdb->users} SET user_email = '" . esc_sql( $new_email ) . "' WHERE ID = " . intval( $user_id ) . " LIMIT 1" );
+
+	$batch_size   = 250;
+	$admin_email  = get_option( 'admin_email' );
+	$counter      = 0; // Global sequential counter to keep deterministic unique values.
+	$offset       = 0;
+
+	// Pre-calc prefix capability meta key for more efficient role detection if needed later.
+	$caps_meta_key = $wpdb->prefix . 'capabilities';
+
+	while ( true ) {
+		// Get next batch of user IDs that have not yet been scrubbed.
+		$user_ids = $wpdb->get_col( $wpdb->prepare(
+			"SELECT ID FROM {$wpdb->users} WHERE user_email NOT LIKE '%%+scrub%%' ORDER BY ID ASC LIMIT %d OFFSET %d",
+			$batch_size,
+			$offset
+		) );
+
+		if ( empty( $user_ids ) ) {
+			break; // No more users to process.
 		}
-		$new_transaction_id = 'SCRUBBED-' . $count;
-		$wpdb->query( "UPDATE {$wpdb->pmpro_membership_orders} SET payment_transaction_id = '" . esc_sql( $new_transaction_id ) . "' WHERE user_id = '" . intval( $user_id ) . "' AND payment_transaction_id <> ''" );
-		$wpdb->query( "UPDATE {$wpdb->pmpro_membership_orders} SET subscription_transaction_id = '" . esc_sql( $new_transaction_id ) . "' WHERE user_id = '" . intval( $user_id ) . "' AND subscription_transaction_id <> ''" );
-		$wpdb->query( "UPDATE {$wpdb->pmpro_subscriptions} SET subscription_transaction_id = '" . esc_sql( $new_transaction_id ) . "' WHERE user_id = '" . intval( $user_id ) . "' AND subscription_transaction_id <> ''" );
-		update_user_meta( $user_id, 'pmpro_braintree_customerid', $new_transaction_id );
-		update_user_meta( $user_id, 'pmpro_stripe_customerid', $new_transaction_id );
+
+		$email_cases = array();
+		$email_ids   = array();
+		$tx_cases    = array(); // Will map user_id => transaction ID for CASE statements.
+
+		foreach ( $user_ids as $user_id ) {
+			$counter++;
+			$new_transaction_id     = 'SCRUBBED-' . $counter;
+			$tx_cases[ $user_id ]    = esc_sql( $new_transaction_id );
+
+			// Only anonymize email for non-admins (same logic as original code).
+			if ( ! user_can( $user_id, 'manage_options' ) ) {
+				$new_email      = str_replace( '@', '+scrub' . $counter . '@', $admin_email );
+				$email_cases[]  = 'WHEN ' . (int) $user_id . " THEN '" . esc_sql( $new_email ) . "'";
+				$email_ids[]    = (int) $user_id;
+			}
+
+			// Keep meta updates (ensures a row is created if missing) – still one of the cheaper operations.
+			update_user_meta( $user_id, 'pmpro_braintree_customerid', $new_transaction_id );
+			update_user_meta( $user_id, 'pmpro_stripe_customerid', $new_transaction_id );
+		}
+
+		// Batch update user emails where applicable.
+		if ( ! empty( $email_ids ) ) {
+			$wpdb->query( "UPDATE {$wpdb->users} SET user_email = CASE ID " . implode( ' ', $email_cases ) . ' END WHERE ID IN (' . implode( ',', $email_ids ) . ')' ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		}
+
+		// Build CASE fragment for transaction IDs.
+		if ( ! empty( $tx_cases ) ) {
+			$when_fragments = array();
+			foreach ( $tx_cases as $uid => $txid ) {
+				$when_fragments[] = 'WHEN ' . (int) $uid . " THEN '" . $txid . "'"; // Already esc_sql above.
+			}
+			$case_sql = 'CASE user_id ' . implode( ' ', $when_fragments ) . ' END';
+			$user_id_list = implode( ',', array_map( 'intval', array_keys( $tx_cases ) ) );
+
+			// Update orders payment_transaction_id only where not empty.
+			$wpdb->query( "UPDATE {$wpdb->pmpro_membership_orders} SET payment_transaction_id = IF(payment_transaction_id <> '', $case_sql, payment_transaction_id) WHERE user_id IN ($user_id_list)" ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			// Update orders subscription_transaction_id only where not empty.
+			$wpdb->query( "UPDATE {$wpdb->pmpro_membership_orders} SET subscription_transaction_id = IF(subscription_transaction_id <> '', $case_sql, subscription_transaction_id) WHERE user_id IN ($user_id_list)" ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			// Update subscriptions table subscription_transaction_id only where not empty.
+			$wpdb->query( "UPDATE {$wpdb->pmpro_subscriptions} SET subscription_transaction_id = IF(subscription_transaction_id <> '', $case_sql, subscription_transaction_id) WHERE user_id IN ($user_id_list)" ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+		}
+
+		// Progress indicator per batch (instead of per user to reduce output overhead).
 		echo '. ';
+
+		$offset += $batch_size;
 	}
+
 	pmprodev_process_complete();
 }
 
@@ -641,7 +706,7 @@ function pmprodev_delete_incomplete_orders( $message ) {
 }
 
 /**
- * Output a message to the screen.
+ * Output a message to the admin screen.
  *
  * @param string $message The message to display.
  * @param string $type The type of message to display.
@@ -649,7 +714,8 @@ function pmprodev_delete_incomplete_orders( $message ) {
  * @return void
  */
 function pmprodev_output_message( $message, $type = 'success' ) {
-	if ( empty( $message ) ) {
+	// If there's no message or we're running in CLI
+	if ( empty( $message ) || defined( 'WP_CLI' ) ) {
 		return;
 	}
 	echo '<div class="notice notice-' . esc_attr( $type ) . '"><p>' . esc_html( $message ) . '</p></div>';
