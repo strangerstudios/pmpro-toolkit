@@ -509,15 +509,10 @@ class Test_Checkout_Endpoint extends API_Endpoint {
         add_filter( 'pmpro_user_deletion_cancel_active_subscriptions', '__return_false', 20 );
 
 		// Ensure the necessary admin include(s) are loaded on the frontend/REST context.
-		// wp_delete_user() and wpmu_delete_user() live in admin includes and are not
-		// guaranteed to be available outside wp-admin. Calling them when undefined
-		// throws an Error which we previously swallowed, resulting in failed cleanup.
 		if ( ! function_exists( 'wp_delete_user' ) ) {
-			// phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingCustomConstant -- Core file include required for deletion helpers.
 			require_once ABSPATH . 'wp-admin/includes/user.php';
 		}
 		if ( is_multisite() && ! function_exists( 'wpmu_delete_user' ) ) {
-			// phpcs:ignore WordPressVIPMinimum.Files.IncludingFile.UsingCustomConstant
 			require_once ABSPATH . 'wp-admin/includes/ms.php';
 		}
 

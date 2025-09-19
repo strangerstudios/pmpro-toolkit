@@ -153,11 +153,7 @@ class Test_Change_Level_Endpoint extends API_Endpoint {
 				2
 			);
 		}
-
-		// ------------------------------------------------------------------
-		// Full checkout simulation
-		// ------------------------------------------------------------------
-		// Global expected by PMPro checkout flow.
+		// Set global level object as expected by PMPro checkout flow.
 		global $pmpro_level;
 		if ( function_exists( 'pmpro_getLevel' ) ) {
 			$pmpro_level = pmpro_getLevel( $level_id );
