@@ -727,6 +727,10 @@ function pmprodev_output_message( $message, $type = 'success' ) {
  * @return void
  */
 function pmprodev_process_complete() {
+	// We are running in WP-CLI, suppress this script.
+	if ( defined( 'WP_CLI' ) ) {
+		return;
+	}
 	echo '<div class="notice notice-success"><p>' . esc_html__( 'Process complete.', 'pmpro-toolkit' ) . '</p></div>';
 }
 
@@ -738,6 +742,10 @@ function pmprodev_process_complete() {
  * @return void
  */
 function pmprodev_expand_actions( $action ) {
+	// We are running in WP-CLI, suppress this script.
+	if ( defined( 'WP_CLI' ) ) {
+		return;
+	}
 	?>
 	<script>
 		jQuery(document).ready(function($) {
