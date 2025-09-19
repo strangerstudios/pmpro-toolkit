@@ -40,7 +40,6 @@ Please post it in the issues section of GitHub and we'll fix it as soon as we ca
 * BUG FIX: Tweak wording for delete member script to include subscription tables. #46 (@MaximilianoRicoTabo)
 * REFACTOR: Renamed "PMPro Toolkit" to "Toolkit" in the admin menu bar option. #60 (@andrewlimaza)
 
-
 = 1.0 - 2024-10-23 =
 * SECURITY: Added nonce checks to the admin forms. #36 (@MaximilianoRicoTabo)
 * FEATURE: Added an option to allow automatically generating test user data at checkout. #44 (@MaximilianoRicoTabo)
