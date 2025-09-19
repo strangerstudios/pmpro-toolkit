@@ -515,7 +515,7 @@ function pmprodev_delete_test_orders( $message ) {
 	// Delete the test orders now and sandbox subscriptions.
 
 	// Delete the order meta first.
-	$wpdb->query( "DELETE FROM {$wpdb->pmpro_membership_order_meta} WHERE membership_order_id IN (SELECT id FROM {$wpdb->pmpro_membership_orders} WHERE gateway_environment = 'sandbox')" );
+	$wpdb->query( "DELETE FROM {$wpdb->pmpro_membership_ordermeta} WHERE pmpro_membership_order_id IN (SELECT id FROM {$wpdb->pmpro_membership_orders} WHERE gateway_environment = 'sandbox')" );
 	$wpdb->query( "DELETE FROM {$wpdb->pmpro_membership_orders} WHERE gateway_environment = 'sandbox'" );
 
 	// Delete subscription meta AND subscriptions.
