@@ -29,13 +29,16 @@ Features:
 Please post it in the issues section of GitHub and we'll fix it as soon as we can. Thanks for helping. https://github.com/strangerstudios/pmpro-toolkit/issues
 
 == Changelog ==
-= 1.1 - 2025-TBD-TBD =
-* FEATURE: Enable performance testing endpoints to test Paid Memberships Pro key functionality (@dalemugford)
-* FEATURE: Enable scripts as CLI commands: Run Toolkit scripts in the WP CLI. (@dalemugford)
-* ENHANCEMENT: Use batch processing to improve performance of member data scrubbing (@dalemugford)
+= 1.1 - TBD =
+* FEATURE: Enable performance testing endpoints to test Paid Memberships Pro key functionality. #57 (@dalemugford)
+* FEATURE: Enable scripts as CLI commands: Run Toolkit scripts in the WP CLI. #57 (@dalemugford)
+* ENHANCEMENT: Use batch processing to improve performance of member data scrubbing. #52 (@dalemugford)
 * ENHANCEMENT: Remove test subscriptions when clearing out test orders. #53 (@andrewlimaza)
 * ENHANCEMENT: Adds conditional support for Action Scheduler handling #52 (@dalemugford)
+* ENHANCEMENT: Improved deletion of test orders to include order meta and subscription meta. #62 (@andrewlimaza)
+* ENHANCEMENT: Added support for generated checkout data for Mailing Address Add On and the Member Directory Maps Fields and other general improvements. #54,#55 (@dparker1005,@kimwhite)
 * BUG FIX: Tweak wording for delete member script to include subscription tables. #46 (@MaximilianoRicoTabo)
+* REFACTOR: Renamed "PMPro Toolkit" to "Toolkit" in the admin menu bar option. #60 (@andrewlimaza)
 
 
 = 1.0 - 2024-10-23 =
