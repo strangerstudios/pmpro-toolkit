@@ -104,17 +104,38 @@ class Test_Change_Level_Endpoint extends API_Endpoint {
 		$cleanup      = ! empty( $params['cleanup'] );
 
 		// Fill $_POST as if the logged-in checkout form is submitted
-		$_POST = array(
-			'level'           => $level_id,
-			'gateway'         => $gateway,
-			'payment_method'  => $gateway,
-			'AccountNumber'   => '4242424242424242',
-			'ExpirationMonth' => '01',
-			'ExpirationYear'  => '2028',
-			'CVV'             => '123',
-			'submit-checkout' => 1,
-			// Add billing fields if required by your site
+		$checkout_nonce = function_exists( 'wp_create_nonce' ) ? wp_create_nonce( 'pmpro_checkout' ) : '';
+		$_POST          = array(
+			'level'              => $level_id,
+			'gateway'            => $gateway,
+			'payment_method'     => $gateway,
+			'AccountNumber'      => '4242424242424242',
+			'ExpirationMonth'    => '01',
+			'ExpirationYear'     => '2028',
+			'CVV'                => '123',
+			'submit-checkout'    => 1,
+			// Common billing/profile fields expected by PMPro/add-ons.
+			'bfirstname'         => 'Test',
+			'blastname'          => 'User',
+			'baddress1'          => '123 Test St',
+			'bcity'              => 'Testville',
+			'bstate'             => 'CA',
+			'bzipcode'           => '90001',
+			'bcountry'           => 'US',
+			'bphone'             => '555-1212',
+			'bemail'             => $user->user_email,
+			'bconfirmemail'      => $user->user_email,
+			// Nonce for security check.
+			'pmpro_checkout_nonce' => $checkout_nonce,
+			'javascriptok'       => 1,
 		);
+
+		// If we are skipping the gateway, force an offline/test style gateway for a full logic pass without remote calls.
+		if ( $skip_gateway ) {
+			$gateway               = 'check';
+			$_POST['gateway']       = 'check';
+			$_POST['payment_method'] = 'check';
+		}
 
 		// Optionally short-circuit the gateway for performance test
 		if ( $skip_gateway ) {
@@ -133,12 +154,43 @@ class Test_Change_Level_Endpoint extends API_Endpoint {
 			);
 		}
 
-		ob_start();
-		do_action( 'pmpro_checkout_preheader' );
-		if ( function_exists( 'pmpro_include_checkout' ) ) {
-			pmpro_include_checkout();
+		// ------------------------------------------------------------------
+		// Full checkout simulation
+		// ------------------------------------------------------------------
+		// Global expected by PMPro checkout flow.
+		global $pmpro_level;
+		if ( function_exists( 'pmpro_getLevel' ) ) {
+			$pmpro_level = pmpro_getLevel( $level_id );
 		}
-		do_action( 'pmpro_checkout' );
+
+		// Mirror $_REQUEST for code paths that read from it instead of $_POST.
+		$_REQUEST = array_merge( $_REQUEST ?? array(), $_POST );
+
+		// Begin output buffering to prevent template/HTML leakage in API response.
+		ob_start();
+
+		// Allow hooked code expecting this action to still run (matches normal page load sequence).
+		do_action( 'pmpro_checkout_preheader' );
+
+		// The core processing logic is in the checkout preheader. It inspects submit vars
+		// and triggers level changes, orders, emails, etc.
+		if ( defined( 'PMPRO_DIR' ) && file_exists( PMPRO_DIR . '/preheaders/checkout.php' ) ) {
+			require_once PMPRO_DIR . '/preheaders/checkout.php';
+		} else {
+			ob_end_clean();
+			return $this->json_error(
+				'missing_preheader',
+				'Could not load PMPro checkout preheader.',
+				500
+			);
+		}
+
+		// After preheader, confirm level applied; if skipping gateway and it failed, fall back to direct level change.
+		$has_level = function_exists( 'pmpro_hasMembershipLevel' ) ? pmpro_hasMembershipLevel( $level_id, $user->ID ) : false;
+		if ( $skip_gateway && ! $has_level && function_exists( 'pmpro_changeMembershipLevel' ) ) {
+			pmpro_changeMembershipLevel( $level_id, $user->ID );
+		}
+
 		ob_end_clean();
 
 		// Gather performance data
@@ -153,13 +205,13 @@ class Test_Change_Level_Endpoint extends API_Endpoint {
 
 		// Return profiling results
 		$data = array(
-			'user_id'         => $user->ID,
-			'user_login'      => $user->user_login,
-			'level_id'        => $level_id,
-			'gateway'         => $gateway,
-			'skipped_gateway' => $skip_gateway,
-			'restored'        => $restored,
-			'metrics'         => $performance_data,
+			'user_id'        => $user->ID,
+			'user_login'     => $user->user_login,
+			'level_id'       => $level_id,
+			'gateway'        => $gateway,
+			'skipped_gateway'=> $skip_gateway,
+			'restored'       => $restored,
+			'metrics'        => $performance_data,
 		);
 
 		return $this->json_success( $data );
