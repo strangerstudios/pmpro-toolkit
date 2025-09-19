@@ -2,20 +2,20 @@
 /**
  * API Loader class.
  *
- * @package TK
+ * @package PMPro_Toolkit
  */
 
-namespace TK;
+namespace PMPro_Toolkit;
 
-use TK\Test_General_Endpoint;
-use TK\Test_Login_Endpoint;
-use TK\Test_Checkout_Endpoint;
-use TK\Test_Change_Level_Endpoint;
-use TK\Test_Membership_Account_Endpoint;
-use TK\Test_Cancel_Level_Endpoint;
-use TK\Test_Search_Endpoint;
-use TK\Test_Report_Endpoint;
-use TK\Test_Member_Export_Endpoint;
+use PMPro_Toolkit\Test_General_Endpoint;
+use PMPro_Toolkit\Test_Login_Endpoint;
+use PMPro_Toolkit\Test_Checkout_Endpoint;
+use PMPro_Toolkit\Test_Change_Level_Endpoint;
+use PMPro_Toolkit\Test_Membership_Account_Endpoint;
+use PMPro_Toolkit\Test_Cancel_Level_Endpoint;
+use PMPro_Toolkit\Test_Search_Endpoint;
+use PMPro_Toolkit\Test_Report_Endpoint;
+use PMPro_Toolkit\Test_Member_Export_Endpoint;
 
 class API_Loader {
 	/**
@@ -112,7 +112,7 @@ class API_Loader {
 		if ( ! is_user_logged_in() ) {
 			return new \WP_Error(
 				'rest_forbidden',
-				__( 'Authentication required.', 'your-text-domain' ),
+				__( 'Authentication required.', 'pmpro-toolkit' ),
 				array( 'status' => 401 )
 			);
 		}

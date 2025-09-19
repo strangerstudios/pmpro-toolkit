@@ -1,6 +1,6 @@
 <?php
 
-namespace TK;
+namespace PMPro_Toolkit;
 
 use WP_REST_Request;
 use WP_REST_Server;
@@ -88,7 +88,7 @@ class Test_Checkout_Endpoint extends API_Endpoint {
 		if ( ! pmpro_getLevel( $level_id ) ) {
 			return $this->json_error(
 				'invalid_level',
-				sprintf( __( 'Membership level ID %d does not exist.', 'tk' ), $level_id ),
+				sprintf( __( 'Membership level ID %d does not exist.', 'pmpro-toolkit' ), $level_id ),
 				400
 			);
 		}
@@ -97,7 +97,7 @@ class Test_Checkout_Endpoint extends API_Endpoint {
 		if ( ! $this->is_valid_mysql_datetime( $checkout_date ) ) {
 			return $this->json_error(
 				'invalid_date',
-				__( 'checkout_date must be in MySQL datetime format (YYYY-MM-DD HH:MM:SS).', 'tk' ),
+				__( 'checkout_date must be in MySQL datetime format (YYYY-MM-DD HH:MM:SS).', 'pmpro-toolkit' ),
 				400
 			);
 		}
@@ -116,7 +116,7 @@ class Test_Checkout_Endpoint extends API_Endpoint {
 				return $this->json_error(
 					'user_has_membership',
 					sprintf(
-						__( 'User %1$s already has membership level %2$d.', 'tk' ),
+						__( 'User %1$s already has membership level %2$d.', 'pmpro-toolkit' ),
 						$user_data['user_login'],
 						$level_id
 					),
@@ -186,38 +186,38 @@ class Test_Checkout_Endpoint extends API_Endpoint {
 	private function get_endpoint_args() {
 		return array(
 			'membership_level' => array(
-				'description' => __( 'Membership level ID to test.', 'tk' ),
+				'description' => __( 'Membership level ID to test.', 'pmpro-toolkit' ),
 				'type'        => 'integer',
 				'default'     => 1,
 				'minimum'     => 1,
 			),
 			'gateway'          => array(
-				'description' => __( 'Payment gateway to use.', 'tk' ),
+				'description' => __( 'Payment gateway to use.', 'pmpro-toolkit' ),
 				'type'        => 'string',
 				'default'     => 'check',
 				'enum'        => array( 'check', 'stripe', 'paypal', 'authorizenet' ),
 			),
 			'skip_gateway'     => array(
-				'description' => __( 'Skip remote gateway calls for local profiling.', 'tk' ),
+				'description' => __( 'Skip remote gateway calls for local profiling.', 'pmpro-toolkit' ),
 				'type'        => 'boolean',
 				'default'     => false,
 			),
 			'cleanup'          => array(
-				'description' => __( 'Delete test user and data after checkout.', 'tk' ),
+				'description' => __( 'Delete test user and data after checkout.', 'pmpro-toolkit' ),
 				'type'        => 'boolean',
 				'default'     => false,
 			),
 			'checkout_date'    => array(
-				'description' => __( 'Custom checkout date for backdating (MySQL datetime format).', 'tk' ),
+				'description' => __( 'Custom checkout date for backdating (MySQL datetime format).', 'pmpro-toolkit' ),
 				'type'        => 'string',
 				'format'      => 'date-time',
 			),
 			'user_login'       => array(
-				'description' => __( 'Custom username for test user.', 'tk' ),
+				'description' => __( 'Custom username for test user.', 'pmpro-toolkit' ),
 				'type'        => 'string',
 			),
 			'user_email'       => array(
-				'description' => __( 'Custom email for test user.', 'tk' ),
+				'description' => __( 'Custom email for test user.', 'pmpro-toolkit' ),
 				'type'        => 'string',
 				'format'      => 'email',
 			),
@@ -250,7 +250,7 @@ class Test_Checkout_Endpoint extends API_Endpoint {
 			if ( ! $random_user ) {
 				return $this->json_error(
 					'random_user_failed',
-					__( 'Could not generate test user data. Random user API is unavailable.', 'tk' ),
+					__( 'Could not generate test user data. Random user API is unavailable.', 'pmpro-toolkit' ),
 					503
 				);
 			}
@@ -271,7 +271,7 @@ class Test_Checkout_Endpoint extends API_Endpoint {
 		if ( empty( $username ) || empty( $user_email ) ) {
 			return $this->json_error(
 				'invalid_user_data',
-				__( 'Valid user_login and user_email are required.', 'tk' ),
+				__( 'Valid user_login and user_email are required.', 'pmpro-toolkit' ),
 				400
 			);
 		}
@@ -279,7 +279,7 @@ class Test_Checkout_Endpoint extends API_Endpoint {
 		if ( ! is_email( $user_email ) ) {
 			return $this->json_error(
 				'invalid_email',
-				__( 'user_email must be a valid email address.', 'tk' ),
+				__( 'user_email must be a valid email address.', 'pmpro-toolkit' ),
 				400
 			);
 		}

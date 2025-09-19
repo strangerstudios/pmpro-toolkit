@@ -82,7 +82,7 @@ if ( ! empty( $pmprodev_options['performance_endpoints'] ) && $pmprodev_options[
 	}
 
 	// Initialize the namespaced API Loader.
-	new TK\API_Loader();
+	new PMPro_Toolkit\API_Loader();
 }
 
 /**
@@ -94,7 +94,7 @@ if ( ! empty( $pmprodev_options['performance_endpoints'] ) && $pmprodev_options[
 if ( defined( 'WP_CLI' ) && WP_CLI && ! empty( $pmprodev_options['enable_cli_commands'] ) ) {
 	// Load CLI command class only if enabled via Toolkit setting.
 	require_once plugin_dir_path( __FILE__ ) . 'cli/Toolkit_Commands.php';
-	\WP_CLI::add_command( 'pmpro-toolkit', 'TK\\Toolkit_Commands' );
+	\WP_CLI::add_command( 'pmpro-toolkit', 'PMPro_Toolkit\\Toolkit_Commands' );
 }
 
 /**
@@ -386,8 +386,8 @@ add_action( 'init', 'pmpro_toolkit_load_textdomain', 1 );
 function pmprodev_plugin_row_meta( $links, $file ) {
 	if ( strpos( $file, 'pmpro-toolkit.php' ) !== false ) {
 		$new_links = array(
-			'<a href="' . esc_url( 'https://www.paidmembershipspro.com/add-ons/pmpro-toolkit/' ) . '" title="' . esc_attr( __( 'View Documentation', 'pmpro' ) ) . '">' . __( 'Docs', 'pmpro' ) . '</a>',
-			'<a href="' . esc_url( 'https://www.paidmembershipspro.com/support/' ) . '" title="' . esc_attr( __( 'Visit Customer Support Forum', 'pmpro' ) ) . '">' . __( 'Support', 'pmpro' ) . '</a>',
+			'<a href="' . esc_url( 'https://www.paidmembershipspro.com/add-ons/pmpro-toolkit/' ) . '" title="' . esc_attr__( 'View Documentation', 'pmpro-toolkit' ) . '">' . esc_html__( 'Docs', 'pmpro-toolkit' ) . '</a>',
+			'<a href="' . esc_url( 'https://www.paidmembershipspro.com/support/' ) . '" title="' . esc_attr__( 'Visit Customer Support Forum', 'pmpro-toolkit' ) . '">' . esc_html__( 'Support', 'pmpro-toolkit' ) . '</a>',
 		);
 		$links     = array_merge( $links, $new_links );
 	}

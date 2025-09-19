@@ -1,6 +1,6 @@
 <?php
 
-namespace TK;
+namespace PMPro_Toolkit;
 
 /**
  * PerformanceTrackingTrait
@@ -8,7 +8,7 @@ namespace TK;
  * This trait provides methods to track performance metrics such as execution time,
  * number of database queries, and peak memory usage.
  *
- * @package TK
+ * @package PMPro_Toolkit
  */
 trait PerformanceTrackingTrait {
 	protected $perf_start_time;
