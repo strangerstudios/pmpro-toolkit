@@ -513,7 +513,13 @@ function pmprodev_clear_vvl_report( $message ) {
 function pmprodev_delete_test_orders( $message ) {
 	global $wpdb;
 	// Delete the test orders now and sandbox subscriptions.
+
+	// Delete the order meta first.
+	$wpdb->query( "DELETE FROM {$wpdb->pmpro_membership_order_meta} WHERE membership_order_id IN (SELECT id FROM {$wpdb->pmpro_membership_orders} WHERE gateway_environment = 'sandbox')" );
 	$wpdb->query( "DELETE FROM {$wpdb->pmpro_membership_orders} WHERE gateway_environment = 'sandbox'" );
+
+	// Delete subscription meta AND subscriptions.
+	$wpdb->query( "DELETE FROM {$wpdb->pmpro_subscriptionmeta} WHERE pmpro_subscription_id IN (SELECT id FROM {$wpdb->pmpro_subscriptions} WHERE gateway_environment = 'sandbox')" );
 	$wpdb->query( "DELETE FROM {$wpdb->pmpro_subscriptions} WHERE gateway_environment = 'sandbox'" );
 	pmprodev_output_message( $message );
 }
