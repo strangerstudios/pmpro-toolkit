@@ -263,32 +263,48 @@
 								<option value="read_write" <?php selected( $pmprodev_options['performance_endpoints'], 'read_write' ); ?>><?php esc_html_e( 'Read and Write', 'pmpro-toolkit' ); ?></option>
 							</select>
 							<p class="description">
-								<?php esc_html_e( 'Enable performance testing REST API endpoint for testing purposes.', 'pmpro-toolkit' ); ?>
-								<br>
-								<?php if ( ! empty( $pmprodev_options['performance_endpoints'] ) && $pmprodev_options['performance_endpoints'] !== 'no' ) : ?>
-									<br><br>
-									<strong><?php esc_html_e( 'Endpoint URLs:', 'pmpro-toolkit' ); ?></strong><br>
-									<code><?php echo esc_url( rest_url( 'toolkit/v1/(endpoint-name)' ) ); ?></code>
-									<br>
-									<em><?php esc_html_e( 'Use GET for read-only tests, POST for read-write tests (if enabled).', 'pmpro-toolkit' ); ?></em>
-									<br><br>
-									<?php
-									if ( !defined( 'SAVEQUERIES' ) || SAVEQUERIES === false ) { ?>
-										<span class="dashicons dashicons-yes" style="margin-top:-3px;"></span><?php esc_html_e( 'The SAVEQUERIES constant is enabled.', 'pmpro-toolkit' ); ?>
-									<?php } else { ?>
-										<strong><?php esc_html_e( 'NOTE:', 'pmpro-toolkit' ); ?></strong>
-										<?php printf(
-										// translators: 1: define() code snippet, 2: wp-config.php filename
-										esc_html__( 'To enable full testing capability, make sure to add %1$s to your %2$s file.', 'pmpro-toolkit' ),
-										'<code>define( \'SAVEQUERIES\', true );</code>',
-										'<code>wp-config.php</code>'
-										); ?>
-									<?php } ?>					
-								<?php endif; ?>
+								<span><?php esc_html_e( 'Enable performance testing REST API endpoint for testing purposes.', 'pmpro-toolkit' ); ?></span>
+
 							</p>
 						</td>
 					</tr>
-					<?php if ( ! empty( $pmprodev_options['performance_endpoints'] ) && $pmprodev_options['performance_endpoints'] !== 'no' ) : ?>
+					<tr>
+						<th></th>
+						<td id="pmprodev_options_performance_endpoints">
+								<strong><?php esc_html_e( 'Endpoint URLs', 'pmpro-toolkit' ); ?>:</strong><br>
+								<code><?php echo esc_url( rest_url( 'toolkit/v1/(endpoint-name)' ) ); ?></code><br>
+								<em><?php esc_html_e( 'Use GET for read-only tests, POST for read-write tests (if enabled).', 'pmpro-toolkit' ); ?></em>
+								
+								<?php
+								if ( !defined( 'SAVEQUERIES' ) || SAVEQUERIES === false ) { ?>
+									<span class="dashicons dashicons-yes" style="margin-top:-3px;"></span><?php esc_html_e( 'The SAVEQUERIES constant is enabled.', 'pmpro-toolkit' ); ?>
+								<?php } else { ?>
+									<br><br>
+									<strong><?php esc_html_e( 'NOTE:', 'pmpro-toolkit' ); ?></strong>
+									<?php printf(
+									// translators: 1: define() code snippet, 2: wp-config.php filename
+									esc_html__( 'To enable full testing capability, make sure to add %1$s to your %2$s file.', 'pmpro-toolkit' ),
+									'<code>define( \'SAVEQUERIES\', true );</code>',
+									'<code>wp-config.php</code>'
+									); ?>
+									<br><br>
+								<?php } ?>					
+						<p>
+							<strong><?php esc_html_e( 'Available Endpoints', 'pmpro-toolkit' ); ?>:</strong><br>
+								<ul style="margin: 0 0 0 1.5em; padding: 0; list-style: none;">
+									<li><code>/wp-json/toolkit/v1/test-general</code></li>
+									<li><code>/wp-json/toolkit/v1/test-login</code></li>
+									<li><code>/wp-json/toolkit/v1/test-cancel-level</code></li>
+									<li><code>/wp-json/toolkit/v1/test-checkout</code></li>
+									<li><code>/wp-json/toolkit/v1/test-account-page</code></li>
+									<li><code>/wp-json/toolkit/v1/test-report</code></li>
+									<li><code>/wp-json/toolkit/v1/test-member-export</code></li>
+									<li><code>/wp-json/toolkit/v1/test-search?query=test</code></li>
+									<li><code>/wp-json/toolkit/v1/test-change-level</code></li>
+								</ul>
+						</p>
+						</td>
+					</tr>
 					<tr>
 						<th scope="row" valign="top">
 							<label for="pmprodev_options[ip_throttling]"> <?php esc_html_e( 'Enable IP Throttling', 'pmpro-toolkit' ); ?></label>
@@ -298,7 +314,6 @@
 							<label for="pmprodev_options[ip_throttling]"> <?php esc_html_e( 'Enable IP-based request throttling on public endpoints.', 'pmpro-toolkit' ); ?></label>
 						</td>
 					</tr>
-					<?php endif; ?>
 				</tbody>
 			</table>
 		</div>
@@ -312,13 +327,17 @@
 jQuery(document).ready(function($) {
 	// Show additional warning when "Read and Write" is selected
 	function togglePerformanceWarning() {
-		var selectedValue = $('#pmprodev_options[performance_endpoints]').val();
+		var selectedValue = $('#pmprodev_options\\[performance_endpoints\\]').val();
 		var warningDiv = $('#performance-endpoint-warning');
-		
 		if (selectedValue === 'read_write') {
 			if (warningDiv.length === 0) {
-				$('#pmprodev_options[performance_endpoints]').next('p.description').append(
-					'<div id="performance-endpoint-warning"><br>' +
+				// Add an ID to the first span if it doesn't exist
+				var $span = $('#pmprodev_options\\[performance_endpoints\\]').closest('td').find('span').first();
+				if (!$span.attr('id')) {
+					$span.attr('id', 'performance-endpoint-span');
+				}
+				$span.append(
+					'<div id="performance-endpoint-warning">' +
 					'<strong style="color: #c3524f;"><?php esc_html_e( 'CAUTION:', 'pmpro-toolkit' ); ?></strong> ' +
 					'<?php esc_html_e( '"Read and Write" mode will create and delete test data on your site. Only use this on development/testing sites.', 'pmpro-toolkit' ); ?>' +
 					'</div>'
@@ -328,13 +347,28 @@ jQuery(document).ready(function($) {
 			warningDiv.remove();
 		}
 	}
+
+	function toggle_performance_endpoint_info() {
+		var selectedValue = $('#pmprodev_options\\[performance_endpoints\\]').val();
+		var endpoints_container = $('#pmprodev_options_performance_endpoints').closest('tr');
+		var ip_throttling_row = $('#pmprodev_options\\[ip_throttling\\]').closest('tr');
+		if (selectedValue === 'no') {
+			endpoints_container.hide();
+			ip_throttling_row.hide();
+		} else {
+			endpoints_container.show();
+			ip_throttling_row.show();
+		}
+	}
 	
 	// Check on page load
 	togglePerformanceWarning();
-	
+	toggle_performance_endpoint_info();
+
 	// Check when selection changes
-	$('#pmprodev_options[performance_endpoints]').change(function() {
+	$('#pmprodev_options\\[performance_endpoints\\]').change(function() {
 		togglePerformanceWarning();
+		toggle_performance_endpoint_info();
 	});
 });
 </script>
