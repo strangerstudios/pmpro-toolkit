@@ -29,7 +29,7 @@ Features:
 Please post it in the issues section of GitHub and we'll fix it as soon as we can. Thanks for helping. https://github.com/strangerstudios/pmpro-toolkit/issues
 
 == Changelog ==
-= 1.1 - TBD =
+= 1.1 - 2025-09-22 =
 * FEATURE: Enable performance testing endpoints to test Paid Memberships Pro key functionality. #57 (@dalemugford)
 * FEATURE: Enable scripts as CLI commands: Run Toolkit scripts in the WP CLI. #57 (@dalemugford)
 * ENHANCEMENT: Use batch processing to improve performance of member data scrubbing. #52 (@dalemugford)
