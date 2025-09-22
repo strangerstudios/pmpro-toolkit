@@ -37,8 +37,7 @@ class Test_General_Endpoint extends API_Endpoint {
 		);
 
 		// Check if the performance endpoints setting is enabled for read_write
-		global $pmprodev_options;
-		$performance_endpoints_setting = isset( $pmprodev_options['performance_endpoints'] ) ? $pmprodev_options['performance_endpoints'] : 'no';
+		$performance_endpoints_setting = method_exists( $this, 'check_setting' ) ? $this->check_setting( 'performance_endpoints' ) : 'no';
 
 		// Only register write method if read_write is enabled
 		if ( $performance_endpoints_setting === 'read_write' ) {
