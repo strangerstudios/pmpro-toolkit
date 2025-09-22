@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-09-22T08:57:12+00:00\n"
+"POT-Creation-Date: 2025-09-22T13:01:31+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: pmpro-toolkit\n"
@@ -654,65 +654,65 @@ msgstr ""
 msgid "Toolkit Menu"
 msgstr ""
 
-#: classes/api/Test_Checkout_Endpoint.php:95
+#: classes/api/Test_Checkout_Endpoint.php:105
 #, php-format
 msgid "Membership level ID %d does not exist."
 msgstr ""
 
-#: classes/api/Test_Checkout_Endpoint.php:104
+#: classes/api/Test_Checkout_Endpoint.php:114
 msgid "checkout_date must be in MySQL datetime format (YYYY-MM-DD HH:MM:SS)."
 msgstr ""
 
-#: classes/api/Test_Checkout_Endpoint.php:123
+#: classes/api/Test_Checkout_Endpoint.php:133
 #, php-format
 msgid "User %1$s already has membership level %2$d."
 msgstr ""
 
-#: classes/api/Test_Checkout_Endpoint.php:159
+#: classes/api/Test_Checkout_Endpoint.php:169
 msgid "Could not load PMPro checkout preheader."
 msgstr ""
 
-#: classes/api/Test_Checkout_Endpoint.php:235
+#: classes/api/Test_Checkout_Endpoint.php:245
 msgid "Membership level ID to test."
 msgstr ""
 
-#: classes/api/Test_Checkout_Endpoint.php:241
+#: classes/api/Test_Checkout_Endpoint.php:251
 msgid "Payment gateway to use."
 msgstr ""
 
-#: classes/api/Test_Checkout_Endpoint.php:247
+#: classes/api/Test_Checkout_Endpoint.php:257
 msgid "Skip remote gateway calls for local profiling."
 msgstr ""
 
-#: classes/api/Test_Checkout_Endpoint.php:252
+#: classes/api/Test_Checkout_Endpoint.php:262
 msgid "Delete test user and data after checkout."
 msgstr ""
 
-#: classes/api/Test_Checkout_Endpoint.php:257
+#: classes/api/Test_Checkout_Endpoint.php:267
 msgid "Custom checkout date for backdating (MySQL datetime format)."
 msgstr ""
 
-#: classes/api/Test_Checkout_Endpoint.php:262
+#: classes/api/Test_Checkout_Endpoint.php:272
 msgid "Custom username for test user."
 msgstr ""
 
-#: classes/api/Test_Checkout_Endpoint.php:266
+#: classes/api/Test_Checkout_Endpoint.php:276
 msgid "Custom email for test user."
 msgstr ""
 
-#: classes/api/Test_Checkout_Endpoint.php:299
+#: classes/api/Test_Checkout_Endpoint.php:309
 msgid "Could not generate test user data. Random user API is unavailable."
 msgstr ""
 
-#: classes/api/Test_Checkout_Endpoint.php:320
+#: classes/api/Test_Checkout_Endpoint.php:330
 msgid "Valid user_login and user_email are required."
 msgstr ""
 
-#: classes/api/Test_Checkout_Endpoint.php:328
+#: classes/api/Test_Checkout_Endpoint.php:338
 msgid "user_email must be a valid email address."
 msgstr ""
 
-#: classes/api/Test_Login_Endpoint.php:92
+#: classes/api/Test_Login_Endpoint.php:102
 msgid "Invalid username or incorrect password."
 msgstr ""
 
