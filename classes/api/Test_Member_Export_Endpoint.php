@@ -88,9 +88,6 @@ class Test_Member_Export_Endpoint extends API_Endpoint {
 		// Raise WordPress memory limit
 		wp_raise_memory_limit( 'admin' );
 
-		// Verify the change took effect
-		error_log( 'Updated PHP memory_limit: ' . ini_get( 'memory_limit' ) );
-
 		// Start performance tracking
 		$this->start_performance_tracking();
 
