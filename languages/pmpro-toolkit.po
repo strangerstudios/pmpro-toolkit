@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-09-19T13:39:01+00:00\n"
+"POT-Creation-Date: 2025-09-22T08:57:12+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: pmpro-toolkit\n"
@@ -599,6 +599,7 @@ msgstr ""
 #: adminpages/settings.php:208
 #: adminpages/cli-commands.php:83
 #: adminpages/settings.php:307
+#: adminpages/settings.php:322
 msgid "Save Settings"
 msgstr ""
 
@@ -769,90 +770,111 @@ msgid "Endpoint URLs:"
 msgstr ""
 
 #: adminpages/settings.php:273
+#: adminpages/settings.php:276
 msgid "Use GET for read-only tests, POST for read-write tests (if enabled)."
 msgstr ""
 
 #: adminpages/settings.php:277
+#: adminpages/settings.php:280
 msgid "The SAVEQUERIES constant is enabled."
 msgstr ""
 
 #: adminpages/settings.php:279
+#: adminpages/settings.php:283
 msgid "NOTE:"
 msgstr ""
 
 #. translators: 1: define() code snippet, 2: wp-config.php filename
 #: adminpages/settings.php:282
+#: adminpages/settings.php:286
 #, php-format
 msgid "To enable full testing capability, make sure to add %1$s to your %2$s file."
 msgstr ""
 
 #: adminpages/settings.php:294
+#: adminpages/settings.php:310
 msgid "Enable IP Throttling"
 msgstr ""
 
 #: adminpages/settings.php:298
+#: adminpages/settings.php:314
 msgid "Enable IP-based request throttling on public endpoints."
 msgstr ""
 
 #: adminpages/settings.php:322
+#: adminpages/settings.php:341
 msgid "CAUTION:"
 msgstr ""
 
 #: adminpages/settings.php:323
+#: adminpages/settings.php:342
 msgid "\"Read and Write\" mode will create and delete test data on your site. Only use this on development/testing sites."
 msgstr ""
 
 #: classes/api/Test_Checkout_Endpoint.php:91
+#: classes/api/Test_Checkout_Endpoint.php:95
 #, php-format
 msgid "Membership level ID %d does not exist."
 msgstr ""
 
 #: classes/api/Test_Checkout_Endpoint.php:100
+#: classes/api/Test_Checkout_Endpoint.php:104
 msgid "checkout_date must be in MySQL datetime format (YYYY-MM-DD HH:MM:SS)."
 msgstr ""
 
 #: classes/api/Test_Checkout_Endpoint.php:119
+#: classes/api/Test_Checkout_Endpoint.php:123
 #, php-format
 msgid "User %1$s already has membership level %2$d."
 msgstr ""
 
 #: classes/api/Test_Checkout_Endpoint.php:189
+#: classes/api/Test_Checkout_Endpoint.php:235
 msgid "Membership level ID to test."
 msgstr ""
 
 #: classes/api/Test_Checkout_Endpoint.php:195
+#: classes/api/Test_Checkout_Endpoint.php:241
 msgid "Payment gateway to use."
 msgstr ""
 
 #: classes/api/Test_Checkout_Endpoint.php:201
+#: classes/api/Test_Checkout_Endpoint.php:247
 msgid "Skip remote gateway calls for local profiling."
 msgstr ""
 
 #: classes/api/Test_Checkout_Endpoint.php:206
+#: classes/api/Test_Checkout_Endpoint.php:252
 msgid "Delete test user and data after checkout."
 msgstr ""
 
 #: classes/api/Test_Checkout_Endpoint.php:211
+#: classes/api/Test_Checkout_Endpoint.php:257
 msgid "Custom checkout date for backdating (MySQL datetime format)."
 msgstr ""
 
 #: classes/api/Test_Checkout_Endpoint.php:216
+#: classes/api/Test_Checkout_Endpoint.php:262
 msgid "Custom username for test user."
 msgstr ""
 
 #: classes/api/Test_Checkout_Endpoint.php:220
+#: classes/api/Test_Checkout_Endpoint.php:266
 msgid "Custom email for test user."
 msgstr ""
 
 #: classes/api/Test_Checkout_Endpoint.php:253
+#: classes/api/Test_Checkout_Endpoint.php:299
 msgid "Could not generate test user data. Random user API is unavailable."
 msgstr ""
 
 #: classes/api/Test_Checkout_Endpoint.php:274
+#: classes/api/Test_Checkout_Endpoint.php:320
 msgid "Valid user_login and user_email are required."
 msgstr ""
 
 #: classes/api/Test_Checkout_Endpoint.php:282
+#: classes/api/Test_Checkout_Endpoint.php:328
 msgid "user_email must be a valid email address."
 msgstr ""
 
@@ -1047,4 +1069,16 @@ msgstr ""
 
 #: pmpro-toolkit.php:444
 msgid "Generate New User and Submit"
+msgstr ""
+
+#: adminpages/settings.php:274
+msgid "Endpoint URLs"
+msgstr ""
+
+#: adminpages/settings.php:293
+msgid "Available Endpoints"
+msgstr ""
+
+#: classes/api/Test_Checkout_Endpoint.php:159
+msgid "Could not load PMPro checkout preheader."
 msgstr ""
