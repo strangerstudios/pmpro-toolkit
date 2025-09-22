@@ -119,4 +119,35 @@ abstract class API_Endpoint {
 
 		return true;
 	}
+
+	/**
+	 * Check to see if the request's method is allowed based on the performance_endpoints setting.
+	 * This is an extra guard rail to prevent people from using "POST" methods when set to "read_only".
+	 *
+	 * @param string $method The HTTP method of the request (e.g., 'GET', 'POST', etc.).
+	 * @return boolean $allowed True if the method is allowed, false if not.
+	 */	
+	public function is_request_allowed( $method ) {
+		$allowed_methods = $this->check_setting( 'performance_endpoints' );
+		$allowed = false;
+
+		// If method is DELETE, UPDATE or PATCH let's set it to false.
+		if ( in_array( $method, array( 'DELETE', 'PUT', 'PATCH' ), true ) ) {
+			$allowed = false;
+		} elseif ( ! empty( $allowed_methods ) && $allowed_methods === 'read_write' ) {
+			$allowed = true;
+		} elseif ( ! empty( $allowed_methods ) && $allowed_methods === 'read_only' && $method === 'GET' ) {
+			$allowed = true;
+		}
+
+		/**
+		 * Filter to allow customization of whether a request method is allowed for an endpoint.
+		 * This filter passes the current allowed status, the request method, and the allowed methods setting.
+		 * 
+		 * @param bool  $allowed         Whether the request method is allowed.
+		 * @param string $method          The HTTP method of the request.
+		 * @param string $allowed_methods The allowed methods setting ('read_only', 'read_write', 'no').
+		 */
+		return apply_filters( 'pmpro_toolkit_is_request_allowed', $allowed, $method, $allowed_methods );
+	}
 }

@@ -59,6 +59,16 @@ class Test_Search_Endpoint extends API_Endpoint {
 	 * @return WP_REST_Response
 	 */
 	public function handle_request( WP_REST_Request $request ) {
+
+		$method = $request->get_method();
+		if ( ! $this->is_request_allowed( $method ) ) {
+			return $this->json_error(
+				'method_not_allowed',
+				'The ' . $method . ' method is not allowed for this endpoint. Please adjust your toolkit settings.',
+				array( 'status' => 405 )
+			);
+		}
+		
 		$search_query = sanitize_text_field( $request->get_param( 'query' ) );
 		$type         = sanitize_text_field( $request->get_param( 'type' ) );
 

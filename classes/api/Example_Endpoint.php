@@ -7,9 +7,7 @@ use WP_REST_Server;
 use WP_Error;
 
 /**
- * Upload_Failed_Endpoint
- *
- * API endpoint for handling video upload failures
+ * Example endpoint that you may use as a template for new endpoints.
  */
 class Example_Endpoint extends API_Endpoint {
 
@@ -25,7 +23,6 @@ class Example_Endpoint extends API_Endpoint {
 	 * Register the example REST API routes for this endpoint
 	 */
 	public function register_routes() {
-
 		register_rest_route(
 			$this->get_namespace(),
 			'/test-example',
@@ -58,17 +55,29 @@ class Example_Endpoint extends API_Endpoint {
 	 * @return void
 	 */
 	public function handle_request( WP_REST_Request $request ) {
-		$user_id = absint( $request->get_param( 'user_id' ) );
 
+		$method = $request->get_method();
+		if ( ! $this->is_request_allowed( $method ) ) {
+			return $this->json_error(
+				'method_not_allowed',
+				'The ' . $method . ' method is not allowed for this endpoint. Please adjust your toolkit settings.',
+				array( 'status' => 405 )
+			);
+		}
+
+		$user_id = absint( $request->get_param( 'user_id' ) );
 		if ( empty( $user_id ) ) {
-			return new WP_Error( 'invalid_user_id', 'Invalid user ID', array( 'status' => 400 ) );
+			return $this->json_error( 
+				'invalid_user_id',
+				'Invalid user ID',
+				array( 'status' => 400 ) 
+			);
 		}
 
 		// Start performance tracking
 		$this->start_performance_tracking();
 
 		$user = $this->get_user( $user_id );
-
 		if ( ! $user ) {
 			return $this->json_error( 'user_not_found', 'User not found.', 404 );
 		}

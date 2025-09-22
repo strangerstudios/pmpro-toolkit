@@ -92,6 +92,15 @@ class Test_Report_Endpoint extends API_Endpoint {
 	 * @since 1.0.0
 	 */
 	public function handle_request( WP_REST_Request $request ) {
+		
+		$method = $request->get_method();
+		if ( ! $this->is_request_allowed( $method ) ) {
+			return $this->json_error(
+				'method_not_allowed',
+				'The ' . $method . ' method is not allowed for this endpoint. Please adjust your toolkit settings.',
+				array( 'status' => 405 )
+			);
+		}
 
 		// Raise WordPress memory limit
 		wp_raise_memory_limit( 'admin' );
