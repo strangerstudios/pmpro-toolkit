@@ -200,10 +200,11 @@ class Toolkit_Commands extends WP_CLI_Command {
 		if ( $from < 1 || $to < 1 ) {
 			WP_CLI::error( __( 'Please supply valid --from and --to level IDs.', 'pmpro-toolkit' ) );
 		}
-		if ( ! empty( $end_date ) && ! preg_match( '/^\d{4}-\d{2}-\d{2}$/', $end_date ) ) {
+		$submitted_date = DateTime::createFromFormat( 'Y-m-d', $end_date );
+		if ( ! empty( $end_date ) && ( ! $submitted_date || $submitted_date->format( 'Y-m-d' ) !== $end_date ) ) {
 			WP_CLI::error( __( 'Please supply --end-date in YYYY-MM-DD format.', 'pmpro-toolkit' ) );
 		}
-		if ( ! empty( $end_date ) && strtotime( $end_date ) < strtotime( 'today' ) ) {
+		if ( ! empty( $end_date ) && strtotime( $end_date ) < strtotime( 'today', current_time( 'timestamp' ) ) ) {
 			WP_CLI::error( __( 'The expiration date must not be in the past.', 'pmpro-toolkit' ) );
 		}
 		if ( $dry ) {

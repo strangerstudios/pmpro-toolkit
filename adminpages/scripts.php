@@ -573,19 +573,21 @@ function pmprodev_move_level( $message ) {
 	$enddate      = '';
 	if ( $set_enddate ) {
 		$enddate = sanitize_text_field( $_REQUEST['move_level_enddate'] );
-		if ( empty( $enddate ) || ! preg_match( '/^\d{4}-\d{2}-\d{2}$/', $enddate ) ) {
+		$submitted_date = DateTime::createFromFormat( 'Y-m-d', $enddate );
+		if ( empty( $enddate ) || ! $submitted_date || $submitted_date->format( 'Y-m-d' ) !== $enddate ) {
 			pmprodev_output_message( __( 'Please enter a valid expiration date in YYYY-MM-DD format.', 'pmpro-toolkit' ), 'warning' );
 			pmprodev_expand_actions( 'pmprodev_move_level' );
 			return;
 		}
-		if ( strtotime( $enddate ) < strtotime( 'today' ) ) {
+
+		if ( strtotime( $enddate ) < strtotime( 'today', current_time( 'timestamp' ) ) ) {
 			pmprodev_output_message( __( 'The expiration date must not be in the past.', 'pmpro-toolkit' ), 'warning' );
 			pmprodev_expand_actions( 'pmprodev_move_level' );
 			return;
 		}
 	}
 
-	$user_ids = $wpdb->get_col( "SELECT user_id FROM $wpdb->pmpro_memberships_users WHERE membership_id = $from_level_id AND status = 'active'" );
+	$user_ids = $wpdb->get_col( $wpdb->prepare( "SELECT user_id FROM $wpdb->pmpro_memberships_users WHERE membership_id = %d AND status = 'active'", $from_level_id ) );
 
 	//Bail if no users found
 	if ( empty( $user_ids ) ) {
@@ -597,8 +599,10 @@ function pmprodev_move_level( $message ) {
 	// Run the SQL query to update the users' membership levels, and optionally set an end date.
 	if ( $set_enddate ) {
 		$wpdb->query( $wpdb->prepare(
-			"UPDATE {$wpdb->pmpro_memberships_users} SET membership_id = {$to_level_id}, enddate = %s WHERE membership_id = {$from_level_id} AND status = 'active'",
-			$enddate
+			"UPDATE {$wpdb->pmpro_memberships_users} SET membership_id = %d, enddate = %s WHERE membership_id = %d AND status = 'active'",
+			$to_level_id,
+			$enddate,
+			$from_level_id
 		) );
 	} else {
 		$wpdb->query( $wpdb->prepare(
