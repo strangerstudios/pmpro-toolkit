@@ -187,24 +187,38 @@ class Toolkit_Commands extends WP_CLI_Command {
 	 * Move all users from one level to another (database only) and run hooks.
 	 *
 	 * ## OPTIONS
-	 * --from=<id>  : Source level ID.
-	 * --to=<id>    : Destination level ID.
+	 * --from=<id>              : Source level ID.
+	 * --to=<id>                : Destination level ID.
+	 * [--end-date=<YYYY-MM-DD>]: Optional hardcoded expiration date to set for all moved members.
 	 * [--dry-run]
 	 */
 	public function move_level( $args, $assoc_args ) {
-		$dry  = isset( $assoc_args['dry-run'] );
-		$from = isset( $assoc_args['from'] ) ? intval( $assoc_args['from'] ) : 0;
-		$to   = isset( $assoc_args['to'] ) ? intval( $assoc_args['to'] ) : 0;
+		$dry      = isset( $assoc_args['dry-run'] );
+		$from     = isset( $assoc_args['from'] ) ? intval( $assoc_args['from'] ) : 0;
+		$to       = isset( $assoc_args['to'] ) ? intval( $assoc_args['to'] ) : 0;
+		$end_date = isset( $assoc_args['end-date'] ) ? sanitize_text_field( $assoc_args['end-date'] ) : '';
 		if ( $from < 1 || $to < 1 ) {
 			WP_CLI::error( __( 'Please supply valid --from and --to level IDs.', 'pmpro-toolkit' ) );
 		}
+		if ( ! empty( $end_date ) && ! preg_match( '/^\d{4}-\d{2}-\d{2}$/', $end_date ) ) {
+			WP_CLI::error( __( 'Please supply --end-date in YYYY-MM-DD format.', 'pmpro-toolkit' ) );
+		}
+		if ( ! empty( $end_date ) && strtotime( $end_date ) < strtotime( 'today' ) ) {
+			WP_CLI::error( __( 'The expiration date must not be in the past.', 'pmpro-toolkit' ) );
+		}
 		if ( $dry ) {
-			$this->dry_run_note( true, sprintf( __( 'Would move members from level %1$d to %2$d.', 'pmpro-toolkit' ), $from, $to ) );
+			$note = sprintf( __( 'Would move members from level %1$d to %2$d.', 'pmpro-toolkit' ), $from, $to );
+			if ( $end_date ) {
+				$note .= ' ' . sprintf( __( 'Expiration date would be set to %s.', 'pmpro-toolkit' ), $end_date );
+			}
+			$this->dry_run_note( true, $note );
 			return;
 		}
 		$this->confirm_or_continue( $dry, sprintf( __( 'Move all members from level %1$d to %2$d?', 'pmpro-toolkit' ), $from, $to ) );
-		$_REQUEST['move_level_a'] = $from;
-		$_REQUEST['move_level_b'] = $to;
+		$_REQUEST['move_level_a']        = $from;
+		$_REQUEST['move_level_b']        = $to;
+		$_REQUEST['move_level_set_enddate'] = ! empty( $end_date ) ? '1' : '';
+		$_REQUEST['move_level_enddate']  = $end_date;
 		\pmprodev_move_level( __( 'Users updated. Running pmpro_after_change_membership_level filter for all users...', 'pmpro-toolkit' ) );
 		WP_CLI::success( __( 'Done.', 'pmpro-toolkit' ) );
 	}
