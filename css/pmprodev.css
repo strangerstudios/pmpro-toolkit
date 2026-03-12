@@ -19,30 +19,17 @@
 	border-radius: 4px;
 	border: 2px solid currentColor;
 	transition: opacity 0.15s ease, background-color 0.15s ease;
-}
-
-#pmprodev-generate {
 	color: var(--pmpro--color--base, #fff);
 	background-color: var(--pmpro--color--accent, #0c3d54);
 	border-color: var(--pmpro--color--accent, #0c3d54);
 }
 
-#pmprodev-generate:hover:not(:disabled) {
-	background-color: var(--pmpro--color--accent--variation, #0a3347);
-	border-color: var(--pmpro--color--accent--variation, #0a3347);
-}
 
-#pmprodev-generate-submit {
-	color: var(--pmpro--color--base, #fff);
-	background-color: var(--pmpro--color--accent, #0c3d54);
-	border-color: var(--pmpro--color--accent, #0c3d54);
-}
-
+#pmprodev-generate:hover:not(:disabled),
 #pmprodev-generate-submit:hover:not(:disabled) {
 	background-color: var(--pmpro--color--accent--variation, #0a3347);
 	border-color: var(--pmpro--color--accent--variation, #0a3347);
 }
-
 #pmprodev-generate:disabled,
 #pmprodev-generate-submit:disabled {
 	opacity: 0.5;
