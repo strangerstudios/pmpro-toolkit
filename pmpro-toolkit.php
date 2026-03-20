@@ -185,8 +185,8 @@ function pmprodev_checkout_debug_email( $filter_contents = null ) {
 
 	global $pmprodev_options, $current_user, $wpdb, $pmpro_msg, $pmpro_msgt;
 
-	// Ignore the dashboard, AJAX, and webhooks.
-	if ( is_admin() || defined( 'DOING_AJAX' ) || pmpro_doing_webhook() ) {
+	// Ignore the dashboard and AJAX.
+	if ( is_admin() || defined( 'DOING_AJAX' ) ) {
 		return $filter_contents;
 	}
 
