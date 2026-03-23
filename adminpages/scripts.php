@@ -164,6 +164,14 @@ if ( ! defined( 'WP_CLI' ) || ! WP_CLI ) : ?>
 								<?php esc_html_e( 'To Level ID:', 'pmpro-toolkit' ); ?>
 								<input type="number" name="move_level_b" value="" size="5">
 							</p>
+							<p>
+								<input type="checkbox" id="pmprodev_move_level_set_enddate" name="move_level_set_enddate" value="1">
+								<label for="pmprodev_move_level_set_enddate"><?php esc_html_e( 'Set an expiration date for all moved members.', 'pmpro-toolkit' ); ?></label>
+								<span id="pmprodev_move_level_enddate_wrap" style="display: none;">
+									<br /><?php esc_html_e( 'Expiration Date:', 'pmpro-toolkit' ); ?>
+									<input type="date" name="move_level_enddate" value="">
+								</span>
+							</p>
 							<p class="description"><?php echo esc_html( $level_actions['pmprodev_move_level']['description'] ); ?></p>
 						</div>
 					</td>
@@ -299,6 +307,10 @@ if ( ! defined( 'WP_CLI' ) || ! WP_CLI ) : ?>
 			$('#pmprodev_' + action ).change(function() {
 				$('#pmprodev_' + action + '_actions').toggle( $(this).is( ':checked' ) );
 			});
+		});
+
+		$('#pmprodev_move_level_set_enddate').change(function() {
+			$('#pmprodev_move_level_enddate_wrap').toggle( $(this).is( ':checked' ) );
 		});
 	});
 </script>
@@ -557,7 +569,25 @@ function pmprodev_move_level( $message ) {
 		return;
 	}
 
-	$user_ids = $wpdb->get_col( "SELECT user_id FROM $wpdb->pmpro_memberships_users WHERE membership_id = $from_level_id AND status = 'active'" );
+	$set_enddate  = ! empty( $_REQUEST['move_level_set_enddate'] );
+	$enddate      = '';
+	if ( $set_enddate ) {
+		$enddate = sanitize_text_field( $_REQUEST['move_level_enddate'] );
+		$submitted_date = DateTime::createFromFormat( 'Y-m-d', $enddate );
+		if ( empty( $enddate ) || ! $submitted_date || $submitted_date->format( 'Y-m-d' ) !== $enddate ) {
+			pmprodev_output_message( __( 'Please enter a valid expiration date in YYYY-MM-DD format.', 'pmpro-toolkit' ), 'warning' );
+			pmprodev_expand_actions( 'pmprodev_move_level' );
+			return;
+		}
+
+		if ( strtotime( $enddate ) < strtotime( 'today', current_time( 'timestamp' ) ) ) {
+			pmprodev_output_message( __( 'The expiration date must not be in the past.', 'pmpro-toolkit' ), 'warning' );
+			pmprodev_expand_actions( 'pmprodev_move_level' );
+			return;
+		}
+	}
+
+	$user_ids = $wpdb->get_col( $wpdb->prepare( "SELECT user_id FROM $wpdb->pmpro_memberships_users WHERE membership_id = %d AND status = 'active'", $from_level_id ) );
 
 	//Bail if no users found
 	if ( empty( $user_ids ) ) {
@@ -566,7 +596,22 @@ function pmprodev_move_level( $message ) {
 		return;
 	}
 
-	$wpdb->query( "UPDATE $wpdb->pmpro_memberships_users SET membership_id = $to_level_id WHERE membership_id = $from_level_id AND status = 'active';" );
+	// Run the SQL query to update the users' membership levels, and optionally set an end date.
+	if ( $set_enddate ) {
+		$wpdb->query( $wpdb->prepare(
+			"UPDATE {$wpdb->pmpro_memberships_users} SET membership_id = %d, enddate = %s WHERE membership_id = %d AND status = 'active'",
+			$to_level_id,
+			$enddate,
+			$from_level_id
+		) );
+	} else {
+		$wpdb->query( $wpdb->prepare(
+			"UPDATE {$wpdb->pmpro_memberships_users} SET membership_id = %d WHERE membership_id = %d AND status = 'active'",
+			$to_level_id,
+			$from_level_id
+		) );
+	}
+
 	pmprodev_output_message( $message );
 	foreach ( $user_ids as $user_id ) {
 		do_action( 'pmpro_after_change_membership_level', $to_level_id, $user_id, $from_level_id );
