@@ -11,6 +11,8 @@
 
 defined( 'ABSPATH' ) || exit;
 
+define( 'PMPRO_TOOLKIT_VERSION', '1.1.1' );
+
 // If Paid Membership Pro is not active do nothing
 if ( ! is_plugin_active( 'paid-memberships-pro/paid-memberships-pro.php' ) ) {
 	return;
@@ -402,10 +404,10 @@ add_filter( 'plugin_row_meta', 'pmprodev_plugin_row_meta', 10, 2 );
  * @since 1.0
  */
 function pmprodev_enqueue_scripts() {
-	wp_register_script( 'pmprodev-generate-checkout-info', plugins_url( 'js/pmprodev-generate-checkout-info.js', __FILE__ ), array( 'jquery' ) );
+	wp_register_script( 'pmprodev-generate-checkout-info', plugins_url( 'js/pmprodev-generate-checkout-info.js', __FILE__ ), array( 'jquery' ), PMPRO_TOOLKIT_VERSION );
 	wp_enqueue_script( 'pmprodev-generate-checkout-info' );
 	// add css for the button
-	wp_register_style( 'pmprodev', plugins_url( 'css/pmprodev.css', __FILE__ ) );
+	wp_register_style( 'pmprodev', plugins_url( 'css/pmprodev.css', __FILE__ ), array(), PMPRO_TOOLKIT_VERSION );
 	wp_enqueue_style( 'pmprodev' );
 }
 

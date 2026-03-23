@@ -1,4 +1,4 @@
-function pmprodev_generate_checkout_info() {
+function pmprodev_generate_checkout_info( submit ) {
 	jQuery.noConflict().ajax({
 		url: 'https://randomuser.me/api/?nat=us',
 		dataType: 'json',
@@ -8,13 +8,15 @@ function pmprodev_generate_checkout_info() {
 		// Fill required fields.
 		jQuery('.pmpro_form_input-checkbox.pmpro_form_input-required').prop('checked', true);
 		jQuery('.pmpro_form_input-text.pmpro_form_input-required').val('Sample Text');
-		
+		const today = new Date().toISOString().split('T')[0];
+		jQuery('.pmpro_form_input-date.pmpro_form_input-required').val( today );
+
 		// Generate email address
 		const username = results.name.first + '.' + results.name.last;
 		const base_email = jQuery('#pmprodev-base-email').val();
 		const at_index = base_email.indexOf("@");
 		const user_email = base_email.substring(0, at_index) + '+' + username + base_email.substring(at_index);
-		
+
 		jQuery('#username').val( username );
 		jQuery('#password').val( username );
 		jQuery('#password2').val( username );
@@ -47,6 +49,10 @@ function pmprodev_generate_checkout_info() {
 		const nextYear = new Date().getFullYear() + 1;
 		jQuery('#ExpirationYear').val( nextYear );
 		jQuery('#CVV').val( "123" );
+
+		if ( submit ) {
+			jQuery('.pmpro_btn-submit-checkout').click();
+		}
 		}
 	});
 }
@@ -60,8 +66,7 @@ jQuery(document).ready(function ( $ ) {
 	});
 
 	$('#pmprodev-generate-submit').click(function () {
-		pmprodev_generate_checkout_info();
-		$('.pmpro_btn-submit-checkout').click();
+		pmprodev_generate_checkout_info( true );
 	});
 
 	/**
