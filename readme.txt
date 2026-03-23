@@ -2,8 +2,8 @@
 Contributors: strangerstudios, jessica o
 Tags: paid memberships pro, pmpro, debug, developer, toolkit
 Requires at least: 5.0
-Tested up to: 6.8
-Stable tag: 1.1
+Tested up to: 6.9
+Stable tag: 1.1.1
 
 Adds various tools and settings to aid in the development of Paid Memberships Pro enabled websites.
 
@@ -29,6 +29,11 @@ Features:
 Please post it in the issues section of GitHub and we'll fix it as soon as we can. Thanks for helping. https://github.com/strangerstudios/pmpro-toolkit/issues
 
 == Changelog ==
+= 1.1.1 - 2026-03-23 =
+* ENHANCEMENT: Added an option to set an expiration date when moving members between levels. #66 (@andrewlimaza)
+* BUG FIX/ENHANCEMENT: Fixed issue with Generate User buttons as well as improved styling and added support for date field completion. #67 (@andrewlimaza)
+* BUG FIX: Removed deprecated call to `pmpro_doing_webhook()` for compatibility with PMPro v3.7+. #70 (@dparker1005)
+
 = 1.1 - 2025-09-22 =
 * FEATURE: Enable performance testing endpoints to test Paid Memberships Pro key functionality. #57 (@dalemugford)
 * FEATURE: Enable scripts as CLI commands: Run Toolkit scripts in the WP CLI. #57 (@dalemugford)
