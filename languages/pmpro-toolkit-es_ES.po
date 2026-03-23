@@ -1,15 +1,15 @@
-# Copyright (C) 2025 Paid Memberships Pro
+# Copyright (C) 2026 Paid Memberships Pro
 # This file is distributed under the same license as the Paid Memberships Pro - Developer's Toolkit Add On plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Paid Memberships Pro - Developer's Toolkit Add On 1.1\n"
+"Project-Id-Version: Paid Memberships Pro - Developer's Toolkit Add On 1.1.1\n"
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2025-09-22T13:01:32+00:00\n"
+"POT-Creation-Date: 2026-03-23T15:36:09+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: pmpro-toolkit\n"
@@ -62,6 +62,7 @@ msgstr "No podía encontrar a usuarios con nivel ID "
 #: adminpages/scripts.php:70
 #: adminpages/scripts.php:76
 #: cli/Toolkit_Commands.php:208
+#: cli/Toolkit_Commands.php:223
 msgid "Users updated. Running pmpro_after_change_membership_level filter for all users..."
 msgstr "Actualizado a los usuarios. Filtro de corriente pmpro_after_change_membership_level para todos los usuarios..."
 
@@ -74,6 +75,7 @@ msgstr "los usuarios de %s eran dar nivel %s "
 #: adminpages/scripts.php:80
 #: adminpages/scripts.php:86
 #: cli/Toolkit_Commands.php:260
+#: cli/Toolkit_Commands.php:275
 msgid "Cancelling users..."
 msgstr "Cancelación de los usuarios..."
 
@@ -531,6 +533,7 @@ msgstr ""
 #: adminpages/scripts.php:88
 #: adminpages/scripts.php:94
 #: cli/Toolkit_Commands.php:286
+#: cli/Toolkit_Commands.php:301
 msgid "Content restrictions copied."
 msgstr ""
 
@@ -547,6 +550,7 @@ msgstr ""
 #: adminpages/scripts.php:93
 #: adminpages/scripts.php:99
 #: cli/Toolkit_Commands.php:309
+#: cli/Toolkit_Commands.php:324
 #, php-format
 msgid "%d orders deleted."
 msgstr ""
@@ -588,6 +592,10 @@ msgstr ""
 #: adminpages/scripts.php:205
 #: adminpages/scripts.php:240
 #: adminpages/scripts.php:264
+#: adminpages/scripts.php:187
+#: adminpages/scripts.php:213
+#: adminpages/scripts.php:248
+#: adminpages/scripts.php:272
 #, php-format
 msgid "Run the %s script."
 msgstr ""
@@ -606,51 +614,62 @@ msgstr ""
 #: adminpages/scripts.php:201
 #: adminpages/scripts.php:186
 #: adminpages/scripts.php:212
+#: adminpages/scripts.php:194
+#: adminpages/scripts.php:220
 msgid "Level ID:"
 msgstr ""
 
 #: adminpages/scripts.php:177
 #: adminpages/scripts.php:188
+#: adminpages/scripts.php:196
 msgid "Start Date:"
 msgstr ""
 
 #: adminpages/scripts.php:179
 #: adminpages/scripts.php:190
+#: adminpages/scripts.php:198
 msgid "End Date:"
 msgstr ""
 
 #: adminpages/scripts.php:216
 #: adminpages/scripts.php:227
+#: adminpages/scripts.php:235
 msgid "Other Scripts"
 msgstr ""
 
 #: adminpages/scripts.php:236
 #: adminpages/scripts.php:247
+#: adminpages/scripts.php:255
 msgid "Copy From Level ID:"
 msgstr ""
 
 #: adminpages/scripts.php:238
 #: adminpages/scripts.php:249
+#: adminpages/scripts.php:257
 msgid "Copy To Level ID:"
 msgstr ""
 
 #: adminpages/scripts.php:260
 #: adminpages/scripts.php:271
+#: adminpages/scripts.php:279
 msgid "Days:"
 msgstr ""
 
 #: adminpages/scripts.php:272
 #: adminpages/scripts.php:283
+#: adminpages/scripts.php:291
 msgid "Run Selected Tools"
 msgstr ""
 
 #: adminpages/scripts.php:303
 #: adminpages/scripts.php:314
+#: adminpages/scripts.php:326
 msgid "Security check failed."
 msgstr ""
 
 #: adminpages/scripts.php:483
 #: adminpages/scripts.php:555
+#: adminpages/scripts.php:567
 msgid "Please enter a level ID > 0 for each option."
 msgstr ""
 
@@ -658,32 +677,39 @@ msgstr ""
 #: adminpages/scripts.php:569
 #: adminpages/scripts.php:564
 #: adminpages/scripts.php:641
+#: adminpages/scripts.php:594
+#: adminpages/scripts.php:686
 #, php-format
 msgid "Couldn't find users with level ID %d."
 msgstr ""
 
 #: adminpages/scripts.php:523
 #: adminpages/scripts.php:595
+#: adminpages/scripts.php:640
 msgid "Please enter a valid level ID and start date."
 msgstr ""
 
 #: adminpages/scripts.php:562
 #: adminpages/scripts.php:634
+#: adminpages/scripts.php:679
 msgid "Please enter a valid level ID."
 msgstr ""
 
 #: adminpages/scripts.php:618
 #: adminpages/scripts.php:690
+#: adminpages/scripts.php:735
 msgid "Please enter a number of days."
 msgstr ""
 
 #: adminpages/scripts.php:626
 #: adminpages/scripts.php:698
+#: adminpages/scripts.php:743
 msgid "Please enter a valid number of days."
 msgstr ""
 
 #: adminpages/scripts.php:663
 #: adminpages/scripts.php:740
+#: adminpages/scripts.php:785
 msgid "Process complete."
 msgstr ""
 
@@ -812,16 +838,20 @@ msgstr ""
 #: pmpro-toolkit.php:239
 #: pmpro-toolkit.php:297
 #: pmpro-toolkit.php:323
+#: pmpro-toolkit.php:299
+#: pmpro-toolkit.php:325
 msgid "Toolkit"
 msgstr ""
 
 #: pmpro-toolkit.php:363
 #: pmpro-toolkit.php:440
+#: pmpro-toolkit.php:442
 msgid "Base Email for Generating New User"
 msgstr ""
 
 #: pmpro-toolkit.php:366
 #: pmpro-toolkit.php:443
+#: pmpro-toolkit.php:445
 msgid "Generate New User"
 msgstr ""
 
@@ -1112,6 +1142,11 @@ msgstr ""
 #: cli/Toolkit_Commands.php:261
 #: cli/Toolkit_Commands.php:287
 #: cli/Toolkit_Commands.php:310
+#: cli/Toolkit_Commands.php:224
+#: cli/Toolkit_Commands.php:253
+#: cli/Toolkit_Commands.php:276
+#: cli/Toolkit_Commands.php:302
+#: cli/Toolkit_Commands.php:325
 msgid "Done."
 msgstr ""
 
@@ -1173,93 +1208,114 @@ msgstr ""
 
 #: cli/Toolkit_Commands.php:199
 #: cli/Toolkit_Commands.php:277
+#: cli/Toolkit_Commands.php:201
+#: cli/Toolkit_Commands.php:292
 msgid "Please supply valid --from and --to level IDs."
 msgstr ""
 
 #: cli/Toolkit_Commands.php:202
+#: cli/Toolkit_Commands.php:211
 #, php-format
 msgid "Would move members from level %1$d to %2$d."
 msgstr ""
 
 #: cli/Toolkit_Commands.php:205
+#: cli/Toolkit_Commands.php:218
 #, php-format
 msgid "Move all members from level %1$d to %2$d?"
 msgstr ""
 
 #: cli/Toolkit_Commands.php:227
+#: cli/Toolkit_Commands.php:242
 msgid "Please supply --level and --start."
 msgstr ""
 
 #: cli/Toolkit_Commands.php:230
+#: cli/Toolkit_Commands.php:245
 #, php-format
 msgid "Would assign level %1$d to users without membership starting %2$s%3$s."
 msgstr ""
 
 #: cli/Toolkit_Commands.php:233
+#: cli/Toolkit_Commands.php:248
 #, php-format
 msgid "Assign level %d to all users without an active membership?"
 msgstr ""
 
 #: cli/Toolkit_Commands.php:237
+#: cli/Toolkit_Commands.php:252
 #, php-format
 msgid "%1$s users were given level %2$s"
 msgstr ""
 
 #: cli/Toolkit_Commands.php:252
+#: cli/Toolkit_Commands.php:267
 msgid "Please supply --level."
 msgstr ""
 
 #: cli/Toolkit_Commands.php:255
+#: cli/Toolkit_Commands.php:270
 #, php-format
 msgid "Would cancel all users with level %d."
 msgstr ""
 
 #: cli/Toolkit_Commands.php:258
+#: cli/Toolkit_Commands.php:273
 #, php-format
 msgid "Cancel all active memberships for level %d (including recurring subscriptions)?"
 msgstr ""
 
 #: cli/Toolkit_Commands.php:280
+#: cli/Toolkit_Commands.php:295
 #, php-format
 msgid "Would copy restricted pages from level %1$d to %2$d."
 msgstr ""
 
 #: cli/Toolkit_Commands.php:283
+#: cli/Toolkit_Commands.php:298
 #, php-format
 msgid "Copy restricted pages from level %1$d to %2$d?"
 msgstr ""
 
 #: cli/Toolkit_Commands.php:301
+#: cli/Toolkit_Commands.php:316
 msgid "Please supply --days (integer > 0)."
 msgstr ""
 
 #: cli/Toolkit_Commands.php:304
+#: cli/Toolkit_Commands.php:319
 #, php-format
 msgid "Would delete incomplete orders older than %d days."
 msgstr ""
 
 #: cli/Toolkit_Commands.php:307
+#: cli/Toolkit_Commands.php:322
 #, php-format
 msgid "Delete incomplete (token/pending/review) orders older than %d days?"
 msgstr ""
 
 #: pmpro-toolkit.php:389
+#: pmpro-toolkit.php:391
 msgid "View Documentation"
 msgstr ""
 
 #: pmpro-toolkit.php:389
+#: pmpro-toolkit.php:391
 msgid "Docs"
 msgstr ""
 
 #: pmpro-toolkit.php:390
+#: pmpro-toolkit.php:392
 msgid "Visit Customer Support Forum"
 msgstr ""
 
 #: pmpro-toolkit.php:390
+#: pmpro-toolkit.php:392
 msgid "Support"
 msgstr ""
 
 #: pmpro-toolkit.php:444
+#: pmpro-toolkit.php:446
 msgid "Generate New User and Submit"
 msgstr ""
 
@@ -1274,4 +1330,30 @@ msgstr ""
 #: classes/api/Test_Checkout_Endpoint.php:159
 #: classes/api/Test_Checkout_Endpoint.php:169
 msgid "Could not load PMPro checkout preheader."
+msgstr ""
+
+#: adminpages/scripts.php:169
+msgid "Set an expiration date for all moved members."
+msgstr ""
+
+#: adminpages/scripts.php:171
+msgid "Expiration Date:"
+msgstr ""
+
+#: adminpages/scripts.php:578
+msgid "Please enter a valid expiration date in YYYY-MM-DD format."
+msgstr ""
+
+#: adminpages/scripts.php:584
+#: cli/Toolkit_Commands.php:208
+msgid "The expiration date must not be in the past."
+msgstr ""
+
+#: cli/Toolkit_Commands.php:205
+msgid "Please supply --end-date in YYYY-MM-DD format."
+msgstr ""
+
+#: cli/Toolkit_Commands.php:213
+#, php-format
+msgid "Expiration date would be set to %s."
 msgstr ""
