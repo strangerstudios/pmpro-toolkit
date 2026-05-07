@@ -3,7 +3,7 @@ Contributors: strangerstudios, jessica o
 Tags: paid memberships pro, pmpro, debug, developer, toolkit
 Requires at least: 5.0
 Tested up to: 6.9
-Stable tag: 1.1.1
+Stable tag: 1.1.2
 
 Adds various tools and settings to aid in the development of Paid Memberships Pro enabled websites.
 
@@ -29,6 +29,9 @@ Features:
 Please post it in the issues section of GitHub and we'll fix it as soon as we can. Thanks for helping. https://github.com/strangerstudios/pmpro-toolkit/issues
 
 == Changelog ==
+= 1.1.2 - 2026-05-07 =
+* BUG FIX: Replaced the top-of-file `is_plugin_active()` early return with narrow `function_exists()` checks at each PMPro-dependent entry point. The plugin now initializes correctly when PMPro is installed under a non-standard folder name (e.g. `paid-memberships-pro-rc1`) and avoids potential fatals on frontend requests. #71 (@dparker1005)
+
 = 1.1.1 - 2026-03-23 =
 * ENHANCEMENT: Added an option to set an expiration date when moving members between levels. #66 (@andrewlimaza)
 * BUG FIX/ENHANCEMENT: Fixed issue with Generate User buttons as well as improved styling and added support for date field completion. #67 (@andrewlimaza)
