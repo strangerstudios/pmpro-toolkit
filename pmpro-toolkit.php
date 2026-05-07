@@ -13,11 +13,6 @@ defined( 'ABSPATH' ) || exit;
 
 define( 'PMPRO_TOOLKIT_VERSION', '1.1.1' );
 
-// If Paid Membership Pro is not active do nothing
-if ( ! is_plugin_active( 'paid-memberships-pro/paid-memberships-pro.php' ) ) {
-	return;
-}
-
 /*
 * Globals
 */
@@ -71,7 +66,7 @@ require_once PMPRODEV_DIR . '/classes/class-pmprodev-migration-assistant.php';
  * @return void
  * @since 1.1
  */
-if ( ! empty( $pmprodev_options['performance_endpoints'] ) && $pmprodev_options['performance_endpoints'] !== 'no' ) {
+if ( ! empty( $pmprodev_options['performance_endpoints'] ) && $pmprodev_options['performance_endpoints'] !== 'no' && function_exists( 'pmpro_getOption' ) ) {
 	// Explicitly load the API Loader class.
 	require_once plugin_dir_path( __FILE__ ) . 'classes/class-api-loader.php';
 	// Load the API Performance Tracking Trait.
@@ -93,7 +88,7 @@ if ( ! empty( $pmprodev_options['performance_endpoints'] ) && $pmprodev_options[
  * @return void
  * @since 1.1
  */
-if ( defined( 'WP_CLI' ) && WP_CLI && ! empty( $pmprodev_options['enable_cli_commands'] ) ) {
+if ( defined( 'WP_CLI' ) && WP_CLI && ! empty( $pmprodev_options['enable_cli_commands'] ) && function_exists( 'pmpro_getOption' ) ) {
 	// Load CLI command class only if enabled via Toolkit setting.
 	require_once plugin_dir_path( __FILE__ ) . 'cli/Toolkit_Commands.php';
 	\WP_CLI::add_command( 'pmpro-toolkit', 'PMPro_Toolkit\\Toolkit_Commands' );
@@ -337,6 +332,9 @@ function pmprodev_admin_menu_bar( $wp_admin_bar ) {
  * @since 1.0
  */
 function pmprodev_process_migration_export() {
+	if ( ! function_exists( 'pmpro_getAllLevels' ) ) {
+		return;
+	}
 	if ( ! empty( $_REQUEST['page'] ) && 'pmpro-toolkit' === $_REQUEST['page'] && ! empty( $_REQUEST['section'] )
 	&& 'migration' === $_REQUEST['section'] && ! empty( $_REQUEST['pmprodev_export_options'] ) ) {
 		PMProDev_Migration_Assistant::export( $_REQUEST['pmprodev_export_options'] );
@@ -351,6 +349,9 @@ add_action( 'admin_init', 'pmprodev_process_migration_export' );
  * @since 1.0
  */
 function pmprodev_settings_page() {
+	if ( ! function_exists( 'pmpro_getParam' ) ) {
+		return;
+	}
 	require_once plugin_dir_path( __FILE__ ) . '/adminpages/toolkit.php';
 }
 
