@@ -258,6 +258,16 @@ class Toolkit_Commands extends WP_CLI_Command {
 	 *
 	 * ## OPTIONS
 	 * --level=<id> : Level ID to cancel.
+	 * [--when=<when>] : When to cancel. 'immediate' (default) cancels memberships and
+	 *   recurring subscriptions right away. 'next-payment-date' stops recurring billing
+	 *   but keeps each membership active until the subscription's next payment date
+	 *   (members without an active subscription are cancelled immediately).
+	 * ---
+	 * default: immediate
+	 * options:
+	 *   - immediate
+	 *   - next-payment-date
+	 * ---
 	 * [--dry-run]
 	 */
 	public function cancel_level( $args, $assoc_args ) {
@@ -266,12 +276,18 @@ class Toolkit_Commands extends WP_CLI_Command {
 		if ( $level < 1 ) {
 			WP_CLI::error( __( 'Please supply --level.', 'pmpro-toolkit' ) );
 		}
+		$when = isset( $assoc_args['when'] ) && 'next-payment-date' === $assoc_args['when'] ? 'next_payment_date' : 'immediate';
 		if ( $dry ) {
-			$this->dry_run_note( true, sprintf( __( 'Would cancel all users with level %d.', 'pmpro-toolkit' ), $level ) );
+			$this->dry_run_note( true, 'next_payment_date' === $when
+				? sprintf( __( 'Would set memberships with level %d to expire on their next payment date.', 'pmpro-toolkit' ), $level )
+				: sprintf( __( 'Would cancel all users with level %d.', 'pmpro-toolkit' ), $level ) );
 			return;
 		}
-		$this->confirm_or_continue( $dry, sprintf( __( 'Cancel all active memberships for level %d (including recurring subscriptions)?', 'pmpro-toolkit' ), $level ) );
-		$_REQUEST['cancel_level_id'] = $level;
+		$this->confirm_or_continue( $dry, 'next_payment_date' === $when
+			? sprintf( __( 'Set all active memberships for level %d to expire on their next payment date (and stop recurring billing)?', 'pmpro-toolkit' ), $level )
+			: sprintf( __( 'Cancel all active memberships for level %d (including recurring subscriptions)?', 'pmpro-toolkit' ), $level ) );
+		$_REQUEST['cancel_level_id']   = $level;
+		$_REQUEST['cancel_level_type'] = $when;
 		\pmprodev_cancel_level( __( 'Cancelling users...', 'pmpro-toolkit' ) );
 		WP_CLI::success( __( 'Done.', 'pmpro-toolkit' ) );
 	}
