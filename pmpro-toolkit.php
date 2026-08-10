@@ -92,6 +92,16 @@ if ( defined( 'WP_CLI' ) && WP_CLI && ! empty( $pmprodev_options['enable_cli_com
 	// Load CLI command class only if enabled via Toolkit setting.
 	require_once plugin_dir_path( __FILE__ ) . 'cli/Toolkit_Commands.php';
 	\WP_CLI::add_command( 'pmpro-toolkit', 'PMPro_Toolkit\\Toolkit_Commands' );
+
+	// Test data commands (one class per command).
+	foreach ( glob( plugin_dir_path( __FILE__ ) . 'cli/commands/*_Command.php' ) as $pmprodev_cli_command_file ) {
+		require_once $pmprodev_cli_command_file;
+	}
+	\WP_CLI::add_command( 'pmpro-toolkit bulk-add-users', 'PMPro_Toolkit\\Bulk_Add_Users_Command' );
+	\WP_CLI::add_command( 'pmpro-toolkit bulk-checkout-users', 'PMPro_Toolkit\\Bulk_Checkout_Users_Command' );
+	\WP_CLI::add_command( 'pmpro-toolkit expire-memberships', 'PMPro_Toolkit\\Expire_Memberships_Command' );
+	\WP_CLI::add_command( 'pmpro-toolkit payment-reminders', 'PMPro_Toolkit\\Payment_Reminders_Command' );
+	\WP_CLI::add_command( 'pmpro-toolkit cleanup-actions', 'PMPro_Toolkit\\Cleanup_Actions_Command' );
 }
 
 /**
