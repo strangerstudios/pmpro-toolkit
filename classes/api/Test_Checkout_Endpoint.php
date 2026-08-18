@@ -28,13 +28,14 @@ class Test_Checkout_Endpoint extends API_Endpoint {
 	}
 
 	/**
-	 * Permission callback for the endpoint. Unauthenticated access is allowed, but
-	 * rate limiting is applied based on IP address.
+	 * Permission callback for the endpoint. Requires an authenticated administrator
+	 * unless unauthenticated access is explicitly enabled via the
+	 * pmpro_toolkit_allow_unauthenticated_requests filter.
 	 *
 	 * @return bool|WP_Error
 	 */
 	public function handle_permissions() {
-		return $this->throttle_if_unauthenticated();
+		return $this->handle_permissions_with_unauthenticated_opt_in();
 	}
 
 	/**
