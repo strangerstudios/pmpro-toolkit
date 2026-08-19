@@ -220,6 +220,18 @@ if ( ! defined( 'WP_CLI' ) || ! WP_CLI ) : ?>
 								<?php esc_html_e( 'Level ID:', 'pmpro-toolkit' ); ?>
 								<input type="number" name="cancel_level_id" value="" size="5">
 							</p>
+							<p>
+								<label>
+									<input type="radio" name="cancel_level_type" value="immediate" checked>
+									<?php esc_html_e( 'Cancel membership immediately.', 'pmpro-toolkit' ); ?>
+								</label>
+							</p>
+							<p>
+								<label>
+									<input type="radio" name="cancel_level_type" value="next_payment_date">
+									<?php esc_html_e( 'Set expiration date to the next payment date (if set), otherwise cancel membership immediately.', 'pmpro-toolkit' ); ?>
+								</label>
+							</p>
 							<p class="description"><?php echo esc_html( $level_actions['pmprodev_cancel_level']['description'] ); ?></p>
 						</div>
 					</td>
@@ -665,6 +677,12 @@ function pmprodev_give_level( $message ) {
 /**
  * Cancel all users with a specific membership level.
  *
+ * Supports two modes via the `cancel_level_type` request param:
+ *  - 'immediate' (default): cancel the membership and any recurring subscription right away.
+ *  - 'next_payment_date': stop recurring billing but keep the membership active until the
+ *    subscription's next payment date. Members without an active subscription (no future
+ *    payment date) are cancelled immediately.
+ *
  * @param string $message The message to display after the process is complete.
  * @since 1.0
  * @return void
@@ -687,13 +705,80 @@ function pmprodev_cancel_level( $message ) {
 		pmprodev_expand_actions( 'pmprodev_cancel_level' );
 	}
 
+	// Determine whether to cancel immediately or expire on the next payment date.
+	$cancel_type = isset( $_REQUEST['cancel_level_type'] ) ? sanitize_text_field( $_REQUEST['cancel_level_type'] ) : 'immediate';
+	if ( 'next_payment_date' !== $cancel_type ) {
+		$cancel_type = 'immediate';
+	}
+
 	$message = sprintf( $message, count( $user_ids ) );
 	pmprodev_output_message( $message );
 	foreach ( $user_ids as $user_id ) {
-		pmpro_cancelMembershipLevel( $cancel_level_id, $user_id );
+		if ( 'next_payment_date' === $cancel_type ) {
+			pmprodev_cancel_level_on_next_payment_date( $cancel_level_id, $user_id );
+		} else {
+			pmpro_cancelMembershipLevel( $cancel_level_id, $user_id );
+		}
 	}
 
 	pmprodev_process_complete();
+}
+
+/**
+ * Cancel a user's recurring billing but keep their membership active until the
+ * subscription's next payment date.
+ *
+ * Cancelling the subscription at the gateway marks it cancelled in the database first,
+ * so the resulting webhook will not strip the membership. We then set the membership's
+ * end date to the latest upcoming payment date so PMPro's expiration cron removes the
+ * level when that date passes. Members without a future payment date are cancelled
+ * immediately, since there is no term to keep active.
+ *
+ * @param int $level_id The membership level ID being cancelled.
+ * @param int $user_id  The user whose membership is being cancelled.
+ * @since 1.x
+ * @return void
+ */
+function pmprodev_cancel_level_on_next_payment_date( $level_id, $user_id ) {
+	global $wpdb;
+
+	// Find the latest upcoming payment date across the user's active subscriptions for this level.
+	$next_payment_date = '';
+	if ( class_exists( 'PMPro_Subscription' ) ) {
+		$subscriptions = PMPro_Subscription::get_subscriptions_for_user( $user_id, $level_id );
+		foreach ( $subscriptions as $subscription ) {
+			$date = $subscription->get_next_payment_date( 'Y-m-d H:i:s' );
+			if ( ! empty( $date ) && ( empty( $next_payment_date ) || $date > $next_payment_date ) ) {
+				$next_payment_date = $date;
+			}
+		}
+	}
+
+	// No future payment date to keep the membership active until, so cancel immediately.
+	if ( empty( $next_payment_date ) || strtotime( $next_payment_date ) <= current_time( 'timestamp' ) ) {
+		pmpro_cancelMembershipLevel( $level_id, $user_id );
+		return;
+	}
+
+	// Stop recurring billing at the gateway (keeps the membership active).
+	foreach ( $subscriptions as $subscription ) {
+		$subscription->cancel_at_gateway();
+	}
+
+	// Keep the membership active but set it to expire on the next payment date.
+	$wpdb->update(
+		$wpdb->pmpro_memberships_users,
+		array( 'enddate' => $next_payment_date ),
+		array(
+			'user_id'       => $user_id,
+			'membership_id' => $level_id,
+			'status'        => 'active',
+		),
+		array( '%s' ),
+		array( '%d', '%d', '%s' )
+	);
+
+	pmpro_clear_level_cache_for_user( $user_id );
 }
 
 /**
