@@ -83,8 +83,8 @@ class API_Loader {
 		if ( ! empty( $user ) ) {
 			return $user;
 		}
-		// Only run on REST API requests.
-		if ( ! defined( 'REST_REQUEST' ) || ! REST_REQUEST ) {
+		// Only run on REST API requests for Toolkit endpoints.
+		if ( ! defined( 'REST_REQUEST' ) || ! REST_REQUEST || ! $this->is_toolkit_rest_request() ) {
 			return $user;
 		}
 		// Only attempt if PHP_AUTH_USER and PHP_AUTH_PW are set.
@@ -129,6 +129,10 @@ class API_Loader {
 	 * @return bool|WP_Error True if authenticated, WP_Error if not.
 	 */
 	public function hybrid_basic_auth( $result ) {
+		// Only run for Toolkit endpoints.
+		if ( ! $this->is_toolkit_rest_request() ) {
+			return $result;
+		}
 		// Only override invalid application password errors.
 		if ( is_wp_error( $result ) && $result->get_error_code() === 'incorrect_password' ) {
 			if (
@@ -143,5 +147,23 @@ class API_Loader {
 			}
 		}
 		return $result;
+	}
+
+	/**
+	 * Check whether the current REST request targets a Toolkit endpoint.
+	 *
+	 * @since TBD
+	 *
+	 * @return bool
+	 */
+	protected function is_toolkit_rest_request() {
+		// Use the rest_route query var rather than REQUEST_URI: it is set for both pretty
+		// and plain (?rest_route=) permalinks, and it reflects the route actually being
+		// dispatched, so it can't be spoofed by including the Toolkit path elsewhere in the URL.
+		if ( empty( $GLOBALS['wp']->query_vars['rest_route'] ) ) {
+			return false;
+		}
+		$rest_route = '/' . ltrim( $GLOBALS['wp']->query_vars['rest_route'], '/' );
+		return 0 === strpos( $rest_route, '/' . API_Endpoint::$namespace . '/' );
 	}
 }

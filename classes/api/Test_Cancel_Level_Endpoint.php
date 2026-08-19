@@ -19,7 +19,7 @@ class Test_Cancel_Level_Endpoint extends API_Endpoint {
 			'/test-cancel-level',
 			array(
 				'methods'             => WP_REST_Server::CREATABLE,
-				'permission_callback' => array( $this, 'handle_permissions' ), // inherits from Abstract_API_Endpoint (require authentication)
+				'permission_callback' => 'is_user_logged_in', // Only acts on the current user, so load tests can authenticate as the member being profiled.
 				'callback'            => array( $this, 'handle_request' ),
 			)
 		);

@@ -45,15 +45,41 @@ abstract class API_Endpoint {
 
 	/**
 	 * Default permission callback for endpoints.
-	 * Requires authentication by default.
+	 * Requires an authenticated administrator by default.
 	 *
 	 * @return bool
 	 */
 	public function handle_permissions() {
-		return is_user_logged_in();
+		return current_user_can( 'manage_options' );
 	}
 
 
+
+	/**
+	 * Permission callback for endpoints that previously allowed unauthenticated access.
+	 *
+	 * Defaults to requiring an authenticated administrator. Unauthenticated access must be
+	 * explicitly enabled with the pmpro_toolkit_allow_unauthenticated_requests filter, in
+	 * which case IP throttling applies if enabled.
+	 *
+	 * @since TBD
+	 *
+	 * @return bool|WP_Error
+	 */
+	public function handle_permissions_with_unauthenticated_opt_in() {
+		/**
+		 * Filter whether unauthenticated requests are allowed for performance test endpoints.
+		 *
+		 * @since TBD
+		 *
+		 * @param bool          $allow    Whether to allow unauthenticated requests. Default false.
+		 * @param API_Endpoint  $endpoint The endpoint instance being checked.
+		 */
+		if ( ! apply_filters( 'pmpro_toolkit_allow_unauthenticated_requests', false, $this ) ) {
+			return current_user_can( 'manage_options' );
+		}
+		return $this->throttle_if_unauthenticated();
+	}
 
 	/**
 	 * Standard JSON success response
