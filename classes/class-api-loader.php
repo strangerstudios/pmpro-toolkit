@@ -152,7 +152,7 @@ class API_Loader {
 	/**
 	 * Check whether the current REST request targets a Toolkit endpoint.
 	 *
-	 * @since TBD
+	 * @since 1.1.3
 	 *
 	 * @return bool
 	 */

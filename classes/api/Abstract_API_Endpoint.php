@@ -62,7 +62,7 @@ abstract class API_Endpoint {
 	 * explicitly enabled with the pmpro_toolkit_allow_unauthenticated_requests filter, in
 	 * which case IP throttling applies if enabled.
 	 *
-	 * @since TBD
+	 * @since 1.1.3
 	 *
 	 * @return bool|WP_Error
 	 */
@@ -70,7 +70,7 @@ abstract class API_Endpoint {
 		/**
 		 * Filter whether unauthenticated requests are allowed for performance test endpoints.
 		 *
-		 * @since TBD
+		 * @since 1.1.3
 		 *
 		 * @param bool          $allow    Whether to allow unauthenticated requests. Default false.
 		 * @param API_Endpoint  $endpoint The endpoint instance being checked.

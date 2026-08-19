@@ -2,8 +2,8 @@
 Contributors: strangerstudios, jessica o
 Tags: paid memberships pro, pmpro, debug, developer, toolkit
 Requires at least: 5.0
-Tested up to: 6.9
-Stable tag: 1.1.2
+Tested up to: 7.0
+Stable tag: 1.1.3
 
 Adds various tools and settings to aid in the development of Paid Memberships Pro enabled websites.
 
@@ -29,6 +29,10 @@ Features:
 Please post it in the issues section of GitHub and we'll fix it as soon as we can. Thanks for helping. https://github.com/strangerstudios/pmpro-toolkit/issues
 
 == Changelog ==
+= 1.1.3 - 2026-08-19 =
+* SECURITY: Performance testing REST API endpoints now require an authenticated administrator by default. Unauthenticated access can be re-enabled with the new `pmpro_toolkit_allow_unauthenticated_requests` filter. #74 (@flintfromthebasement)
+* SECURITY: Basic Auth is now only allowed for Toolkit REST API routes. #74 (@flintfromthebasement)
+
 = 1.1.2 - 2026-05-07 =
 * BUG FIX: Replaced the top-of-file `is_plugin_active()` early return with narrow `function_exists()` checks at each PMPro-dependent entry point. The plugin now initializes correctly when PMPro is installed under a non-standard folder name (e.g. `paid-memberships-pro-rc1`) and avoids potential fatals on frontend requests. #71 (@dparker1005)
 
