@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the Paid Memberships Pro - Developer's Toolkit Add On plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Paid Memberships Pro - Developer's Toolkit Add On 1.1.2\n"
+"Project-Id-Version: Paid Memberships Pro - Developer's Toolkit Add On 1.1.3\n"
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-05-07T18:57:00+00:00\n"
+"POT-Creation-Date: 2026-08-19T16:46:32+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: pmpro-toolkit\n"
@@ -671,65 +671,65 @@ msgstr ""
 msgid "Toolkit Menu"
 msgstr ""
 
-#: classes/api/Test_Checkout_Endpoint.php:105
+#: classes/api/Test_Checkout_Endpoint.php:106
 #, php-format
 msgid "Membership level ID %d does not exist."
 msgstr ""
 
-#: classes/api/Test_Checkout_Endpoint.php:114
+#: classes/api/Test_Checkout_Endpoint.php:115
 msgid "checkout_date must be in MySQL datetime format (YYYY-MM-DD HH:MM:SS)."
 msgstr ""
 
-#: classes/api/Test_Checkout_Endpoint.php:133
+#: classes/api/Test_Checkout_Endpoint.php:134
 #, php-format
 msgid "User %1$s already has membership level %2$d."
 msgstr ""
 
-#: classes/api/Test_Checkout_Endpoint.php:169
+#: classes/api/Test_Checkout_Endpoint.php:170
 msgid "Could not load PMPro checkout preheader."
 msgstr ""
 
-#: classes/api/Test_Checkout_Endpoint.php:245
+#: classes/api/Test_Checkout_Endpoint.php:246
 msgid "Membership level ID to test."
 msgstr ""
 
-#: classes/api/Test_Checkout_Endpoint.php:251
+#: classes/api/Test_Checkout_Endpoint.php:252
 msgid "Payment gateway to use."
 msgstr ""
 
-#: classes/api/Test_Checkout_Endpoint.php:257
+#: classes/api/Test_Checkout_Endpoint.php:258
 msgid "Skip remote gateway calls for local profiling."
 msgstr ""
 
-#: classes/api/Test_Checkout_Endpoint.php:262
+#: classes/api/Test_Checkout_Endpoint.php:263
 msgid "Delete test user and data after checkout."
 msgstr ""
 
-#: classes/api/Test_Checkout_Endpoint.php:267
+#: classes/api/Test_Checkout_Endpoint.php:268
 msgid "Custom checkout date for backdating (MySQL datetime format)."
 msgstr ""
 
-#: classes/api/Test_Checkout_Endpoint.php:272
+#: classes/api/Test_Checkout_Endpoint.php:273
 msgid "Custom username for test user."
 msgstr ""
 
-#: classes/api/Test_Checkout_Endpoint.php:276
+#: classes/api/Test_Checkout_Endpoint.php:277
 msgid "Custom email for test user."
 msgstr ""
 
-#: classes/api/Test_Checkout_Endpoint.php:309
+#: classes/api/Test_Checkout_Endpoint.php:310
 msgid "Could not generate test user data. Random user API is unavailable."
 msgstr ""
 
-#: classes/api/Test_Checkout_Endpoint.php:330
+#: classes/api/Test_Checkout_Endpoint.php:331
 msgid "Valid user_login and user_email are required."
 msgstr ""
 
-#: classes/api/Test_Checkout_Endpoint.php:338
+#: classes/api/Test_Checkout_Endpoint.php:339
 msgid "user_email must be a valid email address."
 msgstr ""
 
-#: classes/api/Test_Login_Endpoint.php:102
+#: classes/api/Test_Login_Endpoint.php:103
 msgid "Invalid username or incorrect password."
 msgstr ""
 
