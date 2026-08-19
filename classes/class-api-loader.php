@@ -157,10 +157,13 @@ class API_Loader {
 	 * @return bool
 	 */
 	protected function is_toolkit_rest_request() {
-		if ( empty( $_SERVER['REQUEST_URI'] ) ) {
+		// Use the rest_route query var rather than REQUEST_URI: it is set for both pretty
+		// and plain (?rest_route=) permalinks, and it reflects the route actually being
+		// dispatched, so it can't be spoofed by including the Toolkit path elsewhere in the URL.
+		if ( empty( $GLOBALS['wp']->query_vars['rest_route'] ) ) {
 			return false;
 		}
-		$request_uri = esc_url_raw( wp_unslash( $_SERVER['REQUEST_URI'] ) );
-		return false !== strpos( $request_uri, '/' . rest_get_url_prefix() . '/' . API_Endpoint::$namespace . '/' );
+		$rest_route = '/' . ltrim( $GLOBALS['wp']->query_vars['rest_route'], '/' );
+		return 0 === strpos( $rest_route, '/' . API_Endpoint::$namespace . '/' );
 	}
 }

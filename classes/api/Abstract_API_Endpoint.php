@@ -45,12 +45,12 @@ abstract class API_Endpoint {
 
 	/**
 	 * Default permission callback for endpoints.
-	 * Requires authentication by default.
+	 * Requires an authenticated administrator by default.
 	 *
 	 * @return bool
 	 */
 	public function handle_permissions() {
-		return is_user_logged_in();
+		return current_user_can( 'manage_options' );
 	}
 
 
