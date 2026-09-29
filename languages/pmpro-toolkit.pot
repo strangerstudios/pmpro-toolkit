@@ -2,14 +2,14 @@
 # This file is distributed under the same license as the Paid Memberships Pro - Developer's Toolkit Add On plugin.
 msgid ""
 msgstr ""
-"Project-Id-Version: Paid Memberships Pro - Developer's Toolkit Add On 1.1.3\n"
+"Project-Id-Version: Paid Memberships Pro - Developer's Toolkit Add On 1.1.4\n"
 "Report-Msgid-Bugs-To: info@paidmembershipspro.com\n"
 "Last-Translator: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "Language-Team: Paid Memberships Pro <info@paidmembershipspro.com>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-08-19T16:46:32+00:00\n"
+"POT-Creation-Date: 2026-09-29T14:58:17+00:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: pmpro-toolkit\n"
@@ -39,635 +39,635 @@ msgstr ""
 msgid "https://www.paidmembershipspro.com"
 msgstr ""
 
-#: adminpages/cli-commands.php:4
-#: adminpages/settings.php:4
-#: adminpages/toolkit.php:4
+#: adminpages/cli-commands.php:9
+#: adminpages/settings.php:9
+#: adminpages/toolkit.php:9
 msgid "You do not have permissions to perform this action."
 msgstr ""
 
-#: adminpages/cli-commands.php:14
-#: adminpages/settings.php:15
+#: adminpages/cli-commands.php:19
+#: adminpages/settings.php:20
 msgid "Are you sure you want to do that? Try again."
 msgstr ""
 
-#: adminpages/cli-commands.php:23
+#: adminpages/cli-commands.php:28
 msgid "CLI command settings updated."
 msgstr ""
 
-#: adminpages/cli-commands.php:29
-#: adminpages/toolkit.php:32
+#: adminpages/cli-commands.php:34
+#: adminpages/toolkit.php:37
 msgid "CLI Commands"
 msgstr ""
 
-#: adminpages/cli-commands.php:36
+#: adminpages/cli-commands.php:41
 msgid "Enable WP-CLI Commands"
 msgstr ""
 
-#: adminpages/cli-commands.php:43
+#: adminpages/cli-commands.php:48
 msgid "Enable Toolkit CLI Commands"
 msgstr ""
 
-#: adminpages/cli-commands.php:46
+#: adminpages/cli-commands.php:51
 msgid "Enable Database Scripts as commands in WP-CLI. We recommend enabling on development or staging sites only."
 msgstr ""
 
-#: adminpages/cli-commands.php:58
+#: adminpages/cli-commands.php:63
 msgid "Usage"
 msgstr ""
 
-#: adminpages/cli-commands.php:62
+#: adminpages/cli-commands.php:67
 msgid "Run Toolkit commands from your WordPress install directory using WP-CLI. These commands can modify or delete data. Use caution and always backup first."
 msgstr ""
 
-#: adminpages/cli-commands.php:63
+#: adminpages/cli-commands.php:68
 msgid "Append --dry-run to preview changes without modifying data."
 msgstr ""
 
-#: adminpages/cli-commands.php:83
-#: adminpages/settings.php:322
+#: adminpages/cli-commands.php:88
+#: adminpages/settings.php:327
 msgid "Save Settings"
 msgstr ""
 
-#: adminpages/migration.php:2
-#: adminpages/toolkit.php:37
+#: adminpages/migration.php:7
+#: adminpages/toolkit.php:42
 msgid "Migration Assistant"
 msgstr ""
 
-#: adminpages/migration.php:3
+#: adminpages/migration.php:8
 msgid "Use the options below to import or export PMPro data from one membership site to another membership site."
 msgstr ""
 
-#: adminpages/migration.php:4
+#: adminpages/migration.php:9
 #, php-format
 msgid "If you need to import or export members, please check out the <a href=\"%s\" target=\"_blank\">Import Members From CSV Add On here</a>."
 msgstr ""
 
-#: adminpages/migration.php:10
-#: adminpages/migration.php:46
+#: adminpages/migration.php:15
+#: adminpages/migration.php:51
 msgid "Import PMPro Data"
 msgstr ""
 
-#: adminpages/migration.php:24
+#: adminpages/migration.php:29
 msgid "Nonce verification failed."
 msgstr ""
 
-#: adminpages/migration.php:33
+#: adminpages/migration.php:38
 msgid "Import successful."
 msgstr ""
 
-#: adminpages/migration.php:37
+#: adminpages/migration.php:42
 msgid "No import file found. Please try importing again with a valid JSON file."
 msgstr ""
 
-#: adminpages/migration.php:42
+#: adminpages/migration.php:47
 msgid "Choose a file to import"
 msgstr ""
 
-#: adminpages/migration.php:46
+#: adminpages/migration.php:51
 msgid "This import will permanently overwrite site data. Are you sure that you would like to continue?"
 msgstr ""
 
-#: adminpages/migration.php:57
-#: adminpages/migration.php:79
+#: adminpages/migration.php:62
+#: adminpages/migration.php:84
 msgid "Export PMPro Data"
 msgstr ""
 
-#: adminpages/migration.php:61
+#: adminpages/migration.php:66
 msgid "Select the data that you would like to export:"
 msgstr ""
 
-#: adminpages/migration.php:62
-#: adminpages/migration.php:92
-#: adminpages/migration.php:95
+#: adminpages/migration.php:67
+#: adminpages/migration.php:97
+#: adminpages/migration.php:100
 msgid "Select All"
 msgstr ""
 
-#: adminpages/migration.php:66
+#: adminpages/migration.php:71
 msgid "Membership Levels"
 msgstr ""
 
-#: adminpages/migration.php:67
+#: adminpages/migration.php:72
 msgid "Email Templates"
 msgstr ""
 
-#: adminpages/migration.php:68
+#: adminpages/migration.php:73
 msgid "Payment & SSL Settings"
 msgstr ""
 
-#: adminpages/migration.php:69
+#: adminpages/migration.php:74
 msgid "Advanced Settings"
 msgstr ""
 
-#: adminpages/migration.php:70
+#: adminpages/migration.php:75
 msgid "User Fields"
 msgstr ""
 
-#: adminpages/migration.php:96
+#: adminpages/migration.php:101
 msgid "Deselect All"
 msgstr ""
 
-#: adminpages/migration.php:109
+#: adminpages/migration.php:114
 msgid "Please select at least one export option."
 msgstr ""
 
-#: adminpages/scripts.php:25
+#: adminpages/scripts.php:31
 msgid "Delete Member Data"
 msgstr ""
 
-#: adminpages/scripts.php:26
+#: adminpages/scripts.php:32
 msgid "Delete all member data."
 msgstr ""
 
-#: adminpages/scripts.php:27
+#: adminpages/scripts.php:33
 msgid "This script deletes data from the wp_pmpro_memberships_users, wp_pmpro_membership_orders, wp_pmpro_discount_codes_uses, wp_pmpro_subscriptions and wp_pmpro_subscriptionmeta tables."
 msgstr ""
 
-#: adminpages/scripts.php:28
+#: adminpages/scripts.php:34
 #: cli/Toolkit_Commands.php:63
 msgid "Member tables have been truncated."
 msgstr ""
 
-#: adminpages/scripts.php:31
+#: adminpages/scripts.php:37
 msgid "Reset Membership Settings"
 msgstr ""
 
-#: adminpages/scripts.php:32
+#: adminpages/scripts.php:38
 msgid "Delete all membership level, content protection, and discount code settings."
 msgstr ""
 
-#: adminpages/scripts.php:33
+#: adminpages/scripts.php:39
 msgid "This script deletes data from the wp_pmpro_discount_codes, wp_pmpro_discount_codes_levels, wp_pmpro_membership_levels, wp_pmpro_memberships_categories, and wp_pmpro_memberships_pages tables."
 msgstr ""
 
-#: adminpages/scripts.php:34
+#: adminpages/scripts.php:40
 #: cli/Toolkit_Commands.php:80
 msgid "Level and discount code tables have been truncated."
 msgstr ""
 
-#: adminpages/scripts.php:37
+#: adminpages/scripts.php:43
 msgid "Scrub Member Data"
 msgstr ""
 
-#: adminpages/scripts.php:38
+#: adminpages/scripts.php:44
 msgid "Scrub all member emails and transaction IDs."
 msgstr ""
 
-#: adminpages/scripts.php:39
+#: adminpages/scripts.php:45
 msgid "This script updates all non-admins in the wp_users and wp_pmpro_membership_orders tables to anonymize their email addresses and order transaction IDs. This may time out on slow servers or sites with large numbers of users."
 msgstr ""
 
-#: adminpages/scripts.php:40
+#: adminpages/scripts.php:46
 #: cli/Toolkit_Commands.php:97
 msgid "Scrubbing user data..."
 msgstr ""
 
-#: adminpages/scripts.php:43
+#: adminpages/scripts.php:49
 msgid "Delete Users"
 msgstr ""
 
-#: adminpages/scripts.php:44
+#: adminpages/scripts.php:50
 msgid "Delete non-admin users."
 msgstr ""
 
-#: adminpages/scripts.php:45
+#: adminpages/scripts.php:51
 msgid "This script deletes from wp_users and wp_usermeta tables directly. This may time out on slow servers or sites with large numbers of users."
 msgstr ""
 
-#: adminpages/scripts.php:46
+#: adminpages/scripts.php:52
 #: cli/Toolkit_Commands.php:114
 msgid "Deleting non-admins..."
 msgstr ""
 
-#: adminpages/scripts.php:49
+#: adminpages/scripts.php:55
 msgid "Reset Options"
 msgstr ""
 
-#: adminpages/scripts.php:50
+#: adminpages/scripts.php:56
 msgid "Delete all PMPro options."
 msgstr ""
 
-#: adminpages/scripts.php:51
+#: adminpages/scripts.php:57
 msgid "This script deletes any option prefixed with pmpro_ in the wp_options table, excluding the pmpro_db_version and assigned PMPro pages."
 msgstr ""
 
-#: adminpages/scripts.php:52
+#: adminpages/scripts.php:58
 #: cli/Toolkit_Commands.php:131
 msgid "Options deleted."
 msgstr ""
 
-#: adminpages/scripts.php:55
+#: adminpages/scripts.php:61
 msgid "Clear Logins Report"
 msgstr ""
 
-#: adminpages/scripts.php:56
+#: adminpages/scripts.php:62
 msgid "Clear and reset all visits, views, and logins report data."
 msgstr ""
 
-#: adminpages/scripts.php:57
+#: adminpages/scripts.php:63
 #: cli/Toolkit_Commands.php:148
 msgid "Visits, Views, and Logins report cleared."
 msgstr ""
 
-#: adminpages/scripts.php:60
+#: adminpages/scripts.php:66
 msgid "Delete Test Orders"
 msgstr ""
 
-#: adminpages/scripts.php:61
+#: adminpages/scripts.php:67
 msgid "Delete all orders made through the testing or sandbox gateway environment."
 msgstr ""
 
-#: adminpages/scripts.php:62
+#: adminpages/scripts.php:68
 msgid "This includes any test subscriptions."
 msgstr ""
 
-#: adminpages/scripts.php:63
+#: adminpages/scripts.php:69
 #: cli/Toolkit_Commands.php:165
 msgid "Test orders deleted."
 msgstr ""
 
-#: adminpages/scripts.php:66
+#: adminpages/scripts.php:72
 msgid "Clear cached report data"
 msgstr ""
 
-#: adminpages/scripts.php:67
+#: adminpages/scripts.php:73
 msgid "Clear cached report data."
 msgstr ""
 
-#: adminpages/scripts.php:68
+#: adminpages/scripts.php:74
 #: cli/Toolkit_Commands.php:182
 msgid "Cached report data cleared."
 msgstr ""
 
-#: adminpages/scripts.php:74
+#: adminpages/scripts.php:80
 msgid "Change Membership Level"
 msgstr ""
 
-#: adminpages/scripts.php:75
+#: adminpages/scripts.php:81
 msgid "Change all members with a specific level ID to another level ID. Note: running this script will NOT cancel any recurring subscriptions."
 msgstr ""
 
-#: adminpages/scripts.php:76
+#: adminpages/scripts.php:82
 #: cli/Toolkit_Commands.php:223
 msgid "Users updated. Running pmpro_after_change_membership_level filter for all users..."
 msgstr ""
 
-#: adminpages/scripts.php:79
+#: adminpages/scripts.php:85
 msgid "Assign Membership Level"
 msgstr ""
 
-#: adminpages/scripts.php:80
+#: adminpages/scripts.php:86
 msgid "Assign a specific membership level to all users without an active membership. Note: This script only assigns membership via the database and does NOT fire any pmpro_change_membership_level hooks or process payments."
 msgstr ""
 
-#: adminpages/scripts.php:81
+#: adminpages/scripts.php:87
 #, php-format
 msgid "%s users were given level %s"
 msgstr ""
 
-#: adminpages/scripts.php:84
+#: adminpages/scripts.php:90
 msgid "Cancel Membership"
 msgstr ""
 
-#: adminpages/scripts.php:85
+#: adminpages/scripts.php:91
 msgid "Cancel all members with a specific level ID. Note: This script WILL also cancel any recurring subscriptions."
 msgstr ""
 
-#: adminpages/scripts.php:86
+#: adminpages/scripts.php:92
 #: cli/Toolkit_Commands.php:275
 msgid "Cancelling users..."
 msgstr ""
 
-#: adminpages/scripts.php:92
+#: adminpages/scripts.php:98
 msgid "Copy Content Restrictions"
 msgstr ""
 
-#: adminpages/scripts.php:93
+#: adminpages/scripts.php:99
 msgid "Make all pages that require a specific level ID also require another level ID."
 msgstr ""
 
-#: adminpages/scripts.php:94
+#: adminpages/scripts.php:100
 #: cli/Toolkit_Commands.php:301
 msgid "Content restrictions copied."
 msgstr ""
 
-#: adminpages/scripts.php:97
+#: adminpages/scripts.php:103
 msgid "Delete Incomplete Orders"
 msgstr ""
 
-#: adminpages/scripts.php:98
+#: adminpages/scripts.php:104
 msgid "Delete all orders in token, pending, or review status that are older than a specified number of days."
 msgstr ""
 
-#: adminpages/scripts.php:99
+#: adminpages/scripts.php:105
 #: cli/Toolkit_Commands.php:324
 #, php-format
 msgid "%d orders deleted."
 msgstr ""
 
-#: adminpages/scripts.php:106
-#: adminpages/toolkit.php:27
+#: adminpages/scripts.php:112
+#: adminpages/toolkit.php:32
 msgid "Database Scripts"
 msgstr ""
 
-#: adminpages/scripts.php:107
+#: adminpages/scripts.php:113
 msgid "Toolkit scripts allow you to clean up, delete, duplicate, or anonymize data in your membership site. We recommend only running one script at a time. Check a setting below and click save to run the script."
 msgstr ""
 
-#: adminpages/scripts.php:108
+#: adminpages/scripts.php:114
 msgid "Note: Running the scripts below will delete or modify data in your database. These changes cannot be reversed. Please take a site backup before running a script."
 msgstr ""
 
-#: adminpages/scripts.php:115
+#: adminpages/scripts.php:121
 msgid "Database Clean Up Scripts"
 msgstr ""
 
-#: adminpages/scripts.php:141
+#: adminpages/scripts.php:147
 msgid "Member Scripts"
 msgstr ""
 
 #. translators: %s: script name
-#: adminpages/scripts.php:155
-#: adminpages/scripts.php:187
-#: adminpages/scripts.php:213
-#: adminpages/scripts.php:248
-#: adminpages/scripts.php:272
+#: adminpages/scripts.php:161
+#: adminpages/scripts.php:193
+#: adminpages/scripts.php:219
+#: adminpages/scripts.php:254
+#: adminpages/scripts.php:278
 #, php-format
 msgid "Run the %s script."
 msgstr ""
 
-#: adminpages/scripts.php:162
+#: adminpages/scripts.php:168
 msgid "From Level ID:"
 msgstr ""
 
-#: adminpages/scripts.php:164
+#: adminpages/scripts.php:170
 msgid "To Level ID:"
 msgstr ""
 
-#: adminpages/scripts.php:169
+#: adminpages/scripts.php:175
 msgid "Set an expiration date for all moved members."
 msgstr ""
 
-#: adminpages/scripts.php:171
+#: adminpages/scripts.php:177
 msgid "Expiration Date:"
 msgstr ""
 
-#: adminpages/scripts.php:194
-#: adminpages/scripts.php:220
+#: adminpages/scripts.php:200
+#: adminpages/scripts.php:226
 msgid "Level ID:"
 msgstr ""
 
-#: adminpages/scripts.php:196
+#: adminpages/scripts.php:202
 msgid "Start Date:"
 msgstr ""
 
-#: adminpages/scripts.php:198
+#: adminpages/scripts.php:204
 msgid "End Date:"
 msgstr ""
 
-#: adminpages/scripts.php:235
+#: adminpages/scripts.php:241
 msgid "Other Scripts"
 msgstr ""
 
-#: adminpages/scripts.php:255
+#: adminpages/scripts.php:261
 msgid "Copy From Level ID:"
 msgstr ""
 
-#: adminpages/scripts.php:257
+#: adminpages/scripts.php:263
 msgid "Copy To Level ID:"
 msgstr ""
 
-#: adminpages/scripts.php:279
+#: adminpages/scripts.php:285
 msgid "Days:"
 msgstr ""
 
-#: adminpages/scripts.php:291
+#: adminpages/scripts.php:297
 msgid "Run Selected Tools"
 msgstr ""
 
-#: adminpages/scripts.php:326
+#: adminpages/scripts.php:332
 msgid "Security check failed."
 msgstr ""
 
-#: adminpages/scripts.php:567
+#: adminpages/scripts.php:573
 msgid "Please enter a level ID > 0 for each option."
 msgstr ""
 
-#: adminpages/scripts.php:578
+#: adminpages/scripts.php:584
 msgid "Please enter a valid expiration date in YYYY-MM-DD format."
 msgstr ""
 
-#: adminpages/scripts.php:584
+#: adminpages/scripts.php:590
 #: cli/Toolkit_Commands.php:208
 msgid "The expiration date must not be in the past."
 msgstr ""
 
-#: adminpages/scripts.php:594
-#: adminpages/scripts.php:686
+#: adminpages/scripts.php:600
+#: adminpages/scripts.php:692
 #, php-format
 msgid "Couldn't find users with level ID %d."
 msgstr ""
 
-#: adminpages/scripts.php:640
+#: adminpages/scripts.php:646
 msgid "Please enter a valid level ID and start date."
 msgstr ""
 
-#: adminpages/scripts.php:679
+#: adminpages/scripts.php:685
 msgid "Please enter a valid level ID."
 msgstr ""
 
-#: adminpages/scripts.php:735
+#: adminpages/scripts.php:741
 msgid "Please enter a number of days."
 msgstr ""
 
-#: adminpages/scripts.php:743
+#: adminpages/scripts.php:749
 msgid "Please enter a valid number of days."
 msgstr ""
 
-#: adminpages/scripts.php:785
+#: adminpages/scripts.php:791
 msgid "Process complete."
 msgstr ""
 
-#: adminpages/settings.php:78
+#: adminpages/settings.php:83
 msgid "Your developer's toolkit settings have been updated."
 msgstr ""
 
-#: adminpages/settings.php:87
-#: adminpages/toolkit.php:22
+#: adminpages/settings.php:92
+#: adminpages/toolkit.php:27
 msgid "Toolkit Options"
 msgstr ""
 
-#: adminpages/settings.php:95
+#: adminpages/settings.php:100
 msgid "Email Debugging"
 msgstr ""
 
-#: adminpages/settings.php:103
+#: adminpages/settings.php:108
 msgid "Redirect PMPro Emails"
 msgstr ""
 
-#: adminpages/settings.php:107
+#: adminpages/settings.php:112
 msgid "Redirect all Paid Memberships Pro emails to a specific address."
 msgstr ""
 
-#: adminpages/settings.php:121
+#: adminpages/settings.php:126
 msgid "Scheduled Actions Debugging"
 msgstr ""
 
-#: adminpages/settings.php:123
+#: adminpages/settings.php:128
 msgid "Scheduled Cron Job Debugging"
 msgstr ""
 
-#: adminpages/settings.php:133
+#: adminpages/settings.php:138
 msgid "Expire Memberships"
 msgstr ""
 
-#: adminpages/settings.php:138
+#: adminpages/settings.php:143
 msgid "Disable checking for expired memberships."
 msgstr ""
 
-#: adminpages/settings.php:145
+#: adminpages/settings.php:150
 msgid "Expiration Warnings"
 msgstr ""
 
-#: adminpages/settings.php:150
+#: adminpages/settings.php:155
 msgid "Disable sending expiration warnings."
 msgstr ""
 
-#: adminpages/settings.php:157
+#: adminpages/settings.php:162
 msgid "Payment Reminders"
 msgstr ""
 
-#: adminpages/settings.php:162
+#: adminpages/settings.php:167
 msgid "Disable sending payment reminders."
 msgstr ""
 
-#: adminpages/settings.php:170
+#: adminpages/settings.php:175
 msgid "Credit Card Expiring"
 msgstr ""
 
-#: adminpages/settings.php:175
+#: adminpages/settings.php:180
 msgid "Check to disable the script that checks for expired credit cards."
 msgstr ""
 
-#: adminpages/settings.php:190
+#: adminpages/settings.php:195
 msgid "Gateway/Checkout Debugging"
 msgstr ""
 
-#: adminpages/settings.php:199
+#: adminpages/settings.php:204
 msgid "Gateway Callback Debug Email"
 msgstr ""
 
-#: adminpages/settings.php:204
+#: adminpages/settings.php:209
 msgid "Enter an email address to receive a debugging email every time the gateway processes data."
 msgstr ""
 
-#: adminpages/settings.php:211
+#: adminpages/settings.php:216
 msgid "Send Checkout Debug Email"
 msgstr ""
 
-#: adminpages/settings.php:215
+#: adminpages/settings.php:220
 msgid "Never (Off)"
 msgstr ""
 
-#: adminpages/settings.php:216
+#: adminpages/settings.php:221
 msgid "Yes, Every Page Load"
 msgstr ""
 
-#: adminpages/settings.php:217
+#: adminpages/settings.php:222
 msgid "Yes, Submitted Forms Only"
 msgstr ""
 
-#: adminpages/settings.php:218
+#: adminpages/settings.php:223
 msgid "Yes, Errors Only"
 msgstr ""
 
-#: adminpages/settings.php:220
+#: adminpages/settings.php:225
 msgid "to email:"
 msgstr ""
 
-#: adminpages/settings.php:223
+#: adminpages/settings.php:228
 msgid "Send an email every time the Checkout page is hit."
 msgstr ""
 
-#: adminpages/settings.php:224
+#: adminpages/settings.php:229
 msgid "This email will contain data about the request, user, membership level, order, and other information."
 msgstr ""
 
-#: adminpages/settings.php:231
+#: adminpages/settings.php:236
 msgid "Enable Generate Checkout Info Button"
 msgstr ""
 
-#: adminpages/settings.php:235
+#: adminpages/settings.php:240
 msgid "Ability to generate checkout info when testing."
 msgstr ""
 
-#: adminpages/settings.php:248
-#: adminpages/settings.php:257
+#: adminpages/settings.php:253
+#: adminpages/settings.php:262
 msgid "Performance Testing Endpoints"
 msgstr ""
 
-#: adminpages/settings.php:261
+#: adminpages/settings.php:266
 msgid "Disabled"
 msgstr ""
 
-#: adminpages/settings.php:262
+#: adminpages/settings.php:267
 msgid "Read Only"
 msgstr ""
 
-#: adminpages/settings.php:263
+#: adminpages/settings.php:268
 msgid "Read and Write"
 msgstr ""
 
-#: adminpages/settings.php:266
+#: adminpages/settings.php:271
 msgid "Enable performance testing REST API endpoint for testing purposes."
 msgstr ""
 
-#: adminpages/settings.php:274
+#: adminpages/settings.php:279
 msgid "Endpoint URLs"
 msgstr ""
 
-#: adminpages/settings.php:276
+#: adminpages/settings.php:281
 msgid "Use GET for read-only tests, POST for read-write tests (if enabled)."
 msgstr ""
 
-#: adminpages/settings.php:280
+#: adminpages/settings.php:285
 msgid "The SAVEQUERIES constant is enabled."
 msgstr ""
 
-#: adminpages/settings.php:283
+#: adminpages/settings.php:288
 msgid "NOTE:"
 msgstr ""
 
 #. translators: 1: define() code snippet, 2: wp-config.php filename
-#: adminpages/settings.php:286
+#: adminpages/settings.php:291
 #, php-format
 msgid "To enable full testing capability, make sure to add %1$s to your %2$s file."
 msgstr ""
 
-#: adminpages/settings.php:293
+#: adminpages/settings.php:298
 msgid "Available Endpoints"
 msgstr ""
 
-#: adminpages/settings.php:310
+#: adminpages/settings.php:315
 msgid "Enable IP Throttling"
 msgstr ""
 
-#: adminpages/settings.php:314
+#: adminpages/settings.php:319
 msgid "Enable IP-based request throttling on public endpoints."
 msgstr ""
 
-#: adminpages/settings.php:341
+#: adminpages/settings.php:346
 msgid "CAUTION:"
 msgstr ""
 
-#: adminpages/settings.php:342
+#: adminpages/settings.php:347
 msgid "\"Read and Write\" mode will create and delete test data on your site. Only use this on development/testing sites."
 msgstr ""
 
-#: adminpages/toolkit.php:13
+#: adminpages/toolkit.php:18
 msgid "Developer's Toolkit"
 msgstr ""
 
-#: adminpages/toolkit.php:18
+#: adminpages/toolkit.php:23
 msgid "Toolkit Menu"
 msgstr ""
 
@@ -927,35 +927,35 @@ msgstr ""
 msgid "Delete incomplete (token/pending/review) orders older than %d days?"
 msgstr ""
 
-#: pmpro-toolkit.php:294
-#: pmpro-toolkit.php:320
+#: pmpro-toolkit.php:296
+#: pmpro-toolkit.php:322
 msgid "Toolkit"
 msgstr ""
 
-#: pmpro-toolkit.php:392
+#: pmpro-toolkit.php:396
 msgid "View Documentation"
 msgstr ""
 
-#: pmpro-toolkit.php:392
+#: pmpro-toolkit.php:396
 msgid "Docs"
 msgstr ""
 
-#: pmpro-toolkit.php:393
+#: pmpro-toolkit.php:397
 msgid "Visit Customer Support Forum"
 msgstr ""
 
-#: pmpro-toolkit.php:393
+#: pmpro-toolkit.php:397
 msgid "Support"
 msgstr ""
 
-#: pmpro-toolkit.php:443
+#: pmpro-toolkit.php:447
 msgid "Base Email for Generating New User"
 msgstr ""
 
-#: pmpro-toolkit.php:446
+#: pmpro-toolkit.php:450
 msgid "Generate New User"
 msgstr ""
 
-#: pmpro-toolkit.php:447
+#: pmpro-toolkit.php:451
 msgid "Generate New User and Submit"
 msgstr ""
