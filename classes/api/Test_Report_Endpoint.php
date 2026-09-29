@@ -212,7 +212,7 @@ class Test_Report_Endpoint extends API_Endpoint {
 		$_REQUEST['pmpro_no_download'] = 1;
 		if ( $type === 'login' ) {
 			// For login report, we need to set the 'l' parameter to 'all' if not provided
-			if ( ! isset( $_REQUEST['l'] ) ) {
+			if ( ! isset( $_REQUEST['l'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- REST route guarded by its permission_callback; only checks a value this endpoint set.
 				$_REQUEST['l'] = 'all';
 			}
 		} elseif ( $type === 'sales' ) {

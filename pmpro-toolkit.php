@@ -208,7 +208,7 @@ function pmprodev_checkout_debug_email( $filter_contents = null ) {
 	}
 
 	// Make sure the checkout form was submitted if using that option.
-	if ( $pmprodev_options['checkout_debug_when'] === 'on_submit' && empty( $_REQUEST['submit-checkout'] ) ) {
+	if ( $pmprodev_options['checkout_debug_when'] === 'on_submit' && empty( $_REQUEST['submit-checkout'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only check for debug logging; PMPro checkout verifies its own nonce.
 		return $filter_contents;
 	}
 
@@ -232,6 +232,7 @@ function pmprodev_checkout_debug_email( $filter_contents = null ) {
 	// Remove password data.
 	$user_pass_bu            = $current_user->user_pass;
 	$current_user->user_pass = '';
+	// phpcs:disable WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Passwords are only backed up and blanked so they are not included in the debug email, then restored unchanged below.
 	if ( isset( $_REQUEST['password'] ) ) {
 		$password_bu          = $_REQUEST['password'];
 		$_REQUEST['password'] = '';
@@ -240,6 +241,7 @@ function pmprodev_checkout_debug_email( $filter_contents = null ) {
 		$password2_bu          = $_REQUEST['password2'];
 		$_REQUEST['password2'] = '';
 	}
+	// phpcs:enable WordPress.Security.NonceVerification.Recommended, WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized
 
 	// Set up the email.
 	$email->subject  = sprintf( '%s Checkout Page Debug Log', get_bloginfo( 'name' ) );
@@ -248,11 +250,11 @@ function pmprodev_checkout_debug_email( $filter_contents = null ) {
 	$email->body     = file_get_contents( plugin_dir_path( __FILE__ ) . '/email/checkout_debug.html' );
 	$email->data     = array(
 		'sitename'     => get_bloginfo( 'sitename' ),
-		'checkout_url' => esc_html( $http . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'] ),
-		'submit'       => ( empty( $_REQUEST['submit-checkout'] ) ? 'no' : 'yes' ),
+		'checkout_url' => esc_html( $http . ( isset( $_SERVER['HTTP_HOST'] ) ? wp_unslash( $_SERVER['HTTP_HOST'] ) : '' ) . ( isset( $_SERVER['REQUEST_URI'] ) ? wp_unslash( $_SERVER['REQUEST_URI'] ) : '' ) ),
+		'submit'       => ( empty( $_REQUEST['submit-checkout'] ) ? 'no' : 'yes' ), // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only, used in the debug email.
 		'level'        => esc_html( wp_check_invalid_utf8( print_r( $level, true ), true ) ),
 		'user'         => esc_html( wp_check_invalid_utf8( print_r( $current_user->data, true ), true ) ),
-		'request'      => esc_html( wp_check_invalid_utf8( print_r( $_REQUEST, true ), true ) ),
+		'request'      => esc_html( wp_check_invalid_utf8( print_r( $_REQUEST, true ), true ) ), // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only, used in the debug email.
 		'message_type' => ( empty( $pmpro_msgt ) ? 'N/A' : esc_html( $pmpro_msgt ) . '|' ),
 		'message'      => esc_html( $pmpro_msg ),
 	);
@@ -335,10 +337,12 @@ function pmprodev_process_migration_export() {
 	if ( ! function_exists( 'pmpro_getAllLevels' ) ) {
 		return;
 	}
+	// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only export download; PMProDev_Migration_Assistant::export() checks manage_options.
 	if ( ! empty( $_REQUEST['page'] ) && 'pmpro-toolkit' === $_REQUEST['page'] && ! empty( $_REQUEST['section'] )
 	&& 'migration' === $_REQUEST['section'] && ! empty( $_REQUEST['pmprodev_export_options'] ) ) {
-		PMProDev_Migration_Assistant::export( $_REQUEST['pmprodev_export_options'] );
+		PMProDev_Migration_Assistant::export( $_REQUEST['pmprodev_export_options'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Values are only used to match allowlisted build_export_data_* methods via method_exists().
 	}
+	// phpcs:enable WordPress.Security.NonceVerification.Recommended
 }
 add_action( 'admin_init', 'pmprodev_process_migration_export' );
 
@@ -422,7 +426,7 @@ add_action( 'wp_enqueue_scripts', 'pmprodev_enqueue_scripts' );
  */
 function pmprodev_enqueue_admin_scripts(){
 	// if we're on a toolkit admin page
-	if ( isset( $_GET['page'] ) && 'pmpro-toolkit' === $_GET['page'] ) {
+	if ( isset( $_GET['page'] ) && 'pmpro-toolkit' === $_GET['page'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only page check for enqueueing styles.
 		// Add css for the admin
 		wp_register_style( 'pmprodev-admin', plugins_url( 'css/pmpro-toolkit-admin.css', __FILE__ ) );
 		wp_enqueue_style( 'pmprodev-admin' );

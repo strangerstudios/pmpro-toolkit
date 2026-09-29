@@ -89,7 +89,7 @@ class API_Loader {
 		}
 		// Only attempt if PHP_AUTH_USER and PHP_AUTH_PW are set.
 		if ( isset( $_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW'] ) ) {
-			$user_obj = wp_authenticate( $_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW'] );
+			$user_obj = wp_authenticate( $_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Basic Auth credentials are passed raw to wp_authenticate(), matching WP core's application password handling; sanitizing would alter valid passwords.
 			if ( ! is_wp_error( $user_obj ) ) {
 				return $user_obj->ID;
 			}
@@ -137,9 +137,9 @@ class API_Loader {
 		if ( is_wp_error( $result ) && $result->get_error_code() === 'incorrect_password' ) {
 			if (
 				isset( $_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW'] )
-				&& username_exists( $_SERVER['PHP_AUTH_USER'] )
+				&& username_exists( $_SERVER['PHP_AUTH_USER'] ) // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Basic Auth credentials are passed raw to wp_authenticate(), matching WP core's application password handling; sanitizing would alter valid passwords.
 			) {
-				$user = wp_authenticate( $_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW'] );
+				$user = wp_authenticate( $_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW'] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.MissingUnslash, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Basic Auth credentials are passed raw to wp_authenticate(), matching WP core's application password handling; sanitizing would alter valid passwords.
 				if ( ! is_wp_error( $user ) ) {
 					wp_set_current_user( $user->ID );
 					return true;

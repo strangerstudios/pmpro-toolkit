@@ -126,7 +126,7 @@ class PMProDev_Migration_Assistant {
 		$levels = pmpro_getAllLevels( true ); // True to include hidden levels.
 
 		// Get metadata for all levels.
-		$level_metadata = $wpdb->get_results( "SELECT * FROM $wpdb->pmpro_membership_levelmeta" );
+		$level_metadata = $wpdb->get_results( "SELECT * FROM $wpdb->pmpro_membership_levelmeta" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Static query on a PMPro custom table for a one-off export.
 
 		// Add metadata to the levels export data.
 		foreach( $level_metadata as $level_meta ) {
@@ -267,7 +267,7 @@ class PMProDev_Migration_Assistant {
 		global $wpdb;
 
 		// Get all email template data from options table.
-		$email_template_option_data = $wpdb->get_results( "SELECT option_name, option_value FROM $wpdb->options WHERE option_name LIKE 'pmpro_email_%_body'" );
+		$email_template_option_data = $wpdb->get_results( "SELECT option_name, option_value FROM $wpdb->options WHERE option_name LIKE 'pmpro_email_%_body'" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Static query for a one-off export.
 
 		// Format the email template data.
 		$email_template_data = array();
@@ -429,8 +429,14 @@ class PMProDev_Migration_Assistant {
 	private static function helper_get_export_data( $option_names_to_export ) {
 		global $wpdb;
 
+		// Bail if there are no options to export.
+		if ( empty( $option_names_to_export ) ) {
+			return array();
+		}
+
 		// Get all advanced settings data from options table.
-		$option_data = $wpdb->get_results( "SELECT option_name, option_value FROM $wpdb->options WHERE option_name IN ('" . implode( "','", $option_names_to_export ) . "')" );
+		$placeholders = implode( ', ', array_fill( 0, count( $option_names_to_export ), '%s' ) );
+		$option_data  = $wpdb->get_results( $wpdb->prepare( "SELECT option_name, option_value FROM $wpdb->options WHERE option_name IN ($placeholders)", $option_names_to_export ) ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- One-off export query; $placeholders is a list of %s placeholders, one per option name.
 
 		// Format the advanced settings data.
 		$export_data = array();

@@ -155,7 +155,7 @@ class Test_Checkout_Endpoint extends API_Endpoint {
 		}
 
 		// Mirror into $_REQUEST for code paths relying on it.
-		$_REQUEST = array_merge( $_REQUEST ?? array(), $_POST );
+		$_REQUEST = array_merge( $_REQUEST ?? array(), $_POST ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing -- REST route guarded by its permission_callback; this mirrors request data for the simulated checkout.
 
 		ob_start();
 
@@ -424,7 +424,7 @@ class Test_Checkout_Endpoint extends API_Endpoint {
 		global $wpdb;
 
 		// Update membership start date
-		$wpdb->update(
+		$wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Direct update of PMPro custom table for test data.
 			$wpdb->pmpro_memberships_users,
 			array(
 				'startdate' => $checkout_date,
@@ -440,7 +440,7 @@ class Test_Checkout_Endpoint extends API_Endpoint {
 		);
 
 		// Update subscription start date if exists
-		$wpdb->update(
+		$wpdb->update( // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Direct update of PMPro custom table for test data.
 			$wpdb->pmpro_subscriptions,
 			array(
 				'startdate'         => $checkout_date,

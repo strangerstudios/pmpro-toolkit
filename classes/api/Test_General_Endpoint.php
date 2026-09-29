@@ -103,14 +103,14 @@ class Test_General_Endpoint extends API_Endpoint {
 
 		// Test 2: Database query performance
 		$this->start_performance_tracking();
-		$users_count = $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->users}" );
-		$posts_count = $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->posts}" );
+		$users_count = $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->users}" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Intentionally uncached; this endpoint measures database query performance.
+		$posts_count = $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->posts}" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Intentionally uncached; this endpoint measures database query performance.
 
 		$pmpro_members_count = 0;
 		$pmpro_levels_count  = 0;
 		if ( defined( 'PMPRO_VERSION' ) && isset( $wpdb->pmpro_memberships_users ) && isset( $wpdb->pmpro_membership_levels ) ) {
-			$pmpro_members_count = $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->pmpro_memberships_users} WHERE status = 'active'" );
-			$pmpro_levels_count  = $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->pmpro_membership_levels}" );
+			$pmpro_members_count = $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->pmpro_memberships_users} WHERE status = 'active'" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Intentionally uncached; this endpoint measures database query performance.
+			$pmpro_levels_count  = $wpdb->get_var( "SELECT COUNT(*) FROM {$wpdb->pmpro_membership_levels}" ); // phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- Intentionally uncached; this endpoint measures database query performance.
 		}
 		$db_block_performance = $this->end_performance_tracking();
 

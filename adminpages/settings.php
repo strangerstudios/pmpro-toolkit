@@ -1,4 +1,9 @@
 <?php
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 	// Only admins can access this page.
 	if( !function_exists( "current_user_can" ) || ( !current_user_can( "manage_options" ) ) ) {
 		die( esc_html__( "You do not have permissions to perform this action.", 'pmpro-toolkit' ) );
@@ -18,11 +23,11 @@
 
 	// Save settings.
 	if( !empty( $_REQUEST['savesettings'] ) ) {
-		$pmprodev_options['redirect_email'] = sanitize_text_field( $_POST['pmprodev_options']['redirect_email'] );
-		$pmprodev_options['ipn_debug'] = sanitize_text_field( $_POST['pmprodev_options']['ipn_debug'] );
-		$pmprodev_options['checkout_debug_when'] = sanitize_text_field( $_POST['pmprodev_options']['checkout_debug_when'] );
-		$pmprodev_options['checkout_debug_email'] = sanitize_text_field( $_POST['pmprodev_options']['checkout_debug_email'] );
-		$pmprodev_options['performance_endpoints'] = sanitize_text_field( $_POST['pmprodev_options']['performance_endpoints'] );
+		$pmprodev_options['redirect_email'] = isset( $_POST['pmprodev_options']['redirect_email'] ) ? sanitize_text_field( wp_unslash( $_POST['pmprodev_options']['redirect_email'] ) ) : '';
+		$pmprodev_options['ipn_debug'] = isset( $_POST['pmprodev_options']['ipn_debug'] ) ? sanitize_text_field( wp_unslash( $_POST['pmprodev_options']['ipn_debug'] ) ) : '';
+		$pmprodev_options['checkout_debug_when'] = isset( $_POST['pmprodev_options']['checkout_debug_when'] ) ? sanitize_text_field( wp_unslash( $_POST['pmprodev_options']['checkout_debug_when'] ) ) : '';
+		$pmprodev_options['checkout_debug_email'] = isset( $_POST['pmprodev_options']['checkout_debug_email'] ) ? sanitize_text_field( wp_unslash( $_POST['pmprodev_options']['checkout_debug_email'] ) ) : '';
+		$pmprodev_options['performance_endpoints'] = isset( $_POST['pmprodev_options']['performance_endpoints'] ) ? sanitize_text_field( wp_unslash( $_POST['pmprodev_options']['performance_endpoints'] ) ) : '';
 
 		if( isset( $_POST['pmprodev_options']['expire_memberships'] ) ) {
 			$expire_memberships = intval( $_POST['pmprodev_options']['expire_memberships'] );
@@ -64,7 +69,7 @@
 		$pmprodev_options['generate_info'] = $generate_info;
 
 		if( isset( $_POST['pmprodev_options']['ip_throttling'] ) ) {
-			$ip_throttling = sanitize_text_field( $_POST['pmprodev_options']['ip_throttling'] );
+			$ip_throttling = sanitize_text_field( wp_unslash( $_POST['pmprodev_options']['ip_throttling'] ) );
 		} else {
 			$ip_throttling = '';
 		}

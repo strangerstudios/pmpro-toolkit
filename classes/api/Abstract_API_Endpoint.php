@@ -128,7 +128,7 @@ abstract class API_Endpoint {
 	public function throttle_if_unauthenticated() {
 		// Check if IP throttling is enabled
 		if ( $this->check_setting( 'ip_throttling' ) ) {
-			$ip    = $_SERVER['REMOTE_ADDR'] ?? 'unknown';
+			$ip    = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : 'unknown';
 			$key   = 'tk_test_checkout_rate_' . md5( $ip );
 			$count = (int) get_transient( $key );
 

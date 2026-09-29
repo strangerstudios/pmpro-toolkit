@@ -1,5 +1,11 @@
 <?php
 
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
+// phpcs:disable WordPress.DB.DirectDatabaseQuery -- Admin/WP-CLI maintenance scripts that intentionally run direct queries against WP core and PMPro custom tables.
+
 global $wpdb, $pmprodev_member_tables, $pmprodev_other_tables;
 
 $pmprodev_member_tables = array(
@@ -340,7 +346,7 @@ foreach ( $actions as $action => $options ) {
 function pmprodev_clean_member_tables( $message ) {
 	global $wpdb, $pmprodev_member_tables;
 	foreach ( $pmprodev_member_tables as $table ) {
-		$wpdb->query( "TRUNCATE $table" );
+		$wpdb->query( "TRUNCATE $table" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- $table comes from the hardcoded $wpdb table-name list at the top of this file.
 	}
 	pmprodev_clear_cached_report_data( '' );
 	pmprodev_output_message( $message );
@@ -356,7 +362,7 @@ function pmprodev_clean_member_tables( $message ) {
 function pmprodev_clean_level_data( $message ) {
 	global $wpdb, $pmprodev_other_tables;
 	foreach ( $pmprodev_other_tables as $table ) {
-		$wpdb->query( "TRUNCATE $table" );
+		$wpdb->query( "TRUNCATE $table" ); // phpcs:ignore WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- $table comes from the hardcoded $wpdb table-name list at the top of this file.
 	}
 	pmprodev_output_message( $message );
 }
@@ -384,7 +390,7 @@ function pmprodev_scrub_member_data( $message ) {
 	while ( true ) {
 		// Get next batch of user IDs that have not yet been scrubbed.
 		$user_ids = $wpdb->get_col( $wpdb->prepare(
-			"SELECT ID FROM {$wpdb->users} WHERE user_email NOT LIKE '%%+scrub%%' ORDER BY ID ASC LIMIT %d OFFSET %d",
+			"SELECT ID FROM {$wpdb->users} WHERE user_email NOT LIKE '%%+scrub%%' ORDER BY ID ASC LIMIT %d OFFSET %d", // phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.LikeWildcardsInQuery -- Static LIKE pattern, no user input.
 			$batch_size,
 			$offset
 		) );
@@ -416,7 +422,7 @@ function pmprodev_scrub_member_data( $message ) {
 
 		// Batch update user emails where applicable.
 		if ( ! empty( $email_ids ) ) {
-			$wpdb->query( "UPDATE {$wpdb->users} SET user_email = CASE ID " . implode( ' ', $email_cases ) . ' END WHERE ID IN (' . implode( ',', $email_ids ) . ')' ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			$wpdb->query( "UPDATE {$wpdb->users} SET user_email = CASE ID " . implode( ' ', $email_cases ) . ' END WHERE ID IN (' . implode( ',', $email_ids ) . ')' ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- IDs are cast with (int) and emails escaped with esc_sql() above.
 		}
 
 		// Build CASE fragment for transaction IDs.
@@ -429,11 +435,11 @@ function pmprodev_scrub_member_data( $message ) {
 			$user_id_list = implode( ',', array_map( 'intval', array_keys( $tx_cases ) ) );
 
 			// Update orders payment_transaction_id only where not empty.
-			$wpdb->query( "UPDATE {$wpdb->pmpro_membership_orders} SET payment_transaction_id = IF(payment_transaction_id <> '', $case_sql, payment_transaction_id) WHERE user_id IN ($user_id_list)" ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			$wpdb->query( "UPDATE {$wpdb->pmpro_membership_orders} SET payment_transaction_id = IF(payment_transaction_id <> '', $case_sql, payment_transaction_id) WHERE user_id IN ($user_id_list)" ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- $case_sql values are esc_sql()'d and IDs intval()'d above.
 			// Update orders subscription_transaction_id only where not empty.
-			$wpdb->query( "UPDATE {$wpdb->pmpro_membership_orders} SET subscription_transaction_id = IF(subscription_transaction_id <> '', $case_sql, subscription_transaction_id) WHERE user_id IN ($user_id_list)" ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			$wpdb->query( "UPDATE {$wpdb->pmpro_membership_orders} SET subscription_transaction_id = IF(subscription_transaction_id <> '', $case_sql, subscription_transaction_id) WHERE user_id IN ($user_id_list)" ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- $case_sql values are esc_sql()'d and IDs intval()'d above.
 			// Update subscriptions table subscription_transaction_id only where not empty.
-			$wpdb->query( "UPDATE {$wpdb->pmpro_subscriptions} SET subscription_transaction_id = IF(subscription_transaction_id <> '', $case_sql, subscription_transaction_id) WHERE user_id IN ($user_id_list)" ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared
+			$wpdb->query( "UPDATE {$wpdb->pmpro_subscriptions} SET subscription_transaction_id = IF(subscription_transaction_id <> '', $case_sql, subscription_transaction_id) WHERE user_id IN ($user_id_list)" ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared, WordPress.DB.PreparedSQL.InterpolatedNotPrepared, PluginCheck.Security.DirectDB.UnescapedDBParameter -- $case_sql values are esc_sql()'d and IDs intval()'d above.
 		}
 
 		// Progress indicator per batch (instead of per user to reduce output overhead).
@@ -559,8 +565,8 @@ function pmprodev_clear_cached_report_data( $message ) {
 function pmprodev_move_level( $message ) {
 	global $wpdb;
 
-	$from_level_id = intval( $_REQUEST['move_level_a'] );
-	$to_level_id = intval( $_REQUEST['move_level_b'] );
+	$from_level_id = isset( $_REQUEST['move_level_a'] ) ? intval( $_REQUEST['move_level_a'] ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Only called after check_admin_referer() in the action loop above, or from WP-CLI.
+	$to_level_id = isset( $_REQUEST['move_level_b'] ) ? intval( $_REQUEST['move_level_b'] ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Only called after check_admin_referer() in the action loop above, or from WP-CLI.
 
 	//Bail if the level IDs are invalid
 	if ( $from_level_id < 1 || $to_level_id < 1 ) {
@@ -569,10 +575,10 @@ function pmprodev_move_level( $message ) {
 		return;
 	}
 
-	$set_enddate  = ! empty( $_REQUEST['move_level_set_enddate'] );
+	$set_enddate  = ! empty( $_REQUEST['move_level_set_enddate'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Only called after check_admin_referer() in the action loop above, or from WP-CLI.
 	$enddate      = '';
 	if ( $set_enddate ) {
-		$enddate = sanitize_text_field( $_REQUEST['move_level_enddate'] );
+		$enddate = isset( $_REQUEST['move_level_enddate'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['move_level_enddate'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Only called after check_admin_referer() in the action loop above, or from WP-CLI.
 		$submitted_date = DateTime::createFromFormat( 'Y-m-d', $enddate );
 		if ( empty( $enddate ) || ! $submitted_date || $submitted_date->format( 'Y-m-d' ) !== $enddate ) {
 			pmprodev_output_message( __( 'Please enter a valid expiration date in YYYY-MM-DD format.', 'pmpro-toolkit' ), 'warning' );
@@ -631,9 +637,9 @@ function pmprodev_move_level( $message ) {
 function pmprodev_give_level( $message ) {
 	global $wpdb;
 
-	$give_level_id = intval( $_REQUEST['give_level_id'] );
-	$give_level_startdate = sanitize_text_field( $_REQUEST['give_level_startdate'] );
-	$give_level_enddate = sanitize_text_field( $_REQUEST['give_level_enddate'] );
+	$give_level_id = isset( $_REQUEST['give_level_id'] ) ? intval( $_REQUEST['give_level_id'] ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Only called after check_admin_referer() in the action loop above, or from WP-CLI.
+	$give_level_startdate = isset( $_REQUEST['give_level_startdate'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['give_level_startdate'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Only called after check_admin_referer() in the action loop above, or from WP-CLI.
+	$give_level_enddate = isset( $_REQUEST['give_level_enddate'] ) ? sanitize_text_field( wp_unslash( $_REQUEST['give_level_enddate'] ) ) : ''; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Only called after check_admin_referer() in the action loop above, or from WP-CLI.
 
 	//bail if the level ID is invalid
 	if ( $give_level_id < 1 || empty( $give_level_startdate ) ) {
@@ -655,7 +661,7 @@ function pmprodev_give_level( $message ) {
 		$give_level_enddate
 	);
 
-	$wpdb->query( $sqlQuery );
+	$wpdb->query( $sqlQuery ); // phpcs:ignore WordPress.DB.PreparedSQL.NotPrepared -- $sqlQuery is built with $wpdb->prepare() above.
 
 	$message = sprintf( $message, $wpdb->rows_affected, $give_level_id );
 
@@ -672,8 +678,8 @@ function pmprodev_give_level( $message ) {
 function pmprodev_cancel_level( $message ) {
 	global $wpdb;
 
-	$cancel_level_id = intval( $_REQUEST['cancel_level_id'] );
-	$user_ids = $wpdb->get_col( "SELECT user_id FROM $wpdb->pmpro_memberships_users WHERE membership_id = $cancel_level_id AND status = 'active'" );
+	$cancel_level_id = isset( $_REQUEST['cancel_level_id'] ) ? intval( $_REQUEST['cancel_level_id'] ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Only called after check_admin_referer() in the action loop above, or from WP-CLI.
+	$user_ids = $wpdb->get_col( $wpdb->prepare( "SELECT user_id FROM $wpdb->pmpro_memberships_users WHERE membership_id = %d AND status = 'active'", $cancel_level_id ) );
 	// Bail if the level ID is invalid
 	if ( $cancel_level_id < 1 ) {
 		pmprodev_output_message( __( 'Please enter a valid level ID.', 'pmpro-toolkit' ), 'warning' );
@@ -706,8 +712,8 @@ function pmprodev_cancel_level( $message ) {
 function pmprodev_copy_memberships_pages( $message ) {
 	global $wpdb;
 
-	$from_level_id = intval( $_REQUEST['copy_memberships_pages_from'] );
-	$to_level_id = intval( $_REQUEST['copy_memberships_pages_to'] );
+	$from_level_id = isset( $_REQUEST['copy_memberships_pages_from'] ) ? intval( $_REQUEST['copy_memberships_pages_from'] ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Only called after check_admin_referer() in the action loop above, or from WP-CLI.
+	$to_level_id = isset( $_REQUEST['copy_memberships_pages_to'] ) ? intval( $_REQUEST['copy_memberships_pages_to'] ) : 0; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Only called after check_admin_referer() in the action loop above, or from WP-CLI.
 
 	$wpdb->query(
 		$wpdb->prepare(
@@ -731,13 +737,13 @@ function pmprodev_copy_memberships_pages( $message ) {
 function pmprodev_delete_incomplete_orders( $message ) {
 	global $wpdb;
 
-	if ( empty( $_REQUEST['delete_incomplete_orders_days']  ) ) {
+	if ( empty( $_REQUEST['delete_incomplete_orders_days']  ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Only called after check_admin_referer() in the action loop above, or from WP-CLI.
 		pmprodev_output_message( __( 'Please enter a number of days.', 'pmpro-toolkit' ), 'warning' );
 		pmprodev_expand_actions( 'pmprodev_delete_incomplete_orders' );
 		return;
 	}
 
-	$days = intval( $_REQUEST['delete_incomplete_orders_days'] );
+	$days = intval( $_REQUEST['delete_incomplete_orders_days'] ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Only called after check_admin_referer() in the action loop above, or from WP-CLI.
 
 	if ( ! is_numeric( $days ) || intval( $days ) < 1 ) {
 		pmprodev_output_message( __( 'Please enter a valid number of days.', 'pmpro-toolkit' ), 'warning' );

@@ -141,7 +141,7 @@ class Test_Member_Export_Endpoint extends API_Endpoint {
 		}
 
 		// Add some sensible defaults if not provided
-		if ( ! isset( $_REQUEST['l'] ) ) {
+		if ( ! isset( $_REQUEST['l'] ) ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- REST route guarded by its permission_callback; only checks a value this endpoint set.
 			$_REQUEST['l'] = 'all';
 			$filters['l']  = 'all';
 		}

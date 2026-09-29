@@ -171,7 +171,7 @@ class Test_Change_Level_Endpoint extends API_Endpoint {
 		}
 
 		// Mirror $_REQUEST for code paths that read from it instead of $_POST.
-		$_REQUEST = array_merge( $_REQUEST ?? array(), $_POST );
+		$_REQUEST = array_merge( $_REQUEST ?? array(), $_POST ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended, WordPress.Security.NonceVerification.Missing -- REST route guarded by its permission_callback; this mirrors request data for the simulated checkout.
 
 		// Begin output buffering to prevent template/HTML leakage in API response.
 		ob_start();

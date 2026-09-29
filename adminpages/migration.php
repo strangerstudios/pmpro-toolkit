@@ -1,3 +1,8 @@
+<?php
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+?>
 
 <h2><?php esc_html_e( 'Migration Assistant', 'pmpro-toolkit' ); ?></h2>
 <p><?php esc_html_e( 'Use the options below to import or export PMPro data from one membership site to another membership site.', 'pmpro-toolkit' ); ?></p>
@@ -15,16 +20,16 @@
 		// Check if the user submitted an import file.
 		if (
 			isset( $_FILES[ 'pmprodev-import-file' ] )
-			&& $_FILES[ 'pmprodev-import-file' ][ 'error' ] === UPLOAD_ERR_OK // Checks for errors.
-			&& is_uploaded_file( $_FILES[ 'pmprodev-import-file' ][ 'tmp_name' ] )
+			&& $_FILES[ 'pmprodev-import-file' ][ 'error' ] === UPLOAD_ERR_OK // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated -- Always set by PHP when the upload array exists; checked for errors.
+			&& is_uploaded_file( $_FILES[ 'pmprodev-import-file' ][ 'tmp_name' ] ) // phpcs:ignore WordPress.Security.NonceVerification.Missing, WordPress.Security.ValidatedSanitizedInput.InputNotValidated, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- PHP-generated temp path, only validated here; the nonce is verified below before importing.
 		) {
 			// Verify the nonce.
-			if ( ! isset( $_POST[ '_wpnonce' ] ) || ! wp_verify_nonce( $_POST[ '_wpnonce' ], 'pmprodev-import' ) ) {
+			if ( ! isset( $_POST[ '_wpnonce' ] ) || ! wp_verify_nonce( sanitize_text_field( wp_unslash( $_POST[ '_wpnonce' ] ) ), 'pmprodev-import' ) ) {
 				// Verification failed.
 				echo '<div class="notice notice-large notice-error inline"><p>' . esc_html__( 'Nonce verification failed.', 'pmpro-toolkit' ) . '</p></div>';
 			} else {
 				// Verification succeeded. Import the file.
-				$error = PMProDev_Migration_Assistant::import( $_FILES[ 'pmprodev-import-file' ][ 'tmp_name' ] );
+				$error = PMProDev_Migration_Assistant::import( $_FILES[ 'pmprodev-import-file' ][ 'tmp_name' ] ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotValidated, WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- PHP-generated temp path, verified with is_uploaded_file() above.
 				if ( is_string( $error ) ) {
 					// There was an error during the import.
 					echo '<div class="notice notice-large notice-error inline"><p>' . esc_html( $error ) . '</p></div>';

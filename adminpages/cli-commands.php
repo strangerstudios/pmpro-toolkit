@@ -1,4 +1,9 @@
 <?php
+
+if ( ! defined( 'ABSPATH' ) ) {
+	exit;
+}
+
 	// Only admins can access this page.
 	if ( ! function_exists( "current_user_can" ) || ( !current_user_can( "manage_options" ) ) ) {
 		die( esc_html__( "You do not have permissions to perform this action.", 'pmpro-toolkit' ) );
