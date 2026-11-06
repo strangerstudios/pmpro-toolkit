@@ -217,6 +217,14 @@ function pmprodev_checkout_debug_email( $filter_contents = null ) {
 		return $filter_contents;
 	}
 
+	// Send at most one email per hour for submissions that fail the JavaScript check, which are usually spam bots.
+	if ( ! empty( $_REQUEST['checkjavascript'] ) && empty( $_REQUEST['javascriptok'] ) ) {
+		if ( get_transient( 'pmprodev_checkout_debug_js_sent' ) ) {
+			return $filter_contents;
+		}
+		set_transient( 'pmprodev_checkout_debug_js_sent', 1, apply_filters( 'pmprodev_checkout_debug_js_throttle', HOUR_IN_SECONDS ) );
+	}
+
 	// We're going to send an email. Make sure we don't send more than one.
 	$pmprodev_options['checkout_debug_when'] = false;
 
